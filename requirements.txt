@@ -1,0 +1,8 @@
+# Versions EXACTES pour la reproductibilité (pas de >=).
+# Python 3.10+ requis (zoneinfo dans la stdlib).
+numpy==1.26.4
+pandas==2.2.2
+xgboost==2.1.1
+scikit-learn==1.5.1
+# tzdata : indispensable pour zoneinfo sous Windows (pas de base tz système).
+tzdata==2024.1
