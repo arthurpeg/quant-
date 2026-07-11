@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"try { python wiki/update_hot.py | Out-Null } catch {}\""
+          }
+        ]
+      }
+    ]
+  }
+}

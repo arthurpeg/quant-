@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Data caches (large; synced via OneDrive, or re-fetchable via fetch_data.py / mt5_loader.py)
+data_cache/
+data_cache_mt5/
+
+# Build/run logs
+*.log
+
+# Obsidian: keep graph.json (our color config) tracked, ignore the volatile workspace files
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+
+# Claude local (machine-specific permissions); keep settings.json (shared hooks) tracked
+.claude/settings.local.json
+
+# OS cruft
+Thumbs.db
+Desktop.ini
+.DS_Store
