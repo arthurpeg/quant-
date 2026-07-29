@@ -197,7 +197,25 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default=str(DEFAULT_CSV), help="path to trades.csv")
     ap.add_argument("--discord", help="send the report to this Discord webhook URL (a test send)")
+    ap.add_argument("--alert-now", action="store_true",
+                    help="fire the configured pre_session_alerts to Discord now (test)")
     args = ap.parse_args()
+    if args.alert_now:
+        import yaml
+        cfg = yaml.safe_load(open(Path(__file__).resolve().parent / "config_live.yaml", encoding="utf-8"))
+        url = cfg.get("discord_webhook_url")
+        alerts = cfg.get("pre_session_alerts") or []
+        if not url:
+            print("no discord_webhook_url in config"); return
+        if not alerts:
+            print("no pre_session_alerts found in config (block missing or wrong indentation)"); return
+        for a in alerts:
+            try:
+                code = send_discord(url, f"[TEST alert] {a.get('msg', '')}", code=False)
+                print(f"sent alert et={a.get('et','?')} (HTTP {code})")
+            except Exception as exc:
+                print(f"FAILED: {exc}")
+        return
     if args.discord == "config":
         import yaml
         cfg_path = Path(__file__).resolve().parent / "config_live.yaml"
