@@ -98,6 +98,26 @@ def status(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: dict) ->
                  "flat" if pos is None else f"{pos.direction:+d} {pos.lots} @ {pos.entry_price:.5f}")
 
 
+_SINGLETON_HANDLE = None   # keep the mutex handle alive for the process lifetime
+
+
+def _acquire_singleton() -> bool:
+    """Windows named-mutex singleton. True if we are the ONLY runner, False if another
+    instance already holds it. Guarantees one runner per machine no matter how many
+    launchers fire (bare `python` with two installs, a stray supervisor, etc.)."""
+    global _SINGLETON_HANDLE
+    try:
+        import ctypes
+        k = ctypes.windll.kernel32
+        h = k.CreateMutexW(None, False, "Global\\edgelab_live_runner_singleton")
+        if k.GetLastError() == 183:   # ERROR_ALREADY_EXISTS
+            return False
+        _SINGLETON_HANDLE = h
+        return True
+    except Exception:
+        return True   # non-Windows / no ctypes -> no guard (this stack is Windows anyway)
+
+
 def _setup_logging() -> None:
     out = Path(__file__).resolve().parent / "_out"
     out.mkdir(parents=True, exist_ok=True)
@@ -127,6 +147,12 @@ def main() -> int:
         status(broker, risk, strategies, cfg_live)
         broker.disconnect()
         return 0
+
+    # SINGLETON: never let two order-sending runners fight over the same account.
+    if not _acquire_singleton():
+        LOG.error("another edgelab.live.runner is already running -> exiting "
+                  "(one runner per machine/account). This one will not trade.")
+        return 0   # exit 0 so the supervisor stops instead of respawning a duplicate
 
     try:
         broker.connect()
