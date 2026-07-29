@@ -17,14 +17,14 @@ $stop = Join-Path $outDir "STOP"
 # Resolve a REAL python interpreter. NEVER the bare 'python' (on this box it's the
 # Microsoft Store app-execution alias, which spawns a stub + a detached child -> two
 # processes and flaky supervision). Prefer the py launcher, then a pythoncore install.
-$PYEXE = $null
-if (Get-Command py.exe -ErrorAction SilentlyContinue) { $PYEXE = (Get-Command py.exe).Source; $PYPRE = @("-3") }
-if (-not $PYEXE) {
-  $cand = Get-ChildItem "$env:LOCALAPPDATA\Python\pythoncore-*\python.exe" -ErrorAction SilentlyContinue |
-          Sort-Object FullName -Descending | Select-Object -First 1
-  if ($cand) { $PYEXE = $cand.FullName; $PYPRE = @() }
-}
-if (-not $PYEXE) { $PYEXE = "python"; $PYPRE = @() }   # last resort
+$PYEXE = $null; $PYPRE = @()
+# Prefer the DIRECT pythoncore interpreter. The Store 'py.exe'/'python.exe' aliases are
+# flaky when called with splatted args from a script -> intermittent "can't open file py.exe".
+$cand = Get-ChildItem "$env:LOCALAPPDATA\Python\pythoncore-*\python.exe" -ErrorAction SilentlyContinue |
+        Sort-Object FullName -Descending | Select-Object -First 1
+if ($cand) { $PYEXE = $cand.FullName; $PYPRE = @() }
+elseif (Get-Command py.exe -ErrorAction SilentlyContinue) { $PYEXE = (Get-Command py.exe).Source; $PYPRE = @("-3") }
+else { $PYEXE = "python"; $PYPRE = @() }
 
 function Log($m) {
   $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
