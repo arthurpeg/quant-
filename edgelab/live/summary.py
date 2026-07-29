@@ -183,8 +183,11 @@ def send_discord(webhook_url: str, text: str) -> int:
     import urllib.request
     body = "```\n" + text[:1900] + "\n```"
     data = json.dumps({"content": body, "username": "edgelab.live"}).encode("utf-8")
-    req = urllib.request.Request(webhook_url, data=data,
-                                 headers={"Content-Type": "application/json"})
+    # Discord's edge rejects the default 'Python-urllib' UA with 403 -> send a real one.
+    req = urllib.request.Request(webhook_url, data=data, headers={
+        "Content-Type": "application/json",
+        "User-Agent": "edgelab.live (https://github.com/arthurpeg/quant-, 1.0)",
+    })
     with urllib.request.urlopen(req, timeout=15) as resp:
         return getattr(resp, "status", 204)
 
