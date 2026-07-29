@@ -27,6 +27,7 @@ wiki links to them and never copies them in as truth.
 | Page | Purpose |
 |------|---------|
 | [index.md](index.md) | This catalog. Read first. |
+| [system.md](system.md) | **The current deployable book**: the frozen 3 bricks, backtest + Monte-Carlo performance, prop sizing. |
 | [SCHEMA.md](SCHEMA.md) | The rulebook: page templates, workflows, lint checks. |
 | [log.md](log.md) | Append-only chronological log of everything that happened. |
 | [hot.md](hot.md) | **Auto-generated** current-state snapshot. Never hand-edit. |
@@ -41,7 +42,10 @@ wiki links to them and never copies them in as truth.
 | [exp-002 — V3 MT5 four "new info" angles](experiments/exp-002-v3-mt5-four-angles.md) | ⚠️ partial | Vol target works (risk mgmt only); cross-asset / seasonality / order-flow fail. |
 | [exp-003 — Cross-sectional FX + metals](experiments/exp-003-xsection-fx.md) | ❌ no edge | ~11-name prop universe too narrow; ML overfits (IC −0.03), momentum insignificant (t=1.19). |
 | [exp-004 — Breadth POC (equities)](experiments/exp-004-xsection-breadth-poc.md) | ⚠️ partial | Breadth mechanism confirmed: IR +0.58 (138 bets) vs ~0 (1 bet). Survivorship-biased, not deployable. |
-| [exp-005 — MT5 intraday vol breakout (Nasdaq)](experiments/exp-005-mt5-intraday-vol-breakout.md) | 🚧 open | External MQL5 EA on NAS100 (US-open breakout). Strong negative prior (single-asset direction); test rigorously OOS + costs. |
+| [exp-005 — MT5 intraday vol breakout (Nasdaq)](experiments/exp-005-mt5-intraday-vol-breakout.md) | ⚠️ marginal-positive | External MQL5 EA on NAS100. Python engine validated to the trade vs MT5 report (697=697). Thin real edge: best-estimate PF **~1.2-1.3** realistic (MT5 real-tick is the honest number; bar methods over-count wins). Positive incl. crises but lumpy; single-asset. |
+| [exp-006 — Cross-sectional index momentum](experiments/exp-006-xsection-index-momentum.md) | ⚠️ weak | Index momentum L/S. Initial "t 3.13 / Sharpe 0.70" was a **data-alignment bug** (union-index panel); clean grid = **Sharpe ~0.40, not significant, worst yr −12%**, and the mandatory prop SL degrades it further (momentum+stops=whipsaw). NOT a confirmed 2nd brick. |
+| [exp-007 — Turn-of-month (gold) 2nd brick](experiments/exp-007-turn-of-month-2nd-brick.md) | ⚠️ candidate | From a systematic 1000-paper arXiv triage: **XAU turn-of-month** clears the validation gate (t=2.18 with a proper ATR stop, 8/10 yrs) and is **decorrelated** from the NAS breakout (corr ~0.00). Thin diversifier (~2 R/yr); doesn't thicken multi-asset. Needs forward-test. |
+| [exp-008 — Crypto trend 3rd brick](experiments/exp-008-crypto-breakout-3rd-brick.md) | ✅ candidate | **Crypto trend** brick, decorrelated (\|corr\|~0.01). FINAL = **MACD(12,26,9)+RSI on BTC+ETH** ([arXiv 2206.12282](https://arxiv.org/abs/2206.12282)), upgraded from breakout-20 (+25.5 vs +9.8 R/yr, RoMaD 25.3). **FROZEN 3-brick portfolio: R/yr +37.9, maxDD 13.6 R, Sharpe 2.56, prop PASSED @≤0.85%/trade** (daily −5% ok). All in-sample; needs forward-test. Check crypto prop-tradability. |
 
 ## Concepts (shared vocabulary)
 

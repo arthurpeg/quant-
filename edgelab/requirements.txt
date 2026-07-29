@@ -1,0 +1,9 @@
+# edgelab framework dependencies
+pandas>=2.0
+numpy>=1.24
+pyyaml>=6.0
+pyarrow>=12.0        # parquet cache
+matplotlib>=3.7      # optional: charts (pipeline degrades gracefully without it)
+yfinance>=0.2        # optional: Yahoo data provider
+pytest>=7.0          # tests
+# arXiv research uses only the Python stdlib (urllib + xml.etree) — no extra dep.

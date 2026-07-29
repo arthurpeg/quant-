@@ -69,6 +69,22 @@ follow-up: pin the spread snapshot.
 **Why it matters / next (breadth link).** Pairs with
 [[exp-004-xsection-breadth-poc]], which isolates the breadth *mechanism* on equities.
 
+**Follow-up (2026-07-27) — the "widen the universe" option (a) is TESTED and FAILS.**
+Enumerated the full Pepperstone prop-tradable universe (FX majors+crosses+EM, 4 metals, 11
+multi-region indices, energy = 107 instruments) via the MT5 API. Two findings
+(`xsection_wide.py`, `scratchpad/breadth_universe.py`):
+- **Breadth does rise:** effective independent bets N_eff (eigenvalue participation ratio of the
+  daily-return correlation matrix) goes 3.4 (11 majors) → 7.8 (add FX crosses) → 8.4 (full), but
+  **plateaus at ~8** — EM/indices add almost nothing (not independent enough). Daily-return ρ is
+  only ~0.08 even on majors (level-correlation ≠ return-correlation).
+- **But it does NOT help — it hurts.** Cross-sectional momentum (3m, weekly rebal, top/bottom
+  quintile, net of per-pair real spread): majors-only reproduces exp-003 (IC +0.025, t 1.32, net
+  +0.18%/yr, Sharpe 0.01); the **wide universe collapses** to IC +0.006 (t 0.44), **net −4.86%/yr,
+  Sharpe −0.34**. Two causes: (1) momentum **doesn't generalize** to crosses/EM (they mean-revert /
+  have idiosyncratic drivers) → IC diluted 0.025→0.006; (2) spread explodes 0.3→2.8 bps median
+  (~10×) → cost kills it. **Lesson: IR = IC·√N assumes IC constant across the N bets; widening
+  dilutes IC and raises cost, so breadth is not free.** Option (a) rejected → [[ledger]].
+
 **Links.** [[cross-sectional-vs-directional]], [[breadth]],
 [[information-coefficient-and-ir]], [[factor-investing-cross-section]],
 [[data-sources]].

@@ -1,0 +1,141 @@
+# =============================================================================
+# edgelab — central configuration. EVERY tunable lives here.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Data layer
+# ---------------------------------------------------------------------------
+data:
+  # Which provider to use: "mt5_csv" (the feed we would actually trade, honest)
+  # or "yahoo" (yfinance, easy to extend / more history for research).
+  provider: mt5_csv
+  timeframe: D1                 # D1 tolerates a weak feed far better than M1 (see wiki)
+  # Directories are relative to the repo root.
+  mt5_cache_dir: data_cache_mt5
+  yahoo_cache_dir: edgelab/data/_cache_yahoo
+  start: "2013-01-01"          # inclusive; null = all available
+  end: null                    # inclusive; null = latest
+
+  # Prop-firm universe only (forex / indices / metals / energies).
+  # These are the symbols we have honest MT5 daily bars for.
+  universe:
+    - EURUSD      # FX major
+    - GBPUSD      # FX major
+    - USDJPY      # FX major
+    - XAUUSD      # metal  (gold)
+    - XAGUSD      # metal  (silver)
+    - US30        # index  (Dow)
+    - NAS100      # index  (Nasdaq)
+    - SpotCrude   # energy (WTI)
+    - NatGas      # energy (nat gas)
+
+# ---------------------------------------------------------------------------
+# Transaction costs (charged on BOTH entry and exit). Asset-agnostic in bps of
+# notional; per-symbol overrides win. Deliberately pessimistic — thin edges must
+# survive honest cost (wiki lesson: overestimate spread rather than tell a story).
+# ---------------------------------------------------------------------------
+costs:
+  default_spread_bps: 2.0        # half-spread paid per side, bps of price
+  default_slippage_bps: 1.0      # extra adverse fill per side, bps of price
+  per_symbol_spread_bps:         # measured / realistic per-instrument spreads
+    EURUSD: 1.0
+    GBPUSD: 1.5
+    USDJPY: 1.5
+    XAUUSD: 3.0
+    XAGUSD: 5.0
+    US30: 2.5
+    NAS100: 3.0
+    SpotCrude: 5.0
+    NatGas: 8.0
+
+# ---------------------------------------------------------------------------
+# Risk rules applied to EVERY trade (all three are mandatory).
+# ---------------------------------------------------------------------------
+risk:
+  # Barriers expressed as ATR multiples (robust across instruments). ATR window
+  # in bars. Alternatively set *_pct to use fixed-percent barriers instead.
+  atr_window: 14
+  stop_loss_atr: 2.0             # SL distance = 2.0 * ATR
+  take_profit_atr: 3.0           # TP distance = 3.0 * ATR  (=> R:R 1.5)
+  take_profit_rr: null           # if set, TP = stop_loss_atr * rr (overrides tp_atr)
+  time_exit_bars: 10             # force close after N bars if neither SL nor TP hit
+  # Position sizing: risk a fixed fraction of equity per trade (SL distance = risk).
+  risk_per_trade: 0.01           # 1% of equity risked to the stop
+  # Intrabar resolution when a bar's range spans both SL and TP: assume the
+  # ADVERSE one (SL) filled first. Pessimistic, avoids optimistic bias.
+  pessimistic_touch: true
+
+# ---------------------------------------------------------------------------
+# Prop-firm hard constraints (FTMO / The5ers / FundingPips style). Breaching a
+# hard rule fails the account; the engine stops trading accordingly.
+# ---------------------------------------------------------------------------
+propfirm:
+  initial_balance: 100000.0
+  max_daily_loss_pct: 0.05       # 5% of initial balance -> stop trading for the day
+  max_total_drawdown_pct: 0.10   # 10% -> account FAILED, backtest stops
+  profit_target_pct: 0.10        # 10% -> objective reached
+  min_trading_days: 5
+  # Optional consistency rule: no single day may exceed this share of total profit.
+  consistency_max_day_share: 0.40   # null to disable
+  drawdown_basis: initial          # "initial" (static) or "peak" (trailing)
+
+# ---------------------------------------------------------------------------
+# Backtest engine
+# ---------------------------------------------------------------------------
+backtest:
+  execution_lag_bars: 1          # signal on bar t -> fill at OPEN of bar t+1 (no lookahead)
+  allow_short: true
+  one_position_per_symbol: true
+  # Walk-forward / out-of-sample split.
+  walk_forward:
+    scheme: expanding            # "expanding" or "rolling"
+    n_folds: 4
+    oos_fraction: 0.25           # last 25% of each fold window is OOS (for holdout report)
+    embargo_bars: 10             # gap between IS and OOS = time_exit_bars (no label leakage)
+
+# ---------------------------------------------------------------------------
+# Portfolio construction
+# ---------------------------------------------------------------------------
+portfolio:
+  corr_threshold: 0.30           # keep pairwise |rho| of daily returns below this
+  weighting: risk_parity         # "equal" or "risk_parity"
+  min_sharpe_to_admit: 0.0       # an edge must clear this OOS Sharpe to be eligible
+
+# ---------------------------------------------------------------------------
+# arXiv research
+# ---------------------------------------------------------------------------
+research:
+  categories: [q-fin.TR, q-fin.ST, q-fin.PM, q-fin.CP]
+  max_results_per_query: 40
+  rate_limit_seconds: 3.0        # arXiv asks for >= 3s between requests
+  out_dir: edgelab/research/_out
+  # Editable keyword sets — each becomes one query.
+  keyword_sets:
+    - ["momentum", "anomaly"]
+    - ["mean reversion", "equity"]
+    - ["cross-sectional", "factor"]
+    - ["statistical arbitrage"]
+    - ["volatility risk premium"]
+    - ["post-earnings", "drift"]
+    - ["pairs trading"]
+    - ["time series momentum", "trend following"]
+  # Abstract scoring: words that suggest an exploitable, tested edge.
+  score_terms:
+    predictable: 2
+    "abnormal return": 3
+    "abnormal returns": 3
+    sharpe: 2
+    "out-of-sample": 3
+    "out of sample": 3
+    backtest: 2
+    "risk-adjusted": 1
+    profitable: 2
+    "trading strategy": 1
+    significant: 1
+
+# ---------------------------------------------------------------------------
+# Reproducibility / reporting
+# ---------------------------------------------------------------------------
+seed: 7
+reports_dir: edgelab/reports/_out
+trading_days_per_year: 252       # daily-bar annualisation for Sharpe/CAGR

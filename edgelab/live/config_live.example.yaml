@@ -1,0 +1,65 @@
+# =============================================================================
+# edgelab.live — LIVE / FORWARD-TEST configuration
+# =============================================================================
+# SAFETY: live_trading:false means the runner sends NO orders. It connects to MT5
+# only to PULL BARS (Pepperstone), logs the trades it WOULD place, and paper-tracks
+# realised R. Flip live_trading to true ONLY when you have watched the dry-run match
+# the backtest for a while and you accept real risk.
+
+live_trading: true           # send orders to MT5. SAFE here: Pepperstone account is a DEMO.
+allow_real_account: false    # HARD SAFETY: refuse to send orders if the account is NOT a demo.
+pull_real_bars: true         # connect to the MT5 terminal for price data (Pepperstone)
+trade_log_csv: edgelab/live/_out/trades.csv   # journal of every entry/exit (forward-test record)
+
+# --- Which MT5 terminal to attach to (REQUIRED on a VPS running several terminals) ---
+# Point mt5_path at the PEPPERSTONE terminal so this runner never attaches to another
+# terminal (e.g. a MetaQuotes algo's). expect_server makes it REFUSE to trade if it
+# somehow lands on the wrong broker. login/password/server make an unattended reconnect
+# deterministic (password is a secret — a demo is low-risk; prefer saved creds in the
+# terminal + leaving it running, and omit the password here where you can).
+# mt5_path: "C:/Program Files/Pepperstone MetaTrader 5/terminal64.exe"
+expect_server: Pepperstone          # server name must contain this, else refuse to trade
+# mt5_login: 62133658
+# mt5_server: PepperstoneUK-Demo
+# mt5_password: "..."               # optional; avoid storing if the terminal auto-logs in
+# mt5_portable: false               # true if the Pepperstone terminal is a /portable install
+
+# Logical brick symbol -> your Pepperstone MT5 symbol name. VERIFY these against the
+# Market Watch in your terminal (crypto/index suffixes vary by broker, e.g. "NAS100.a").
+symbol_map:
+  NAS100: NAS100
+  XAUUSD: XAUUSD
+  BTCUSD: BTCUSD
+  ETHUSD: ETHUSD
+
+# which symbol each brick trades
+nas_symbol: NAS100
+gold_symbol: XAUUSD
+crypto_symbols: [BTCUSD, ETHUSD]
+
+# ---- risk / prop rules (static-DD firm) ------------------------------------
+# 1R = risk_per_trade * initial_balance (fixed-fractional, NO compounding).
+# Recommended: 1.00% to PASS the challenge, drop to 0.50% once funded (see wiki/system.md).
+risk_per_trade: 0.01
+# size_from_account:true (default) bases 1R and the prop floors on the ACTUAL connected
+# balance at startup -> avoids the dangerous mismatch where initial_balance below is 10x
+# the real demo balance. Set false to use propfirm.initial_balance verbatim (a real
+# fixed-size challenge where the nominal account size is known and fixed).
+size_from_account: true
+propfirm:
+  initial_balance: 100000.0     # only used if size_from_account:false
+  max_daily_loss_pct: 0.05
+  max_total_drawdown_pct: 0.10
+  profit_target_pct: 0.15
+  min_trading_days: 5
+  consistency_max_day_share: null
+  drawdown_basis: initial       # STATIC drawdown (floor fixed at 90% of initial)
+
+# ---- runner cadence --------------------------------------------------------
+poll_seconds: 20               # loop period; brick 1 needs sub-minute polling near the US open
+daily_decision_et: "09:45"     # when bricks 2 & 3 make their once-a-day decision (ET)
+
+# ---- live order plumbing (only used when live_trading:true) ----------------
+deviation_points: 20
+filling: ORDER_FILLING_IOC
+paper_balance: 100000.0        # dry-run starting balance for the P&L log

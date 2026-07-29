@@ -24,6 +24,17 @@ updated: 2026-07-11
   `equity_loader.py`. ~200 stocks. ⚠️ **Survivorship bias present** — POC-only, not
   prop-tradable. [[exp-004-xsection-breadth-poc]]
 
+## Pepperstone broad universe (pulled 2026-07-28, via `edgelab/data/mt5_live.py`)
+- **Real Pepperstone feed** (PepperstoneUK-Demo server, EET-stamped → reinterpret to
+  UTC with `edgelab.intraday.orb.to_true_utc`). D1 for indices (NAS100/US30/US500/US2000/
+  GER40/FRA40/UK100/SWI20/NETH25/AUS200/HK50), metals (XAU/XAG/XPT/XPD/Copper), energy
+  (SpotCrude/NatGas/Gasoline), and **crypto** (BTC/ETH/LTC/XRP/BCH/ADA/DOT/SOL/DOGE/LINK).
+  Intraday M1 cached for NAS100, XAUUSD. Bars carry a per-bar `spread` (points).
+- **Crypto caveat:** available as CFDs, history from ~2016-18 (mild survivorship), wide
+  spreads. **Not on the original prop whitelist** ([[prop-firm-universe]]) — verify your
+  firm allows crypto before treating [[exp-008-crypto-breakout-3rd-brick|the crypto brick]]
+  as deployable.
+
 ## ⚠️ MT5 data QUALITY (not just availability)
 - **MetaQuotes-Demo is a weak feed** — synthetic/aggregated ticks, unrealistic
   spreads, gaps. For **minute-level intraday** strategies this alone can invalidate a

@@ -5,8 +5,17 @@
 //+------------------------------------------------------------------+
 #property copyright "RobustifyTrading"
 #property link      ""
-#property version   "2.00"
+#property version   "2.10"
 #property strict
+
+//--- v2.10 — Backtest-duration fix: the EA no longer reads PERIOD_M1.
+//    The only M1 dependency was the entry-time open price in CalculateLevels
+//    (plus a dead M1 iTime tracker in OnTick). Both are gone: the breakout is
+//    now anchored on the *confirmation* timeframe (M5/M10/M15), which is the
+//    smallest timeframe the code touches. That lets the Strategy Tester run in
+//    "Open prices only" on the confirmation-TF chart and use the broker's full
+//    higher-TF history (typically 10-20 yrs) instead of being capped by ~3 yrs
+//    of usable M1 data. See header note below CalculateLevels for the caveat.
 
 #include <Trade\Trade.mqh>
 
@@ -81,7 +90,6 @@ double   g_tp_distance;
 bool     g_setup_ready;
 bool     g_levels_calculated;
 bool     g_trade_taken;
-datetime g_last_bar_time;
 datetime g_last_confirm_bar;
 int      g_atr_handle;
 int      g_atr_long_handle;   // 20-day ATR for regime baseline
@@ -95,13 +103,30 @@ int      g_exit_hour,      g_exit_min;
 #define REGIME_LONG_PERIOD  20
 
 //+------------------------------------------------------------------+
+//| Anchor timeframe = the confirmation TF. This is the smallest      |
+//| timeframe the EA reads; keeping everything on it (never M1) is    |
+//| what allows a long "Open prices only" backtest.                   |
+//+------------------------------------------------------------------+
+ENUM_TIMEFRAMES AnchorTF()
+{
+   return (ENUM_TIMEFRAMES)Confirmation_Timeframe;
+}
+
+//+------------------------------------------------------------------+
 //| Initialization                                                    |
 //+------------------------------------------------------------------+
 int OnInit()
 {
    g_trade.SetExpertMagicNumber(Magic_Number);
    g_trade.SetDeviationInPoints(10);
-   g_trade.SetTypeFilling(ORDER_FILLING_FOK);
+   // Auto-détecte le mode de remplissage supporté (les CFD indices refusent souvent FOK).
+   long filling = SymbolInfoInteger(_Symbol, SYMBOL_FILLING_MODE);
+   if((filling & SYMBOL_FILLING_FOK) != 0)
+      g_trade.SetTypeFilling(ORDER_FILLING_FOK);
+   else if((filling & SYMBOL_FILLING_IOC) != 0)
+      g_trade.SetTypeFilling(ORDER_FILLING_IOC);
+   else
+      g_trade.SetTypeFilling(ORDER_FILLING_RETURN);
 
    g_atr_handle = iATR(_Symbol, PERIOD_D1, ATR_Period);
    if(g_atr_handle == INVALID_HANDLE)
@@ -162,7 +187,7 @@ int OnInit()
 
    ResetDailyState();
 
-   Print("IntradayVolatilityBreakout v2.00 initialized");
+   Print("IntradayVolatilityBreakout v2.10 initialized");
    Print("ATR Period: ",        ATR_Period,
          " | Breakout Mult: ",  ATR_Multiplier,
          " | Stop Mult: ",      Stop_ATR_Multiplier,
@@ -171,7 +196,7 @@ int OnInit()
    Print("Regime: ATR(", REGIME_SHORT_PERIOD, "d) vs ATR(", REGIME_LONG_PERIOD,
          "d) × ", ATR_Regime_Factor, " | Mode: ", EnumToString(Regime_Filter_Mode));
    Print("Direction: ", DirectionToString(),
-         " | Confirm TF: ",     EnumToString((ENUM_TIMEFRAMES)Confirmation_Timeframe),
+         " | Confirm/Anchor TF: ", EnumToString(AnchorTF()),
          " | Candle close: ",   Use_Candle_Close ? "Yes" : "No");
    Print("Max Spread: ", Max_Spread_Points, " pts",
          " | Hours: ", Entry_Time, " - ", Max_Entry_Time, " | Exit: ", Exit_Time);
@@ -206,15 +231,11 @@ void OnTick()
 
    if(Use_Candle_Close)
    {
-      datetime bar_time = iTime(_Symbol, (ENUM_TIMEFRAMES)Confirmation_Timeframe, 0);
+      datetime bar_time = iTime(_Symbol, AnchorTF(), 0);
       if(bar_time == g_last_confirm_bar)
          return;
       g_last_confirm_bar = bar_time;
    }
-
-   datetime current_bar = iTime(_Symbol, PERIOD_M1, 0);
-   if(current_bar != g_last_bar_time)
-      g_last_bar_time = current_bar;
 
    if(IsNewDay())
    {
@@ -289,7 +310,7 @@ void EvaluateSignals()
 double GetSignalPrice()
 {
    if(Use_Candle_Close)
-      return iClose(_Symbol, (ENUM_TIMEFRAMES)Confirmation_Timeframe, 1);
+      return iClose(_Symbol, AnchorTF(), 1);
 
    return SymbolInfoDouble(_Symbol, SYMBOL_LAST);
 }
@@ -317,6 +338,14 @@ bool PassesRegimeFilter()
 
 //+------------------------------------------------------------------+
 //| Calculate Breakout Levels                                         |
+//|                                                                   |
+//| Anchored on the confirmation TF (never M1) so the tester can run  |
+//| "Open prices only" over the full higher-TF history. The confTF    |
+//| bar that opens at Entry_Time has the SAME open as the M1 bar at    |
+//| that minute, so results are unchanged as long as Entry_Time falls |
+//| on a confTF boundary (16:30 aligns to M5/M10/M15). If you set an  |
+//| Entry_Time that is NOT a boundary of the chosen confTF, the anchor|
+//| open shifts to that bar's opening minute — keep them aligned.     |
 //+------------------------------------------------------------------+
 bool CalculateLevels()
 {
@@ -337,14 +366,14 @@ bool CalculateLevels()
    dt.min  = g_entry_min;
    dt.sec  = 0;
 
-   int shift = iBarShift(_Symbol, PERIOD_M1, StructToTime(dt));
+   int shift = iBarShift(_Symbol, AnchorTF(), StructToTime(dt));
    if(shift < 0)
    {
       Print("Error: Could not locate bar at entry time");
       return false;
    }
 
-   g_entry_open_price = iOpen(_Symbol, PERIOD_M1, shift);
+   g_entry_open_price = iOpen(_Symbol, AnchorTF(), shift);
    if(g_entry_open_price <= 0)
    {
       Print("Error: Invalid open price at entry time");

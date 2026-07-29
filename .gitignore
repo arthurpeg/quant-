@@ -22,3 +22,16 @@ data_cache_mt5/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Live config holds a broker password (per-machine secret). Template is committed
+# as edgelab/live/config_live.example.yaml.
+edgelab/live/config_live.yaml
+
+# Crypto data cache (Yahoo daily; re-fetchable) — like the other data_cache dirs
+data_cache_crypto/
+
+# Generated / regenerable outputs (arXiv corpus, report images, live logs & journals)
+edgelab/research/_out/
+edgelab/reports/_out/
+edgelab/live/_out/
+edgelab/data/_cache_yahoo/
