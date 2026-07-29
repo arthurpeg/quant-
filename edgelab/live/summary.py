@@ -139,10 +139,67 @@ def summarise(csv_path: Path) -> None:
     print("=" * 64)
 
 
+def build_report_text(csv_path: Path, header: list[str] | None = None) -> str:
+    """Compact one-message report (for Discord): heartbeat header + realised R + open pos."""
+    lines = list(header) if header else []
+    rows = _parse(csv_path) if csv_path.exists() else []
+    if not rows:
+        lines.append("no trades logged yet.")
+        return "\n".join(lines)
+    exits = [r for r in rows if r["event"] == "exit" and r.get("R") is not None]
+    net = defaultdict(int); last_entry = {}
+    for r in rows:
+        if r["event"] == "enter":
+            net[r["symbol"]] += 1; last_entry[r["symbol"]] = r
+        else:
+            net[r["symbol"]] -= 1
+    open_syms = [s for s, n in net.items() if n > 0]
+    if exits:
+        Rs = [r["R"] for r in exits]; tot = sum(Rs)
+        w = [x for x in Rs if x > 0]; l = [x for x in Rs if x <= 0]
+        pf = (sum(w) / -sum(l)) if l and sum(l) != 0 else float("inf")
+        lines.append(f"closed {len(exits)} | realised {tot:+.2f} R | win {100*len(w)/len(Rs):.0f}% | PF {pf:.2f}")
+        byb = defaultdict(float)
+        for r in exits:
+            byb[_brick(r["symbol"])] += r["R"]
+        lines.append("  " + " | ".join(f"{b.split('(')[0].strip()} {v:+.1f}R" for b, v in sorted(byb.items())))
+    else:
+        lines.append("closed 0 | realised +0.00 R (nothing closed yet)")
+    if open_syms:
+        parts = []
+        for s in sorted(open_syms):
+            e = last_entry.get(s, {})
+            side = "LONG" if str(e.get("dir", "")).lstrip("+") != "-1" else "SHORT"
+            parts.append(f"{s} {side}")
+        lines.append("open: " + " | ".join(parts))
+    else:
+        lines.append("open: flat")
+    return "\n".join(lines)
+
+
+def send_discord(webhook_url: str, text: str) -> int:
+    """POST ``text`` to a Discord webhook (wrapped in a code block). Returns HTTP status."""
+    import json
+    import urllib.request
+    body = "```\n" + text[:1900] + "\n```"
+    data = json.dumps({"content": body, "username": "edgelab.live"}).encode("utf-8")
+    req = urllib.request.Request(webhook_url, data=data,
+                                 headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        return getattr(resp, "status", 204)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default=str(DEFAULT_CSV), help="path to trades.csv")
+    ap.add_argument("--discord", help="send the report to this Discord webhook URL (a test send)")
     args = ap.parse_args()
+    if args.discord:
+        from datetime import datetime, timezone
+        hdr = [f"edgelab.live TEST report - {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC"]
+        code = send_discord(args.discord, build_report_text(Path(args.csv), hdr))
+        print(f"sent to Discord (HTTP {code}) — check your channel")
+        return
     summarise(Path(args.csv))
 
 

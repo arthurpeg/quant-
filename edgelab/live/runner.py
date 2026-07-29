@@ -77,6 +77,37 @@ def _sync_account_size(broker: Broker, risk: LiveRiskManager, cfg_live: dict) ->
                     risk.rules.max_daily_loss_pct * 100, risk.rules.max_total_drawdown_pct * 100)
 
 
+_LAST_REPORT_DAY = None
+
+
+def _maybe_report(broker: Broker, risk: LiveRiskManager, cfg_live: dict, now_utc: pd.Timestamp) -> None:
+    """Once a day at ``daily_report_et``, push a heartbeat+summary to Discord. Its ABSENCE
+    is the alert: no report = the runner is down. Sends even if MT5 hiccups (heartbeat)."""
+    global _LAST_REPORT_DAY
+    url = cfg_live.get("discord_webhook_url")
+    if not url:
+        return
+    et = now_utc.tz_convert("America/New_York")
+    hhmm = str(cfg_live.get("daily_report_et", "17:00"))
+    rep_min = int(hhmm[:2]) * 60 + int(hhmm[3:])
+    if et.date() == _LAST_REPORT_DAY or (et.hour * 60 + et.minute) < rep_min:
+        return
+    from edgelab.live.summary import build_report_text, send_discord, DEFAULT_CSV
+    try:
+        bal = broker.balance()
+    except Exception:
+        bal = float("nan")
+    header = [f"edgelab.live daily report - {et:%Y-%m-%d %H:%M} ET",
+              f"account {risk.initial_balance:.0f} | 1R {risk.risk_budget():.2f} | "
+              f"balance {bal:.2f} | runner ALIVE"]
+    try:
+        send_discord(url, build_report_text(DEFAULT_CSV, header))
+        LOG.info("daily Discord report sent")
+    except Exception as exc:
+        LOG.warning("Discord report failed: %s", exc)
+    _LAST_REPORT_DAY = et.date()   # set even on failure -> one attempt/day, no spam
+
+
 def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Timestamp) -> None:
     risk.on_equity(_equity(broker, risk), now_utc)
     for strat in strategies:
@@ -171,7 +202,9 @@ def main() -> int:
                 except Exception:
                     LOG.exception("reconnect failed; retrying next cycle")
                     time.sleep(poll); continue
-            one_pass(broker, risk, strategies, pd.Timestamp.now(tz="UTC"))
+            now = pd.Timestamp.now(tz="UTC")
+            one_pass(broker, risk, strategies, now)
+            _maybe_report(broker, risk, cfg_live, now)
             if risk.failed:
                 LOG.error("account FAILED -> stopping runner (exit %d, supervisor will NOT restart)",
                           EXIT_ACCOUNT_FAILED)

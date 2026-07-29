@@ -67,6 +67,13 @@ total / per brick / per month, win rate, profit factor, open positions):
 py -3 -m edgelab.live.summary
 ```
 
+**Daily Discord heartbeat (dead-man's switch)** — set `discord_webhook_url` (+ optional
+`daily_report_et`) in config_live.yaml. The runner posts a summary once a day; its
+ABSENCE is the alert (no report today => the runner is down). Test the webhook now:
+```powershell
+py -3 -m edgelab.live.summary --discord "https://discord.com/api/webhooks/XXXX/YYYY"
+```
+
 **Auto-start at logon** (optional, run once, no admin):
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File edgelab\live\install_task.ps1
