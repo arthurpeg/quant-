@@ -182,6 +182,17 @@ def _acquire_singleton() -> bool:
         return True   # non-Windows / no ctypes -> no guard (this stack is Windows anyway)
 
 
+def _git_head() -> str:
+    """Short hash of the running commit (so the logs say exactly which version is live)."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "--short", "HEAD"],
+                             capture_output=True, text=True, timeout=10).stdout.strip()
+        return out or "?"
+    except Exception:
+        return "?"
+
+
 def _setup_logging() -> None:
     out = Path(__file__).resolve().parent / "_out"
     out.mkdir(parents=True, exist_ok=True)
@@ -203,9 +214,9 @@ def main() -> int:
     cfg_live = _load_live_cfg()
     broker, risk, strategies = build(cfg_live)
 
-    mode = "LIVE — REAL ORDERS" if broker.live else "DRY-RUN (paper, no orders sent)"
-    LOG.warning("edgelab.live starting | mode=%s | risk/trade=%.2f%% | static-DD prop",
-                mode, risk.risk_per_trade * 100)
+    mode = "LIVE - REAL ORDERS" if broker.live else "DRY-RUN (paper, no orders sent)"
+    LOG.warning("edgelab.live starting | commit %s | mode=%s | risk/trade=%.2f%% | static-DD prop",
+                _git_head(), mode, risk.risk_per_trade * 100)
 
     if args.status:
         status(broker, risk, strategies, cfg_live)
