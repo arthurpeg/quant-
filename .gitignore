@@ -35,3 +35,7 @@ edgelab/research/_out/
 edgelab/reports/_out/
 edgelab/live/_out/
 edgelab/data/_cache_yahoo/
+
+# Root convenience copies of the HTML reports (versioned copies live in edgelab/reports/)
+/RAPPORT_backtest_portefeuille.html
+/RAPPORT_monte_carlo.html
