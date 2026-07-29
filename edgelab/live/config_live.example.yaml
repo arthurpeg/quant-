@@ -59,6 +59,13 @@ propfirm:
 poll_seconds: 20               # loop period; brick 1 needs sub-minute polling near the US open
 daily_decision_et: "09:45"     # when bricks 2 & 3 make their once-a-day decision (ET)
 
+# ---- daily Discord heartbeat report ----------------------------------------
+# The runner posts a summary once a day. Its ABSENCE is the alert: no report today
+# => the runner is down. Paste your Discord webhook URL to enable (empty = off).
+# Create one in Discord: Server Settings > Integrations > Webhooks > New Webhook > Copy URL.
+discord_webhook_url: ""        # e.g. https://discord.com/api/webhooks/XXXX/YYYY
+daily_report_et: "17:00"       # time of day (ET) to send the report
+
 # ---- live order plumbing (only used when live_trading:true) ----------------
 deviation_points: 20
 filling: ORDER_FILLING_IOC
