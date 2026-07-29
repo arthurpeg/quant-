@@ -1,0 +1,210 @@
+<title>3-Brick Portfolio — Backtest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --ground:#f4f6f8; --surface:#ffffff; --ink:#131a24; --muted:#5b6675; --line:#e4e8ee;
+  --accent:#0f7c8c; --accent-soft:#0f7c8c1a; --pos:#1f9d61; --neg:#cf4636;
+  --grid:#eef1f5; --shadow:0 1px 2px #131a2408, 0 8px 24px #131a2409;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ground:#0b1016; --surface:#141c27; --ink:#e7edf5; --muted:#93a1b5; --line:#232e3d;
+  --accent:#33b3c3; --accent-soft:#33b3c31f; --pos:#38c281; --neg:#e26a5f;
+  --grid:#1a2331; --shadow:0 1px 2px #0006, 0 10px 30px #0004;
+}}
+:root[data-theme="light"]{
+  --ground:#f4f6f8; --surface:#ffffff; --ink:#131a24; --muted:#5b6675; --line:#e4e8ee;
+  --accent:#0f7c8c; --accent-soft:#0f7c8c1a; --pos:#1f9d61; --neg:#cf4636; --grid:#eef1f5;
+  --shadow:0 1px 2px #131a2408, 0 8px 24px #131a2409;
+}
+:root[data-theme="dark"]{
+  --ground:#0b1016; --surface:#141c27; --ink:#e7edf5; --muted:#93a1b5; --line:#232e3d;
+  --accent:#33b3c3; --accent-soft:#33b3c31f; --pos:#38c281; --neg:#e26a5f; --grid:#1a2331;
+  --shadow:0 1px 2px #0006, 0 10px 30px #0004;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;
+  -webkit-font-smoothing:antialiased;font-size:15px}
+.wrap{max-width:1060px;margin:0 auto;padding:clamp(20px,4vw,52px) clamp(16px,3vw,28px) 80px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+h1{font-size:clamp(26px,4.5vw,40px);line-height:1.08;margin:0 0 12px;letter-spacing:-.02em;text-wrap:balance;font-weight:680}
+.lede{color:var(--muted);max-width:66ch;margin:0 0 6px;font-size:16px}
+.masthead{border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:26px}
+.meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:16px;display:flex;flex-wrap:wrap;gap:6px 22px}
+.meta b{color:var(--ink);font-weight:600}
+h2{font-size:13px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin:44px 0 16px;font-weight:600;display:flex;align-items:center;gap:10px}
+h2::after{content:"";height:1px;flex:1;background:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.tile .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tile .v{font-family:var(--mono);font-size:27px;font-weight:600;margin-top:8px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.tile .s{font-size:12px;color:var(--muted);margin-top:3px}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .acc{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 14px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 4px;font-size:15px;font-weight:620}
+.card p.cap{margin:0 0 14px;color:var(--muted);font-size:13px}
+figure{margin:0}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:11px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line)}
+tbody td{font-variant-numeric:tabular-nums;font-family:var(--mono)}
+tbody td:first-child{font-family:var(--sans)}
+tbody tr:last-child td{border-bottom:none}
+tfoot td{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;border-top:2px solid var(--line)}
+tfoot td:first-child{font-family:var(--sans)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.corr{display:grid;grid-template-columns:auto repeat(3,1fr);gap:4px;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.corr .h{color:var(--muted);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:6px;text-align:center}
+.corr .rh{color:var(--muted);font-size:11px;padding:6px 8px;display:flex;align-items:center}
+.corr .c{padding:12px 6px;text-align:center;border-radius:8px;background:var(--accent-soft)}
+.corr .diag{background:var(--line);color:var(--muted)}
+.note{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:10px;padding:16px 18px;color:var(--muted);font-size:13.5px}
+.note b{color:var(--ink)}
+.note ul{margin:8px 0 0;padding-left:18px} .note li{margin:5px 0}
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Systematic portfolio · backtest</p>
+    <h1>Three decorrelated bricks, in R</h1>
+    <p class="lede">NAS100 opening-range breakout · gold turn-of-month · BTC+ETH MACD-RSI trend. Combined, equal 1R per trade, no compounding. Crypto priced on the <b>Pepperstone</b> feed — the data actually traded live.</p>
+    <div class="meta">
+      <span>WINDOW <b id="m-window">—</b></span>
+      <span>UNIT <b>R (1R = risk per trade, SL = −1R)</b></span>
+      <span>COSTS <b>spread + slippage, both sides</b></span>
+    </div>
+  </header>
+
+  <h2>Headline</h2>
+  <div class="tiles" id="tiles"></div>
+
+  <h2>Combined equity curve</h2>
+  <div class="card">
+    <h3>Cumulative R, month-end</h3>
+    <p class="cap">Every trade risks a fixed 1R; the curve is the running sum of realised R across all three bricks.</p>
+    <figure><div id="equity"></div></figure>
+  </div>
+
+  <h2>Per year &amp; per brick</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Annual R</h3>
+      <p class="cap">Positive every full year; worst is the 2018 half-year (−1.6 R).</p>
+      <figure><div id="years"></div></figure>
+    </div>
+    <div class="card">
+      <h3>Brick contributions</h3>
+      <p class="cap">Return spread across independent edges.</p>
+      <table id="bricks"><thead><tr><th>Brick</th><th>R / yr</th><th>Total R</th><th>Trades</th></tr></thead><tbody></tbody><tfoot></tfoot></table>
+    </div>
+  </div>
+
+  <h2>Why it holds together</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Pairwise correlation of daily R</h3>
+      <p class="cap">All ≈ 0 — the engine that makes combined drawdown smaller than any single brick's.</p>
+      <div class="corr" id="corr"></div>
+    </div>
+    <div class="note">
+      <b>Read this as a candidate, not a promise.</b>
+      <ul>
+        <li>All figures are <b>in-sample</b> on the frozen rules — no live forward test yet.</li>
+        <li>Brick 1's edge is regime-selected; brick 2 is thin (~12 trades/yr); brick 3 is the workhorse but crypto-dependent.</li>
+        <li>Combined maxDD (15.8 R) &lt; the worst single brick — decorrelation drains risk, not return.</li>
+        <li>The Yahoo-crypto variant reads higher (+37.9 R/yr); this Pepperstone book is the honest, tradeable number.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><span>edgelab · 3-brick book</span><span id="f-gen">block-bootstrap sibling report: Monte Carlo</span></div>
+</div>
+
+<script>
+const D={
+ window:"2018-07 → 2026-07  (8.1 yr)",
+ combined:{r:32.5,maxdd:15.8,romad:2.06,sharpe:2.42,worst:-4.15,best:5.96,win:51},
+ equity:[1.8,-3.6,-6.8,-9.3,1.2,-1.6,-1.9,-5.7,2.4,0.8,6.8,9.8,12.8,10.3,9.9,9.9,3.9,12.2,13.2,20.3,27.1,33.4,34.8,36.1,40.4,48.6,49.7,54.6,63.0,64.7,71.4,66.8,64.7,72.7,79.3,83.1,84.4,92.8,94.8,99.1,96.4,96.2,97.4,95.6,95.4,100.7,109.1,112.1,124.7,119.3,117.0,120.4,117.6,119.8,131.8,126.7,129.7,136.0,138.8,140.2,132.2,137.4,135.1,143.4,149.6,149.5,139.9,155.4,164.0,160.4,169.9,175.5,181.7,187.4,192.8,188.3,199.2,208.2,207.8,219.8,220.5,218.6,226.1,219.2,232.5,234.1,234.5,229.4,233.5,232.8,241.9,251.8,254.7,252.4,256.1,267.2,262.7],
+ eq_start:2018.58,
+ years:{2018:-1.6,2019:13.8,2020:52.6,2021:31.5,2022:23.6,2023:29.7,2024:58.7,2025:24.6,2026:29.8},
+ bricks:{"NAS100 breakout":[12.9,104,784],"Gold turn-of-month":[2.5,20,96],"Crypto MACD-RSI":[17.1,138,559]},
+ corr:{NAS:{NAS:1,Gold:.02,Crypto:-.01},Gold:{NAS:.02,Gold:1,Crypto:-.01},Crypto:{NAS:-.01,Gold:-.01,Crypto:1}}
+};
+const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+document.getElementById('m-window').textContent=D.window;
+
+/* KPI tiles */
+const c=D.combined;
+document.getElementById('tiles').innerHTML=[
+ ['Return / year',(c.r>0?'+':'')+c.r+' R','pos'],
+ ['Max drawdown',c.maxdd+' R',''],
+ ['RoMaD','×'+c.romad,'acc'],
+ ['Sharpe (ann.)',c.sharpe,''],
+ ['Best / worst day','+'+c.best+' / '+c.worst,''],
+ ['Winning days',c.win+'%','']
+].map(([k,v,cl])=>`<div class="tile"><div class="k">${k}</div><div class="v ${cl}">${v}</div></div>`).join('');
+
+/* generic axis helpers */
+function frame(W,H,pad){return {W,H,pad,x:(t,a,b)=>pad.l+(t-a)/(b-a||1)*(W-pad.l-pad.r),y:(v,a,b)=>H-pad.b-(v-a)/(b-a||1)*(H-pad.t-pad.b)};}
+
+/* equity area chart */
+(function(){
+ const W=800,H=300,pad={l:44,r:14,t:14,b:28},f=frame(W,H,pad);
+ const d=D.equity,n=d.length,mn=Math.min(0,...d),mx=Math.max(...d);
+ const X=i=>f.x(i,0,n-1),Y=v=>f.y(v,mn,mx);
+ let grid='',ylabs='';
+ const step=50;for(let g=0;g<=mx;g+=step){const y=Y(g);grid+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" stroke="${cv('--grid')}"/>`;ylabs+=`<text x="${pad.l-8}" y="${y+3}" text-anchor="end">${g}</text>`;}
+ const zero=Y(0);grid+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${zero}" y2="${zero}" stroke="${cv('--line')}" stroke-width="1"/>`;
+ let ln=d.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+ const area=`${pad.l},${zero} ${ln} ${X(n-1)},${zero}`;
+ let xlabs='';const yrs=[2019,2020,2021,2022,2023,2024,2025,2026];
+ yrs.forEach(yr=>{const i=(yr-D.eq_start)*12;if(i>=0&&i<n){xlabs+=`<text x="${X(i)}" y="${H-8}" text-anchor="middle">${yr}</text>`;}});
+ document.getElementById('equity').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="cumulative R equity curve">
+  <defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${cv('--accent')}" stop-opacity=".28"/><stop offset="1" stop-color="${cv('--accent')}" stop-opacity="0"/></linearGradient></defs>
+  <g font-family="${cv('--mono')}" font-size="10" fill="${cv('--muted')}">${grid}${ylabs}${xlabs}</g>
+  <polygon points="${area}" fill="url(#ga)"/>
+  <polyline points="${ln}" fill="none" stroke="${cv('--accent')}" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="${X(n-1)}" cy="${Y(d[n-1])}" r="3.5" fill="${cv('--accent')}"/></svg>`;
+})();
+
+/* annual bars */
+(function(){
+ const W=520,H=260,pad={l:40,r:10,t:12,b:26},f=frame(W,H,pad);
+ const ys=Object.keys(D.years),vals=Object.values(D.years);
+ const mx=Math.max(...vals),mn=Math.min(0,...vals);
+ const bw=(W-pad.l-pad.r)/ys.length*0.62;
+ const Y=v=>f.y(v,mn,mx);const zero=Y(0);
+ let bars='',lab='';
+ ys.forEach((yr,i)=>{const cx=pad.l+(i+0.5)/ys.length*(W-pad.l-pad.r);const v=vals[i];const y=Y(v);
+   const col=v>=0?cv('--pos'):cv('--neg');
+   bars+=`<rect x="${cx-bw/2}" y="${Math.min(y,zero)}" width="${bw}" height="${Math.abs(y-zero)}" rx="2" fill="${col}"/>`;
+   bars+=`<text x="${cx}" y="${v>=0?y-5:y+12}" text-anchor="middle" font-size="9.5" fill="${cv('--muted')}">${v>0?'+':''}${v}</text>`;
+   lab+=`<text x="${cx}" y="${H-8}" text-anchor="middle" font-size="9.5" fill="${cv('--muted')}">'${String(yr).slice(2)}</text>`;});
+ let grid='';for(let g=0;g<=mx;g+=20){const y=Y(g);grid+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" stroke="${cv('--grid')}"/><text x="${pad.l-6}" y="${y+3}" text-anchor="end" font-size="9.5" fill="${cv('--muted')}" font-family="${cv('--mono')}">${g}</text>`;}
+ document.getElementById('years').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="annual R"><g>${grid}</g><line x1="${pad.l}" x2="${W-pad.r}" y1="${zero}" y2="${zero}" stroke="${cv('--line')}"/><g font-family="${cv('--mono')}">${bars}${lab}</g></svg>`;
+})();
+
+/* bricks table */
+(function(){
+ const tb=document.querySelector('#bricks tbody');let tot=[0,0,0];
+ for(const[k,v]of Object.entries(D.bricks)){tot[0]+=v[0];tot[1]+=v[1];tot[2]+=v[2];
+   tb.innerHTML+=`<tr><td>${k}</td><td class="pos">+${v[0]}</td><td>+${v[1]}</td><td>${v[2]}</td></tr>`;}
+ document.querySelector('#bricks tfoot').innerHTML=`<tr><td>Combined</td><td class="pos">+${tot[0].toFixed(1)}</td><td>+${tot[1]}</td><td>${tot[2]}</td></tr>`;
+})();
+
+/* correlation matrix */
+(function(){
+ const keys=['NAS','Gold','Crypto'];let h='<div class="h"></div>'+keys.map(k=>`<div class="h">${k}</div>`).join('');
+ keys.forEach(r=>{h+=`<div class="rh">${r}</div>`+keys.map(cc=>{const v=D.corr[r][cc];const diag=r===cc;return `<div class="c ${diag?'diag':''}">${diag?'1.00':(v>0?'+':'')+v.toFixed(2)}</div>`;}).join('');});
+ document.getElementById('corr').innerHTML=h;
+})();
+</script>

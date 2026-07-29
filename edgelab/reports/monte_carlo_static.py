@@ -5,7 +5,9 @@ The daily-R series is built the CORRECT way (two earlier bugs fixed, see wiki/sy
   * fixed-fractional TRADE-R on exit dates (sizing-invariant), NOT the engine's compounding
     mark-to-market (`res.returns` compounds -> understated crypto R);
   * a CALENDAR-day index (freq='D') so crypto WEEKEND exits are kept (freq='B' dropped them).
-Correctness check: the MC median must match the historical backtest (both +37.9 R/yr).
+Brick 3 uses the PEPPERSTONE crypto bars (data_cache_mt5) — the data the live runner
+actually trades — not Yahoo. That makes this the LIVE-realistic book (~+32 R/yr) rather
+than the Yahoo-optimistic +37.9 (Yahoo's longer history + different daily-close boundary).
 
 Bricks: NAS100 US-open ATR-breakout (low-vol) + XAU turn-of-month + MACD(12,26,9)+RSI BTC+ETH.
 Run from repo root:  python edgelab/reports/monte_carlo_static.py
@@ -21,12 +23,14 @@ from edgelab.backtest.costs import CostModel
 from edgelab.intraday.atr_breakout import run_atr_breakout, ATRBreakParams
 from edgelab.edges.turn_of_month import run_turn_of_month, TurnOfMonthParams
 
-CC = Path('data_cache_crypto'); cfg = load_config(); START = pd.Timestamp('2018-01-01')
+# Pepperstone crypto (the live feed). ETH history there starts 2018-06 -> window from 2018-07.
+CC = Path('data_cache_mt5'); cfg = load_config(); START = pd.Timestamp('2018-07-01')
 eng = BacktestEngine(cfg, cost_model=CostModel(10, 3, {'BTCUSD': 5, 'ETHUSD': 8}))
 
 
 def load(s):
-    d = pd.read_parquet(CC / f'{s}_D1.parquet'); d['time'] = pd.to_datetime(d['time'], utc=True)
+    d = pd.read_parquet(CC / f'{s}_D1.parquet'); d.columns = [c.lower() for c in d.columns]
+    d['time'] = pd.to_datetime(d['time'], utc=True)
     return d.set_index('time')[['open', 'high', 'low', 'close']].assign(volume=0).astype(float).sort_index()
 
 
