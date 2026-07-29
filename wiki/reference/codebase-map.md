@@ -61,8 +61,10 @@ updated: 2026-07-11
   `verify.py` (proves live==backtest: brick1 830/830, brick3 identical, brick2 ~98%),
   `config_live.yaml` (symbol map + `live_trading` flag + risk%). See `edgelab/live/README.md`.
   Resilience: runner self-heals dropped MT5 conn (health-check + reconnect), rotating
-  `_out/runner.log`, exit 42 on blown account. `run_forever.ps1` = supervisor (restart on
-  crash, STOP-file to halt); `install_task.ps1` = auto-start at logon. [[system]]
+  `_out/runner.log`, exit 42 on blown account; single-instance mutex in `runner.py`.
+  `run_forever.ps1` = supervisor (restart on crash, resolves the real python not the Store
+  alias, STOP-file to halt); `install_task.ps1` = auto-start at logon; `summary.py` =
+  one-command forward-test readout of `_out/trades.csv` (R total/per-brick/per-month). [[system]]
 
 ## External strategies (MQL5)
 - `mql5/IntradayVolatilityBreakout.mq5` — MT5 Expert Advisor, intraday Nasdaq

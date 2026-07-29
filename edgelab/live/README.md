@@ -61,6 +61,12 @@ It relaunches the runner if it crashes; it **stops** (does not restart) on a cle
 interrupt or a blown account (exit 42). Stop it anytime by creating `edgelab\live\_out\STOP`
 or closing the window. Logs to `_out/supervisor.log`.
 
+**Track the forward-test** — a one-command readout of the trade journal (realised R
+total / per brick / per month, win rate, profit factor, open positions):
+```powershell
+py -3 -m edgelab.live.summary
+```
+
 **Auto-start at logon** (optional, run once, no admin):
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File edgelab\live\install_task.ps1
