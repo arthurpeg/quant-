@@ -57,7 +57,10 @@ propfirm:
 
 # ---- runner cadence --------------------------------------------------------
 poll_seconds: 20               # loop period; brick 1 needs sub-minute polling near the US open
-daily_decision_et: "09:45"     # when bricks 2 & 3 make their once-a-day decision (ET)
+# Bricks 2 & 3 now decide at the broker DAILY-BAR ROLLOVER (00:00 server time) so live
+# enters at the bar open / exits at the bar close = matches the backtest (no intraday lag).
+# daily_decision_et is no longer used (kept only for backward compatibility).
+daily_decision_et: "09:45"
 
 # ---- auto-update from GitHub (no more manual file copies on the VPS) --------
 # Needs the folder to be a git clone of the repo + git installed. Every

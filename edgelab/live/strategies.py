@@ -112,18 +112,18 @@ class GoldTomStrategy:
         self.p = TurnOfMonthParams(sl_atr=1.5)
         self.logical = cfg_live.get("gold_symbol", "XAUUSD")
         self.magic = MAGIC["gold_tom"]
-        self.decision_min = _mins(cfg_live.get("daily_decision_et", "09:45"))
         self._acted_day = None
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
-        et = now_utc.tz_convert("America/New_York")
-        minute = et.hour * 60 + et.minute
-        # act once per day, shortly after the ET open (one clean decision point)
-        if et.date() == self._acted_day or minute < self.decision_min:
+        # Act ONCE per broker (server) day, triggered right at the daily-bar rollover
+        # (00:00 server time). That is where the backtest enters (bar open) and exits
+        # (bar close) -> live matches the backtest, no intraday lag.
+        bday = now_utc.tz_convert("Europe/Athens").date()
+        if bday == self._acted_day:
             return
 
         d1 = broker.get_bars(self.logical, "D1", 90)
-        day = pd.Timestamp(et.date())
+        day = pd.Timestamp(bday)
         st = S.tom_state(d1, day, self.p)
         pos = broker.open_position(self.magic)
 
@@ -133,24 +133,24 @@ class GoldTomStrategy:
                 bar = d1.iloc[-1]
                 closed, px, why = broker.resolve_paper(pos, bar, now_utc)
                 if closed:
-                    broker.close(pos, px, why, now_utc); self._acted_day = et.date(); return
+                    broker.close(pos, px, why, now_utc); self._acted_day = bday; return
             if st.is_exit_day:
                 px = float(d1.iloc[-1]["close"])
                 broker.close(pos, px, "time_exit", now_utc)
-            self._acted_day = et.date()
+            self._acted_day = bday
             return
 
-        # entry on the last-trading-day of the month
+        # entry on the last-trading-day of the month (at the fresh daily open)
         if st.is_entry_day and st.sl_dist > 0:
             ok, why = risk.can_enter()
             if not ok:
-                logger.info("brick2 skip entry: %s", why); self._acted_day = et.date(); return
+                logger.info("brick2 skip entry: %s", why); self._acted_day = bday; return
             ref = float(d1.iloc[-1]["close"])
             sl = ref - st.sl_dist               # long only
             lots = broker.lots_for_risk(self.logical, +1, ref, sl, risk.risk_budget())
             broker.place_market(self.logical, +1, lots, sl, None, self.magic,
                                 "brick2_turn_of_month", st.sl_dist, ref, now_utc)
-        self._acted_day = et.date()
+        self._acted_day = bday
 
 
 class CryptoMacdStrategy:
@@ -161,13 +161,13 @@ class CryptoMacdStrategy:
         self.magic = MAGIC["btc_macd"] if "BTC" in logical else MAGIC["eth_macd"]
         self.risk_cfg = risk_cfg
         self.time_exit_bars = int(risk_cfg["time_exit_bars"])
-        self.decision_min = _mins(cfg_live.get("daily_decision_et", "09:45"))
         self._acted_day = None
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
-        et = now_utc.tz_convert("America/New_York")
-        minute = et.hour * 60 + et.minute
-        if et.date() == self._acted_day or minute < self.decision_min:
+        # Act ONCE per broker (server) day, at the daily-bar rollover (00:00 server time),
+        # entering at the fresh bar's open = where the backtest fills. No intraday lag.
+        bday = now_utc.tz_convert("Europe/Athens").date()
+        if bday == self._acted_day:
             return
 
         # RAW broker-time D1 (clean date keying). Drop the still-forming bar of the
@@ -176,8 +176,7 @@ class CryptoMacdStrategy:
         raw = broker.get_bars_raw(self.logical, "D1", 320)
         raw["time"] = pd.to_datetime(raw["time"], utc=True)
         daily_all = raw.set_index("time")[["open", "high", "low", "close"]].astype(float).sort_index()
-        server_today = pd.Timestamp(now_utc).tz_convert("Europe/Athens").date()
-        forming = len(daily_all) > 0 and daily_all.index[-1].date() == server_today
+        forming = len(daily_all) > 0 and daily_all.index[-1].date() == bday
         daily = daily_all.iloc[:-1] if forming else daily_all   # completed bars only
         pos = broker.open_position(self.magic)
 
@@ -187,17 +186,17 @@ class CryptoMacdStrategy:
                 bar = daily_all.iloc[-1]                          # current forming bar for SL/TP touch
                 closed, px, why = broker.resolve_paper(pos, bar, now_utc, bars_held=bars_held)
                 if closed:
-                    broker.close(pos, px, why, now_utc); self._acted_day = et.date(); return
+                    broker.close(pos, px, why, now_utc); self._acted_day = bday; return
             if bars_held >= self.time_exit_bars:
                 broker.close(pos, float(daily_all.iloc[-1]["close"]), "time_exit", now_utc)
-            self._acted_day = et.date()
+            self._acted_day = bday
             return
 
         plan = S.crypto_entry(daily, self.risk_cfg)              # decide on CLOSED bars
         if plan is not None:
             ok, why = risk.can_enter()
             if not ok:
-                logger.info("brick3 %s skip entry: %s", self.logical, why); self._acted_day = et.date(); return
+                logger.info("brick3 %s skip entry: %s", self.logical, why); self._acted_day = bday; return
             ref = float(daily_all.iloc[-1]["close"])   # current price for the market entry
             sl = ref - plan.direction * plan.sl_dist
             tp = ref + plan.direction * plan.tp_dist if plan.tp_dist else None
@@ -205,4 +204,4 @@ class CryptoMacdStrategy:
             broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                                 f"brick3_{plan.reason}", plan.sl_dist, ref, now_utc,
                                 bars_held_limit=self.time_exit_bars)
-        self._acted_day = et.date()
+        self._acted_day = bday
