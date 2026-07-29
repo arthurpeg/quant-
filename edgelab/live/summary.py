@@ -197,8 +197,17 @@ def main() -> None:
     if args.discord:
         from datetime import datetime, timezone
         hdr = [f"edgelab.live TEST report - {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC"]
-        code = send_discord(args.discord, build_report_text(Path(args.csv), hdr))
-        print(f"sent to Discord (HTTP {code}) — check your channel")
+        if "TON_URL" in args.discord or "XXXX" in args.discord or "/webhooks/" not in args.discord:
+            print("that is not a real webhook URL (still a placeholder). Paste the full URL "
+                  "copied from Discord: https://discord.com/api/webhooks/<ID>/<TOKEN>")
+            return
+        try:
+            code = send_discord(args.discord, build_report_text(Path(args.csv), hdr))
+            print(f"sent to Discord (HTTP {code}) - check your channel")
+        except Exception as exc:
+            print(f"Discord send FAILED: {exc}")
+            print("Check the webhook URL is the full one copied from Discord (Server Settings "
+                  "> Integrations > Webhooks > Copy Webhook URL), not truncated.")
         return
     summarise(Path(args.csv))
 
