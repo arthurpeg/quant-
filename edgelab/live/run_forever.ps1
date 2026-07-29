@@ -14,6 +14,18 @@ New-Item -ItemType Directory -Force $outDir | Out-Null
 $log  = Join-Path $outDir "supervisor.log"
 $stop = Join-Path $outDir "STOP"
 
+# Resolve a REAL python interpreter. NEVER the bare 'python' (on this box it's the
+# Microsoft Store app-execution alias, which spawns a stub + a detached child -> two
+# processes and flaky supervision). Prefer the py launcher, then a pythoncore install.
+$PYEXE = $null
+if (Get-Command py.exe -ErrorAction SilentlyContinue) { $PYEXE = (Get-Command py.exe).Source; $PYPRE = @("-3") }
+if (-not $PYEXE) {
+  $cand = Get-ChildItem "$env:LOCALAPPDATA\Python\pythoncore-*\python.exe" -ErrorAction SilentlyContinue |
+          Sort-Object FullName -Descending | Select-Object -First 1
+  if ($cand) { $PYEXE = $cand.FullName; $PYPRE = @() }
+}
+if (-not $PYEXE) { $PYEXE = "python"; $PYPRE = @() }   # last resort
+
 function Log($m) {
   $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
   $line = "[$ts] $m"
@@ -22,11 +34,11 @@ function Log($m) {
 }
 
 if (Test-Path $stop) { Remove-Item $stop -Force }   # clear a stale stop flag
-Log "supervisor started (repo: $repo)"
+Log "supervisor started (repo: $repo) | python: $PYEXE $($PYPRE -join ' ')"
 while ($true) {
   if (Test-Path $stop) { Log "STOP file found -> supervisor exiting"; Remove-Item $stop -Force; break }
-  Log "launching: python -m edgelab.live.runner"
-  python -m edgelab.live.runner
+  Log "launching runner"
+  & $PYEXE @PYPRE -m edgelab.live.runner
   $code = $LASTEXITCODE
   if ($code -eq 42) { Log "runner exited 42 (ACCOUNT FAILED) -> NOT restarting"; break }
   if ($code -eq 0)  { Log "runner exited 0 (clean/interrupt) -> NOT restarting"; break }
