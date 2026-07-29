@@ -194,6 +194,10 @@ def main() -> None:
     ap.add_argument("--csv", default=str(DEFAULT_CSV), help="path to trades.csv")
     ap.add_argument("--discord", help="send the report to this Discord webhook URL (a test send)")
     args = ap.parse_args()
+    if args.discord == "config":
+        import yaml
+        cfg_path = Path(__file__).resolve().parent / "config_live.yaml"
+        args.discord = (yaml.safe_load(open(cfg_path, encoding="utf-8")).get("discord_webhook_url") or "")
     if args.discord:
         from datetime import datetime, timezone
         hdr = [f"edgelab.live TEST report - {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC"]
