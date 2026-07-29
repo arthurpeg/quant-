@@ -74,6 +74,13 @@ update_check_min: 30           # how often (minutes) to check GitHub for a new c
 discord_webhook_url: ""        # e.g. https://discord.com/api/webhooks/XXXX/YYYY
 daily_report_et: "17:00"       # time of day (ET) to send the report
 
+# Pre-session heads-up pings (~1h before the bricks trade). All 3 bricks act in the US
+# morning window: brick 1 at the 09:30 ET open, bricks 2 & 3 at the 09:45 ET decision.
+# Each entry fires once/day at its ET time. Add/edit freely (times are New York time).
+pre_session_alerts:
+  - et: "08:30"
+    msg: "In ~1h: NAS100 breakout window opens (09:30 ET) + gold turn-of-month & crypto MACD decision (09:45 ET)."
+
 # ---- live order plumbing (only used when live_trading:true) ----------------
 deviation_points: 20
 filling: ORDER_FILLING_IOC

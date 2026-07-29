@@ -110,6 +110,36 @@ def _check_update(cfg_live: dict) -> bool:
     return False
 
 
+_LAST_ALERT_DAY: dict = {}
+
+
+def _maybe_session_alerts(cfg_live: dict, now_utc: pd.Timestamp) -> None:
+    """Fire configured pre-session Discord pings (e.g. ~1h before the US open). Each entry
+    of ``pre_session_alerts`` is {et: "HH:MM", msg: "..."}; each fires once/day inside a
+    short window after its time (no stale catch-up if the runner was down)."""
+    alerts = cfg_live.get("pre_session_alerts") or []
+    url = cfg_live.get("discord_webhook_url")
+    if not alerts or not url:
+        return
+    et = now_utc.tz_convert("America/New_York")
+    nowmin = et.hour * 60 + et.minute
+    from edgelab.live.summary import send_discord
+    for a in alerts:
+        t = str(a.get("et", "")).strip()
+        if len(t) < 4 or ":" not in t:
+            continue
+        amin = int(t[:2]) * 60 + int(t[3:])
+        if _LAST_ALERT_DAY.get(t) == et.date() or not (amin <= nowmin < amin + 20):
+            continue
+        msg = str(a.get("msg", f"trading session in ~1h ({t} ET)"))
+        try:
+            send_discord(url, f"[{et:%H:%M} ET] {msg}", code=False)
+            LOG.info("pre-session alert sent (%s)", t)
+        except Exception as exc:
+            LOG.warning("session alert failed: %s", exc)
+        _LAST_ALERT_DAY[t] = et.date()
+
+
 _LAST_REPORT_DAY = None
 
 
@@ -248,6 +278,7 @@ def main() -> int:
                     time.sleep(poll); continue
             now = pd.Timestamp.now(tz="UTC")
             one_pass(broker, risk, strategies, now)
+            _maybe_session_alerts(cfg_live, now)
             _maybe_report(broker, risk, cfg_live, now)
             if _check_update(cfg_live):
                 return EXIT_UPDATE   # supervisor git-pulls the new code + relaunches

@@ -177,11 +177,12 @@ def build_report_text(csv_path: Path, header: list[str] | None = None) -> str:
     return "\n".join(lines)
 
 
-def send_discord(webhook_url: str, text: str) -> int:
-    """POST ``text`` to a Discord webhook (wrapped in a code block). Returns HTTP status."""
+def send_discord(webhook_url: str, text: str, code: bool = True) -> int:
+    """POST ``text`` to a Discord webhook. ``code`` wraps it in a monospace block (good for
+    the report table); set False for a plain short message (alerts, emojis). Returns status."""
     import json
     import urllib.request
-    body = "```\n" + text[:1900] + "\n```"
+    body = ("```\n" + text[:1900] + "\n```") if code else text[:1990]
     data = json.dumps({"content": body, "username": "edgelab.live"}).encode("utf-8")
     # Discord's edge rejects the default 'Python-urllib' UA with 403 -> send a real one.
     req = urllib.request.Request(webhook_url, data=data, headers={
