@@ -43,12 +43,14 @@ Pairwise daily-P&L correlations ≈ 0: **NAS/gold +0.02, NAS/crypto 0.00, gold/c
 
 | Metric | Value |
 |--------|-------|
-| Total (Yahoo crypto) | +325 R (**+37.9 R/yr**) |
-| Total (Pepperstone crypto, live data) | **~+30.5 R/yr** (NAS +11.6 + gold +2.2 + crypto +16.7) |
-| maxDD (historical) | **13.6 R** |
-| RoMaD (R/yr ÷ maxDD) | **2.78** |
-| Sharpe (annualised, active days) | **2.63** |
-| Worst day / best day | −4.13 R / +7.87 R |
+| Total (Yahoo crypto) | +325 R (**+37.9 R/yr**), maxDD 13.6 R, Sharpe 2.63 |
+| **Total (Pepperstone crypto, live data — canonical)** | **+263 R (+32.5 R/yr)** over 2018-07→2026-07; NAS +12.9 + gold +2.5 + crypto +17.1; maxDD **15.8 R**, RoMaD 2.06, Sharpe 2.42, worst day −4.15 R |
+| MC (Pepperstone) | median **+32.1 R/yr**, P(profit) 96.5%, maxDD median 10.5 R (95th 19.6) |
+
+**HTML reports** (self-contained, in `edgelab/reports/`): `portfolio_backtest.html` (equity
+curve, per-brick, correlation, annual R) and `monte_carlo.html` (percentile fan,
+distributions, prop-firm odds by sizing). `monte_carlo_static.py` now uses the Pepperstone
+crypto feed (the live-realistic book).
 | Combined maxDD < worst single brick | 13.6 R < 16.6 R (NAS) → decorrelation empties **risk**, not return |
 
 ## Monte Carlo (block-bootstrap, no compounding, 1 R = risk% of **initial** balance)
