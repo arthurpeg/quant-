@@ -59,6 +59,14 @@ propfirm:
 poll_seconds: 20               # loop period; brick 1 needs sub-minute polling near the US open
 daily_decision_et: "09:45"     # when bricks 2 & 3 make their once-a-day decision (ET)
 
+# ---- auto-update from GitHub (no more manual file copies on the VPS) --------
+# Needs the folder to be a git clone of the repo + git installed. Every
+# update_check_min the runner compares to origin/main; if newer, it exits and the
+# supervisor (run_forever.ps1) git-pulls + relaunches, rolling back if the new code
+# fails to import. config_live.yaml is gitignored -> never overwritten.
+auto_update: true
+update_check_min: 30           # how often (minutes) to check GitHub for a new commit
+
 # ---- daily Discord heartbeat report ----------------------------------------
 # The runner posts a summary once a day. Its ABSENCE is the alert: no report today
 # => the runner is down. Paste your Discord webhook URL to enable (empty = off).

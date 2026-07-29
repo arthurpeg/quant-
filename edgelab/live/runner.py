@@ -22,6 +22,8 @@ import pandas as pd
 import yaml
 
 EXIT_ACCOUNT_FAILED = 42   # supervisor uses this to STOP restarting (don't loop a blown account)
+EXIT_UPDATE = 75           # a newer commit is on origin/main -> supervisor git-pulls + relaunches
+REPO_ROOT = Path(__file__).resolve().parents[2]   # the git repo root (…/edgelab/live/runner.py)
 
 from edgelab.config import load_config
 from edgelab.risk.propfirm import PropFirmRules
@@ -75,6 +77,37 @@ def _sync_account_size(broker: Broker, risk: LiveRiskManager, cfg_live: dict) ->
                     "daily floor -%.0f%% total-DD floor -%.0f%% (static)",
                     bal, risk.risk_per_trade * bal, risk.risk_per_trade * 100,
                     risk.rules.max_daily_loss_pct * 100, risk.rules.max_total_drawdown_pct * 100)
+
+
+_LAST_UPDATE_CHECK = 0.0
+
+
+def _check_update(cfg_live: dict) -> bool:
+    """If ``auto_update`` is on, every ``update_check_min`` min compare local HEAD to
+    origin/main; return True when a newer commit exists so the runner can exit and let
+    the supervisor git-pull + relaunch. Degrades silently if git is missing/offline."""
+    if not cfg_live.get("auto_update", False):
+        return False
+    global _LAST_UPDATE_CHECK
+    import subprocess
+    import time as _t
+    if _t.time() - _LAST_UPDATE_CHECK < float(cfg_live.get("update_check_min", 30)) * 60:
+        return False
+    _LAST_UPDATE_CHECK = _t.time()
+    repo = str(REPO_ROOT)
+    try:
+        subprocess.run(["git", "-C", repo, "fetch", "--quiet", "origin", "main"], timeout=60, check=False)
+        loc = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"],
+                             capture_output=True, text=True, timeout=15).stdout.strip()
+        rem = subprocess.run(["git", "-C", repo, "rev-parse", "origin/main"],
+                             capture_output=True, text=True, timeout=15).stdout.strip()
+        if loc and rem and loc != rem:
+            LOG.warning("update available (%s -> %s) -> exiting %d for supervised pull+relaunch",
+                        loc[:7], rem[:7], EXIT_UPDATE)
+            return True
+    except Exception as exc:
+        LOG.warning("auto-update check skipped: %s", exc)
+    return False
 
 
 _LAST_REPORT_DAY = None
@@ -205,6 +238,8 @@ def main() -> int:
             now = pd.Timestamp.now(tz="UTC")
             one_pass(broker, risk, strategies, now)
             _maybe_report(broker, risk, cfg_live, now)
+            if _check_update(cfg_live):
+                return EXIT_UPDATE   # supervisor git-pulls the new code + relaunches
             if risk.failed:
                 LOG.error("account FAILED -> stopping runner (exit %d, supervisor will NOT restart)",
                           EXIT_ACCOUNT_FAILED)

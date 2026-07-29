@@ -85,6 +85,19 @@ enable "save account/password" in the terminal so it reconnects on its own.
 **Best of all: a VPS** with the terminal always up — the runner must be alive to enforce
 time-exits (brick 1 flat at 15:55 ET, brick 2 at the window end, brick 3 after 10 days).
 
+## Auto-update from GitHub (no more manual file copies)
+With `auto_update: true` and the VPS folder as a **git clone**, the runner checks
+`origin/main` every `update_check_min` minutes; when a new commit exists it exits and the
+supervisor `git pull`s + relaunches — so a `git push` propagates to the VPS on its own. If
+the pulled code fails to import, the supervisor **rolls back** to the last-good commit
+(trading continues). `config_live.yaml` is gitignored → never overwritten. One-time VPS
+bootstrap (needs `git`): from the runner folder,
+```powershell
+git init; git remote add origin https://github.com/arthurpeg/quant-.git; git fetch origin; git reset --hard origin/main
+```
+then run under `run_forever.ps1`. Edit only `config_live.yaml` (untracked) on the VPS —
+never tracked files, or the next sync discards them.
+
 ## Deploy on a VPS that already runs another MT5 (e.g. a MetaQuotes algo)
 The `MetaTrader5` Python package connects to **one terminal per process**, chosen by the
 `path` you pass. So this Pepperstone runner and your existing MetaQuotes algo coexist —

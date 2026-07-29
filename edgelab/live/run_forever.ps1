@@ -34,14 +34,33 @@ function Log($m) {
 }
 
 if (Test-Path $stop) { Remove-Item $stop -Force }   # clear a stale stop flag
-Log "supervisor started (repo: $repo) | python: $PYEXE $($PYPRE -join ' ')"
+$hasGit = [bool](Get-Command git -ErrorAction SilentlyContinue)
+Log "supervisor started (repo: $repo) | python: $PYEXE $($PYPRE -join ' ') | git: $hasGit"
 while ($true) {
   if (Test-Path $stop) { Log "STOP file found -> supervisor exiting"; Remove-Item $stop -Force; break }
+
+  # --- AUTO-UPDATE: sync to origin/main, but roll back if the new code won't import
+  # (keeps trading on the last-good version if a push is broken). config_live.yaml is
+  # untracked/gitignored -> git never touches it.
+  if ($hasGit -and (Test-Path (Join-Path $repo ".git"))) {
+    $prev = (git -C $repo rev-parse HEAD 2>$null)
+    git -C $repo fetch --quiet origin main 2>$null
+    git -C $repo reset --hard origin/main 2>$null | Out-Null
+    & $PYEXE @PYPRE -c "import edgelab.live.runner" 2>$null
+    if ($LASTEXITCODE -ne 0 -and $prev) {
+      Log "pulled code FAILS to import -> rolling back to $($prev.Substring(0,7))"
+      git -C $repo reset --hard $prev 2>$null | Out-Null
+    } else {
+      Log "on commit $(git -C $repo rev-parse --short HEAD 2>$null)"
+    }
+  }
+
   Log "launching runner"
   & $PYEXE @PYPRE -m edgelab.live.runner
   $code = $LASTEXITCODE
   if ($code -eq 42) { Log "runner exited 42 (ACCOUNT FAILED) -> NOT restarting"; break }
   if ($code -eq 0)  { Log "runner exited 0 (clean/interrupt) -> NOT restarting"; break }
+  if ($code -eq 75) { Log "runner exited 75 (UPDATE) -> pulling + relaunching now"; continue }
   Log "runner CRASHED (code $code) -> restarting in 15s"
   Start-Sleep -Seconds 15
 }
