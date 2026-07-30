@@ -141,12 +141,23 @@ class Broker:
             self._connected = False
 
     def healthy(self) -> bool:
-        """True if the MT5 terminal + account are reachable (data mode or live)."""
+        """True only if the terminal is CONNECTED to the trade server and the account
+        feed is live. A dropped link often leaves account_info() non-None but with
+        equity 0 -> treat that as unhealthy so the loop reconnects instead of acting
+        on a garbage equity (which used to trip a false 'prop failed')."""
         if not (self.live or self.cfg.get("pull_real_bars", True)):
             return True
         try:
             import MetaTrader5 as mt5
-            return mt5.terminal_info() is not None and mt5.account_info() is not None
+            ti = mt5.terminal_info()
+            ai = mt5.account_info()
+            if ti is None or ai is None:
+                return False
+            if not getattr(ti, "connected", True):
+                return False
+            if float(getattr(ai, "equity", 0.0)) <= 0.0:
+                return False
+            return True
         except Exception:
             return False
 
