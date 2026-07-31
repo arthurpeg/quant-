@@ -5850,5 +5850,1475 @@
   "path": "mql40/scripts/LFX.OpenPosition.mq4",
   "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_scripts_LFX.OpenPosition.mq4",
   "chars": 18044
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/2MACDSTO.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_2MACDSTO.mq5",
+  "chars": 7390
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/2MOMEMA.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_2MOMEMA.mq5",
+  "chars": 6767
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/3MACD.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_3MACD.mq5",
+  "chars": 10789
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/3MAF.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_3MAF.mq5",
+  "chars": 7420
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/AFAOSMD.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_AFAOSMD.mq5",
+  "chars": 7917
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/BBRSI.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_BBRSI.mq5",
+  "chars": 7792
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/CEZLSMA.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_CEZLSMA.mq5",
+  "chars": 7605
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/DHLAOS.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_DHLAOS.mq5",
+  "chars": 8869
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/EATemplate.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_EATemplate.mq5",
+  "chars": 6301
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/EATemplate2.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_EATemplate2.mq5",
+  "chars": 6748
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/LRCMACD.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_LRCMACD.mq5",
+  "chars": 10835
+ },
+ {
+  "lang": "mql",
+  "repo": "geraked/metatrader5",
+  "path": "Experts/LRCUTB.mq5",
+  "file": "scratchpad\\code\\mql\\geraked__metatrader5\\Experts_LRCUTB.mq5",
+  "chars": 8329
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/PositionSizer",
+  "path": "MQL4/Experts/Position Sizer/Position Sizer.mq4",
+  "file": "scratchpad\\code\\mql\\EarnForex__PositionSizer\\MQL4_Experts_Position_Sizer_Position_Sizer.mq4",
+  "chars": 57725
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/PositionSizer",
+  "path": "MQL5/Experts/Position Sizer/Position Sizer.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__PositionSizer\\MQL5_Experts_Position_Sizer_Position_Sizer.mq5",
+  "chars": 66004
+ },
+ {
+  "lang": "mql",
+  "repo": "yulz008/GOLD_ORB",
+  "path": "GOLD_ORB/GOLD_ORB.mq5",
+  "file": "scratchpad\\code\\mql\\yulz008__GOLD_ORB\\GOLD_ORB_GOLD_ORB.mq5",
+  "chars": 8751
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Account-Protector",
+  "path": "MQL4/Experts/Account Protector/Account Protector.mq4",
+  "file": "scratchpad\\code\\mql\\EarnForex__Account-Protector\\MQL4_Experts_Account_Protector_Account_Protector.mq4",
+  "chars": 25905
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Account-Protector",
+  "path": "MQL5/Experts/Account Protector/Account Protector.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__Account-Protector\\MQL5_Experts_Account_Protector_Account_Protector.mq5",
+  "chars": 27014
+ },
+ {
+  "lang": "mql",
+  "repo": "sajidmahamud835/grid-master-pro-mt5-ea",
+  "path": "GridMaster Pro.mq5",
+  "file": "scratchpad\\code\\mql\\sajidmahamud835__grid-master-pro-mt5-ea\\GridMaster_Pro.mq5",
+  "chars": 15023
+ },
+ {
+  "lang": "mql",
+  "repo": "6alaile/MetaTrader5-to-Telegram",
+  "path": "MT5 to Telegram.mq5",
+  "file": "scratchpad\\code\\mql\\6alaile__MetaTrader5-to-Telegram\\MT5_to_Telegram.mq5",
+  "chars": 10852
+ },
+ {
+  "lang": "mql",
+  "repo": "codedpro/mt5-trade-split-manager",
+  "path": "bulk-add-signals.mq5",
+  "file": "scratchpad\\code\\mql\\codedpro__mt5-trade-split-manager\\bulk-add-signals.mq5",
+  "chars": 65694
+ },
+ {
+  "lang": "mql",
+  "repo": "kaiovalente/mql5",
+  "path": "9_1.mq5",
+  "file": "scratchpad\\code\\mql\\kaiovalente__mql5\\9_1.mq5",
+  "chars": 15364
+ },
+ {
+  "lang": "mql",
+  "repo": "kaiovalente/mql5",
+  "path": "9_1_v2.mq5",
+  "file": "scratchpad\\code\\mql\\kaiovalente__mql5\\9_1_v2.mq5",
+  "chars": 20128
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/Bollinger-Bands-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_Bollinger-Bands-EA.mq5",
+  "chars": 1857
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/Ichimoku-Kinko-Hyo-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_Ichimoku-Kinko-Hyo-EA.mq5",
+  "chars": 1873
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/MACD-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_MACD-EA.mq5",
+  "chars": 2511
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/Moving-Average-Cross-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_Moving-Average-Cross-EA.mq5",
+  "chars": 2436
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/Moving-Average-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_Moving-Average-EA.mq5",
+  "chars": 1901
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/Parabolic-SAR-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_Parabolic-SAR-EA.mq5",
+  "chars": 1930
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/RSI-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_RSI-EA.mq5",
+  "chars": 2264
+ },
+ {
+  "lang": "mql",
+  "repo": "pipbolt/experts",
+  "path": "experts/Stochastic-Oscillator-EA.mq5",
+  "file": "scratchpad\\code\\mql\\pipbolt__experts\\experts_Stochastic-Oscillator-EA.mq5",
+  "chars": 2221
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/010_Volatility_Navigator_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_010_Volatility_Navigator_EA.mq5",
+  "chars": 8763
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/011_RSI_V2_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_011_RSI_V2_EA.mq5",
+  "chars": 7455
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/012_MA_V1_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_012_MA_V1_EA.mq5",
+  "chars": 4818
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/013_Bollinger_Bands_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_013_Bollinger_Bands_EA.mq5",
+  "chars": 8849
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/014_RSI_MA_V2_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_014_RSI_MA_V2_EA.mq5",
+  "chars": 9009
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/015_Triple_MA_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_015_Triple_MA_EA.mq5",
+  "chars": 3950
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/016_CCI_2MAVG_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_016_CCI_2MAVG_EA.mq5",
+  "chars": 5326
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/017_Ichi_ATR_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_017_Ichi_ATR_EA.mq5",
+  "chars": 3514
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/018_Price_Action_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_018_Price_Action_EA.mq5",
+  "chars": 4048
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/019_ADX_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_019_ADX_EA.mq5",
+  "chars": 7658
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/01_RSI_V1_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_01_RSI_V1_EA.mq5",
+  "chars": 2893
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/02_TSI_Lines_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_02_TSI_Lines_EA.mq5",
+  "chars": 6360
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/03_TSICD_OOP_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_03_TSICD_OOP_EA.mq5",
+  "chars": 6288
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/04_TSI_MA_Trend_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_04_TSI_MA_Trend_EA.mq5",
+  "chars": 22124
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/05_RSI_MA_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_05_RSI_MA_EA.mq5",
+  "chars": 10087
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/06_TSI_Martingale_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_06_TSI_Martingale_EA.mq5",
+  "chars": 14643
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/07_TSI_ATR_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_07_TSI_ATR_EA.mq5",
+  "chars": 16944
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/08_HFS_NS92_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_08_HFS_NS92_EA.mq5",
+  "chars": 19101
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "1_Expert_Advisors_EA/09_TSI_MA_Trend_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\1_Expert_Advisors_EA_09_TSI_MA_Trend_EA.mq5",
+  "chars": 21496
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/00_Discord_Notifications.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_00_Discord_Notifications.mq5",
+  "chars": 8608
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/010_Event_Handling.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_010_Event_Handling.mq5",
+  "chars": 3999
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/01_Check_Candle-Bar.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_01_Check_Candle-Bar.mq5",
+  "chars": 2534
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/02_Check_Open_Positions.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_02_Check_Open_Positions.mq5",
+  "chars": 3458
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/03_Calculate_LotSize.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_03_Calculate_LotSize.mq5",
+  "chars": 2790
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/04_LSTM_LotSize.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_04_LSTM_LotSize.mq5",
+  "chars": 3905
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/05_Trailing_Stop_01.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_05_Trailing_Stop_01.mq5",
+  "chars": 4626
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/07_Trailing_Stop_03.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_07_Trailing_Stop_03.mq5",
+  "chars": 4821
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/08_Time_Period_Session.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_08_Time_Period_Session.mq5",
+  "chars": 2204
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "3_MQL5_EA_Tools/09_OnTester.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\3_MQL5_EA_Tools_09_OnTester.mq5",
+  "chars": 2869
+ },
+ {
+  "lang": "mql",
+  "repo": "santiago-cruzlopez/MQL5",
+  "path": "4_Neural_Networks/01_R2WM_EA.mq5",
+  "file": "scratchpad\\code\\mql\\santiago-cruzlopez__MQL5\\4_Neural_Networks_01_R2WM_EA.mq5",
+  "chars": 3593
+ },
+ {
+  "lang": "mql",
+  "repo": "rafaelfvcs/Introduction-to-MetaTrader5-and-MQL5---book",
+  "path": "MA_CROS_RSI.mq5",
+  "file": "scratchpad\\code\\mql\\rafaelfvcs__Introduction-to-MetaTrader5-and-MQL5---book\\MA_CROS_RSI.mq5",
+  "chars": 13863
+ },
+ {
+  "lang": "mql",
+  "repo": "rafaelfvcs/Introduction-to-MetaTrader5-and-MQL5---book",
+  "path": "MM_CROS_IFR.mq5",
+  "file": "scratchpad\\code\\mql\\rafaelfvcs__Introduction-to-MetaTrader5-and-MQL5---book\\MM_CROS_IFR.mq5",
+  "chars": 14960
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/News-Trader",
+  "path": "NewsTrader.mq4",
+  "file": "scratchpad\\code\\mql\\EarnForex__News-Trader\\NewsTrader.mq4",
+  "chars": 33729
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/News-Trader",
+  "path": "NewsTrader.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__News-Trader\\NewsTrader.mq5",
+  "chars": 35895
+ },
+ {
+  "lang": "mql",
+  "repo": "abiodunaremu/openea",
+  "path": "fxchartai_openea.mq5",
+  "file": "scratchpad\\code\\mql\\abiodunaremu__openea\\fxchartai_openea.mq5",
+  "chars": 26479
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "helper_functions/new_candle_detector.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\helper_functions_new_candle_detector.mq5",
+  "chars": 2026
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/bearish_engulfing_candle_detector.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_bearish_engulfing_candle_detector.mq5",
+  "chars": 3179
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/bearish_engulfing_candle_turaround_detector.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_bearish_engulfing_candle_turaround_detector.mq5",
+  "chars": 4078
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/bollinger_bands.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_bollinger_bands.mq5",
+  "chars": 3539
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/bollinger_bands_distance_calculator.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_bollinger_bands_distance_calculator.mq5",
+  "chars": 4918
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/bullish_engulfing_candle_detector.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_bullish_engulfing_candle_detector.mq5",
+  "chars": 3181
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/bullish_engulfing_turnaround_detector.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_bullish_engulfing_turnaround_detector.mq5",
+  "chars": 4031
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/doji_super_detector.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_doji_super_detector.mq5",
+  "chars": 11422
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/envelopes_indicator.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_envelopes_indicator.mq5",
+  "chars": 3313
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/exponential_moving_average.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_exponential_moving_average.mq5",
+  "chars": 2507
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/macd_histogram.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_macd_histogram.mq5",
+  "chars": 3213
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/macd_histogram_zero_cross.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_macd_histogram_zero_cross.mq5",
+  "chars": 3424
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/macd_signal.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_macd_signal.mq5",
+  "chars": 3210
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/macd_signal_zero_cross.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_macd_signal_zero_cross.mq5",
+  "chars": 3418
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "indicators/money_flow_index_indicator.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\indicators_money_flow_index_indicator.mq5",
+  "chars": 2582
+ },
+ {
+  "lang": "mql",
+  "repo": "jimtin/build-your-own-mt5-ea",
+  "path": "rsi_trading_bot_tutorial.mq5",
+  "file": "scratchpad\\code\\mql\\jimtin__build-your-own-mt5-ea\\rsi_trading_bot_tutorial.mq5",
+  "chars": 5988
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Chart-Pattern-Helper",
+  "path": "ChartPatternHelper.mq4",
+  "file": "scratchpad\\code\\mql\\EarnForex__Chart-Pattern-Helper\\ChartPatternHelper.mq4",
+  "chars": 82222
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Chart-Pattern-Helper",
+  "path": "ChartPatternHelper.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__Chart-Pattern-Helper\\ChartPatternHelper.mq5",
+  "chars": 85988
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/MT5-Expert-Advisor-Template",
+  "path": "Experts/MT5-EA-Template.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__MT5-Expert-Advisor-Template\\Experts_MT5-EA-Template.mq5",
+  "chars": 34641
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AcceleratorOscillator.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AcceleratorOscillator.mq5",
+  "chars": 3237
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AccumulationDistributionEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AccumulationDistributionEA.mq5",
+  "chars": 3589
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdaptiveMovingAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdaptiveMovingAverage.mq5",
+  "chars": 712
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdnancedMomentumEA_Version-1.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdnancedMomentumEA_Version-1.mq5",
+  "chars": 4299
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedAdaptiveMovingAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedAdaptiveMovingAverage.mq5",
+  "chars": 3228
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedBbreakEvenStop.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedBbreakEvenStop.mq5",
+  "chars": 909
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedCommodityChannelIndex.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedCommodityChannelIndex.mq5",
+  "chars": 5451
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedIVIDyA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedIVIDyA.mq5",
+  "chars": 3310
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedMomentumEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedMomentumEA.mq5",
+  "chars": 4496
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedMomentumEAforBTCAUD20.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedMomentumEAforBTCAUD20.mq5",
+  "chars": 4506
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedMomentumEAforBTCUSD20.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedMomentumEAforBTCUSD20.mq5",
+  "chars": 4510
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedRelativeVigorIndex.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedRelativeVigorIndex.mq5",
+  "chars": 3316
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedSARExpertAdvisor.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedSARExpertAdvisor.mq5",
+  "chars": 1184
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedTradingRange.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedTradingRange.mq5",
+  "chars": 1927
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedTrailingStop.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedTrailingStop.mq5",
+  "chars": 1403
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvancedWPR.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvancedWPR.mq5",
+  "chars": 2000
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AdvanncedSMA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AdvanncedSMA.mq5",
+  "chars": 2267
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AverageDirectionalMovingIndex.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AverageDirectionalMovingIndex.mq5",
+  "chars": 1615
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AverageTrueRange.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AverageTrueRange.mq5",
+  "chars": 690
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "AwesomeOscillatorEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\AwesomeOscillatorEA.mq5",
+  "chars": 1048
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "BollingerBandsStandaloneEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\BollingerBandsStandaloneEA.mq5",
+  "chars": 3189
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "BullsPowerOscillator.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\BullsPowerOscillator.mq5",
+  "chars": 618
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "BullsPowerOscillatorStandalone.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\BullsPowerOscillatorStandalone.mq5",
+  "chars": 782
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "BuyLimit.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\BuyLimit.mq5",
+  "chars": 406
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "BuyStop.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\BuyStop.mq5",
+  "chars": 504
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "ChartObject.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\ChartObject.mq5",
+  "chars": 912
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "CheckEntryBollingerBands.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\CheckEntryBollingerBands.mq5",
+  "chars": 8777
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "CheckEntry_MacD.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\CheckEntry_MacD.mq5",
+  "chars": 1174
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "CommodityChannelIndex.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\CommodityChannelIndex.mq5",
+  "chars": 523
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "DeMarker.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\DeMarker.mq5",
+  "chars": 705
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "DoubleExponentialMovingAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\DoubleExponentialMovingAverage.mq5",
+  "chars": 2149
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "DynnamicPositionSize.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\DynnamicPositionSize.mq5",
+  "chars": 531
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "EA_MA_Cross_Over.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\EA_MA_Cross_Over.mq5",
+  "chars": 1368
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "Envelopes.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\Envelopes.mq5",
+  "chars": 2525
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "ForceIndex.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\ForceIndex.mq5",
+  "chars": 722
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "FractalAdaptiveMovingAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\FractalAdaptiveMovingAverage.mq5",
+  "chars": 2975
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "GetSignal_All.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\GetSignal_All.mq5",
+  "chars": 96201
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "IchimokuH1GBPUSD.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\IchimokuH1GBPUSD.mq5",
+  "chars": 8330
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "MacD.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\MacD.mq5",
+  "chars": 548
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "MacDStandaloneEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\MacDStandaloneEA.mq5",
+  "chars": 4935
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "Momentum_TripleMA_WPR.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\Momentum_TripleMA_WPR.mq5",
+  "chars": 4370
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "MonneyFlowIndex.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\MonneyFlowIndex.mq5",
+  "chars": 829
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "MyExampleOne.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\MyExampleOne.mq5",
+  "chars": 4035
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "MyFramework1.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\MyFramework1.mq5",
+  "chars": 1015
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "MyStrategyTester.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\MyStrategyTester.mq5",
+  "chars": 11074
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "ObjectLabel.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\ObjectLabel.mq5",
+  "chars": 603
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "ObjectOrientedLine.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\ObjectOrientedLine.mq5",
+  "chars": 1140
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "ParabolicSAAR.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\ParabolicSAAR.mq5",
+  "chars": 923
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "PositionMultiplier.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\PositionMultiplier.mq5",
+  "chars": 657
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "RVIStandaloneEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\RVIStandaloneEA.mq5",
+  "chars": 2231
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "RandomEntry.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\RandomEntry.mq5",
+  "chars": 2006
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "RelativeStrengthIndex_RSI.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\RelativeStrengthIndex_RSI.mq5",
+  "chars": 2044
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "RelativeVigorIndex.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\RelativeVigorIndex.mq5",
+  "chars": 1657
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "ShiftedMovingAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\ShiftedMovingAverage.mq5",
+  "chars": 4343
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SignalStcking.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SignalStcking.mq5",
+  "chars": 3424
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SiimpleEMACrossover.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SiimpleEMACrossover.mq5",
+  "chars": 2348
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleArrowEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleArrowEA.mq5",
+  "chars": 8983
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleBWMFI.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleBWMFI.mq5",
+  "chars": 555
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleBearsPowerIndicator.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleBearsPowerIndicator.mq5",
+  "chars": 553
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleBollingerBands.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleBollingerBands.mq5",
+  "chars": 1115
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleCancelOrder.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleCancelOrder.mq5",
+  "chars": 893
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleChaikinEA.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleChaikinEA.mq5",
+  "chars": 2812
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleEnvelopes.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleEnvelopes.mq5",
+  "chars": 1390
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleExternalSignal.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleExternalSignal.mq5",
+  "chars": 479
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleHighestLowesAndAverageCandle.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleHighestLowesAndAverageCandle.mq5",
+  "chars": 1106
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleIchimoku.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleIchimoku.mq5",
+  "chars": 9115
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleMomentum.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleMomentum.mq5",
+  "chars": 860
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleMovingAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleMovingAverage.mq5",
+  "chars": 822
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleNewCandle.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleNewCandle.mq5",
+  "chars": 1045
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleOrderHistoryProfit.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleOrderHistoryProfit.mq5",
+  "chars": 2221
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimplePositionCount.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimplePositionCount.mq5",
+  "chars": 476
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimplePriceInfo.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimplePriceInfo.mq5",
+  "chars": 590
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleRSI.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleRSI.mq5",
+  "chars": 591
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleRSIBollingerBandEntry.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleRSIBollingerBandEntry.mq5",
+  "chars": 1423
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleRSIBollingerEntry.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleRSIBollingerEntry.mq5",
+  "chars": 1021
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleRectangle.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleRectangle.mq5",
+  "chars": 1091
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleStandardDeviation.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleStandardDeviation.mq5",
+  "chars": 670
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleSymbolInfo.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleSymbolInfo.mq5",
+  "chars": 1201
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleTimeBasedEntry.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleTimeBasedEntry.mq5",
+  "chars": 446
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleTripleExponentialMovinngAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleTripleExponentialMovinngAverage.mq5",
+  "chars": 2936
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "SimpleVolumesFilter.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\SimpleVolumesFilter.mq5",
+  "chars": 2295
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "StochasticOscillator.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\StochasticOscillator.mq5",
+  "chars": 5093
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "TrendBasedSellStop.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\TrendBasedSellStop.mq5",
+  "chars": 668
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "TrendFilter.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\TrendFilter.mq5",
+  "chars": 1287
+ },
+ {
+  "lang": "mql",
+  "repo": "monir71/Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot",
+  "path": "TripleMovingAverage.mq5",
+  "file": "scratchpad\\code\\mql\\monir71__Meta-Trader-MQL5-MQL4-Programming-Expert-Advisor-Robot\\TripleMovingAverage.mq5",
+  "chars": 2960
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Spike-Trader",
+  "path": "SpikeTrader.mq4",
+  "file": "scratchpad\\code\\mql\\EarnForex__Spike-Trader\\SpikeTrader.mq4",
+  "chars": 6097
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Spike-Trader",
+  "path": "SpikeTrader.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__Spike-Trader\\SpikeTrader.mq5",
+  "chars": 4847
+ },
+ {
+  "lang": "mql",
+  "repo": "umairkj/mql5-expert-advisor-auto-trading-bot",
+  "path": "Experts/auto-trading-bot.mq5",
+  "file": "scratchpad\\code\\mql\\umairkj__mql5-expert-advisor-auto-trading-bot\\Experts_auto-trading-bot.mq5",
+  "chars": 15229
+ },
+ {
+  "lang": "mql",
+  "repo": "llihcchill/ICT-Imbalance-Expert-Advisor",
+  "path": "ICT Imbalance Expert Advisor.mq5",
+  "file": "scratchpad\\code\\mql\\llihcchill__ICT-Imbalance-Expert-Advisor\\ICT_Imbalance_Expert_Advisor.mq5",
+  "chars": 13027
+ },
+ {
+  "lang": "mql",
+  "repo": "NadirAliOfficial/STAR-EA-v11.20",
+  "path": "STAR_v11.20.mq5",
+  "file": "scratchpad\\code\\mql\\NadirAliOfficial__STAR-EA-v11.20\\STAR_v11.20.mq5",
+  "chars": 2635256
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Amazing",
+  "path": "MQL4/Experts/Amazing.mq4",
+  "file": "scratchpad\\code\\mql\\EarnForex__Amazing\\MQL4_Experts_Amazing.mq4",
+  "chars": 33243
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Amazing",
+  "path": "MQL5/Experts/Amazing.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__Amazing\\MQL5_Experts_Amazing.mq5",
+  "chars": 30963
+ },
+ {
+  "lang": "mql",
+  "repo": "Astralchemist/Expert-Advisor-trading-bot",
+  "path": "bot.mq5",
+  "file": "scratchpad\\code\\mql\\Astralchemist__Expert-Advisor-trading-bot\\bot.mq5",
+  "chars": 16497
+ },
+ {
+  "lang": "mql",
+  "repo": "terencebeauj/Trading_bot_BollingerBands",
+  "path": "Basic_Bollinger_Bands.mq5",
+  "file": "scratchpad\\code\\mql\\terencebeauj__Trading_bot_BollingerBands\\Basic_Bollinger_Bands.mq5",
+  "chars": 7155
+ },
+ {
+  "lang": "mql",
+  "repo": "phamngocvinh/galaxy-trader",
+  "path": "archive/trend_catcher/TrendCatcher.mq5",
+  "file": "scratchpad\\code\\mql\\phamngocvinh__galaxy-trader\\archive_trend_catcher_TrendCatcher.mq5",
+  "chars": 10318
+ },
+ {
+  "lang": "mql",
+  "repo": "phamngocvinh/galaxy-trader",
+  "path": "cloud_catcher/Cloud_Catcher_Multi_Frame-v1.0.mq5",
+  "file": "scratchpad\\code\\mql\\phamngocvinh__galaxy-trader\\cloud_catcher_Cloud_Catcher_Multi_Frame-v1.0.mq5",
+  "chars": 5323
+ },
+ {
+  "lang": "mql",
+  "repo": "phamngocvinh/galaxy-trader",
+  "path": "cloud_catcher/Cloud_Catcher_Single_Frame-v1.0.mq5",
+  "file": "scratchpad\\code\\mql\\phamngocvinh__galaxy-trader\\cloud_catcher_Cloud_Catcher_Single_Frame-v1.0.mq5",
+  "chars": 4468
+ },
+ {
+  "lang": "mql",
+  "repo": "phamngocvinh/galaxy-trader",
+  "path": "tide_surfer/Tide_Surfer_Percent-v1.0.mq5",
+  "file": "scratchpad\\code\\mql\\phamngocvinh__galaxy-trader\\tide_surfer_Tide_Surfer_Percent-v1.0.mq5",
+  "chars": 4771
+ },
+ {
+  "lang": "mql",
+  "repo": "phamngocvinh/galaxy-trader",
+  "path": "tide_surfer/Tide_Surfer_Point-v1.0.mq5",
+  "file": "scratchpad\\code\\mql\\phamngocvinh__galaxy-trader\\tide_surfer_Tide_Surfer_Point-v1.0.mq5",
+  "chars": 4818
+ },
+ {
+  "lang": "mql",
+  "repo": "phamngocvinh/galaxy-trader",
+  "path": "trailing_star/Trailing_Star_Point-v1.0.mq5",
+  "file": "scratchpad\\code\\mql\\phamngocvinh__galaxy-trader\\trailing_star_Trailing_Star_Point-v1.0.mq5",
+  "chars": 4916
+ },
+ {
+  "lang": "mql",
+  "repo": "phamngocvinh/galaxy-trader",
+  "path": "trailing_star/Trailing_Star_Price-v1.0.mq5",
+  "file": "scratchpad\\code\\mql\\phamngocvinh__galaxy-trader\\trailing_star_Trailing_Star_Price-v1.0.mq5",
+  "chars": 4672
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Binario",
+  "path": "Binario.mq4",
+  "file": "scratchpad\\code\\mql\\EarnForex__Binario\\Binario.mq4",
+  "chars": 6713
+ },
+ {
+  "lang": "mql",
+  "repo": "EarnForex/Binario",
+  "path": "Binario.mq5",
+  "file": "scratchpad\\code\\mql\\EarnForex__Binario\\Binario.mq5",
+  "chars": 7559
+ },
+ {
+  "lang": "mql",
+  "repo": "selormwalker/AuraExpert",
+  "path": "Experts/AuraExpert.mq5",
+  "file": "scratchpad\\code\\mql\\selormwalker__AuraExpert\\Experts_AuraExpert.mq5",
+  "chars": 6447
+ },
+ {
+  "lang": "mql",
+  "repo": "NadirAliOfficial/monsterfx-reliable-trader",
+  "path": "MonsterFX_AutoTrader.mq5",
+  "file": "scratchpad\\code\\mql\\NadirAliOfficial__monsterfx-reliable-trader\\MonsterFX_AutoTrader.mq5",
+  "chars": 44987
+ },
+ {
+  "lang": "mql",
+  "repo": "NadirAliOfficial/PriceAction-EngulfingZone-EA",
+  "path": "MQL5/Experts/PriceAction_EngulfingZone_EA.mq5",
+  "file": "scratchpad\\code\\mql\\NadirAliOfficial__PriceAction-EngulfingZone-EA\\MQL5_Experts_PriceAction_EngulfingZone_EA.mq5",
+  "chars": 37810
+ },
+ {
+  "lang": "mql",
+  "repo": "jvieranieves54-alt/j5-trading-strategy",
+  "path": "downloads/MarketLiquiditySignals.mq5",
+  "file": "scratchpad\\code\\mql\\jvieranieves54-alt__j5-trading-strategy\\downloads_MarketLiquiditySignals.mq5",
+  "chars": 17586
+ },
+ {
+  "lang": "mql",
+  "repo": "jvieranieves54-alt/j5-trading-strategy",
+  "path": "mql5/EA_Epiphany_Market_Sessions_v7.0.mq5",
+  "file": "scratchpad\\code\\mql\\jvieranieves54-alt__j5-trading-strategy\\mql5_EA_Epiphany_Market_Sessions_v7.0.mq5",
+  "chars": 16395
+ },
+ {
+  "lang": "mql",
+  "repo": "jvieranieves54-alt/j5-trading-strategy",
+  "path": "mql5/MarketLiquiditySignals.mq5",
+  "file": "scratchpad\\code\\mql\\jvieranieves54-alt__j5-trading-strategy\\mql5_MarketLiquiditySignals.mq5",
+  "chars": 17586
+ },
+ {
+  "lang": "mql",
+  "repo": "fpinheiro921/trading-ea-mql5",
+  "path": "IFR2_Visual.mq5",
+  "file": "scratchpad\\code\\mql\\fpinheiro921__trading-ea-mql5\\IFR2_Visual.mq5",
+  "chars": 18216
+ },
+ {
+  "lang": "mql",
+  "repo": "fpinheiro921/trading-ea-mql5",
+  "path": "MaxMin_EA.mq5",
+  "file": "scratchpad\\code\\mql\\fpinheiro921__trading-ea-mql5\\MaxMin_EA.mq5",
+  "chars": 30081
+ },
+ {
+  "lang": "mql",
+  "repo": "fpinheiro921/trading-ea-mql5",
+  "path": "ORB_Stretch_EA.mq5",
+  "file": "scratchpad\\code\\mql\\fpinheiro921__trading-ea-mql5\\ORB_Stretch_EA.mq5",
+  "chars": 66014
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/exness-market-hunter/exness-market-hunter.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_exness-market-hunter_exness-market-hunter.mq5",
+  "chars": 128485
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/gold-ea/gold-ea.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_gold-ea_gold-ea.mq5",
+  "chars": 99179
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/gold-stop-grid-scalper/gold-stop-grid-scalper.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_gold-stop-grid-scalper_gold-stop-grid-scalper.mq5",
+  "chars": 60742
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/grid-martingale-demo/grid-martingale-demo.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_grid-martingale-demo_grid-martingale-demo.mq5",
+  "chars": 43885
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/liquidity-flow/liquidity-flow.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_liquidity-flow_liquidity-flow.mq5",
+  "chars": 35723
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/momentum-trend/momentum-trend.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_momentum-trend_momentum-trend.mq5",
+  "chars": 27001
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/pulse-real-high-rr/pulse-real-high-rr.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_pulse-real-high-rr_pulse-real-high-rr.mq5",
+  "chars": 59381
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/quant-alpha-scalper/quant-alpha-scalper.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_quant-alpha-scalper_quant-alpha-scalper.mq5",
+  "chars": 54721
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/real-pulse-btc/real-pulse-btc.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_real-pulse-btc_real-pulse-btc.mq5",
+  "chars": 61143
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/real-pulse-micro-scalper/real-pulse-micro-scalper.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_real-pulse-micro-scalper_real-pulse-micro-scalper.mq5",
+  "chars": 71217
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/real-pulse-structure/real-pulse-structure.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_real-pulse-structure_real-pulse-structure.mq5",
+  "chars": 25249
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/supply-demand-retest/supply-demand-retest.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_supply-demand-retest_supply-demand-retest.mq5",
+  "chars": 20181
+ },
+ {
+  "lang": "mql",
+  "repo": "Asdfghjklbikku/mt5-expert-advisors",
+  "path": "EAs/universal-breakout-portfolio/universal-breakout-portfolio.mq5",
+  "file": "scratchpad\\code\\mql\\Asdfghjklbikku__mt5-expert-advisors\\EAs_universal-breakout-portfolio_universal-breakout-portfolio.mq5",
+  "chars": 44597
+ },
+ {
+  "lang": "mql",
+  "repo": "smiladasadzadeh-afk/GoldAI",
+  "path": "XAUUSD_GoldAI.mq5",
+  "file": "scratchpad\\code\\mql\\smiladasadzadeh-afk__GoldAI\\XAUUSD_GoldAI.mq5",
+  "chars": 8000
  }
 ]
