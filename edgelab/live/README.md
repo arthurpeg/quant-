@@ -1,23 +1,37 @@
-# edgelab.live — live / forward-test runner (3-brick book on MT5 / Pepperstone)
+# edgelab.live — live / forward-test runner (4-brick book on MT5 / Pepperstone)
 
-One Python process, three strategy modules, one shared risk manager. It reuses the
+One Python process, four strategy modules, one shared risk manager. It reuses the
 **exact** backtest signal math (see `edgelab/live/verify.py`), so live cannot silently
 diverge from the backtest. **Dry-run by default** — it connects to MT5 only to pull
 Pepperstone bars, logs the orders it *would* place, and paper-tallies realised R.
 
-## The three bricks (unchanged from the frozen book — see `wiki/system.md`)
-| Brick | Symbol | When it acts | Rule (source of truth) |
-|-------|--------|--------------|------------------------|
-| 1 | NAS100 | intraday, US open | `signals.nas_orb_scan` → `intraday/atr_breakout.py` |
-| 2 | XAUUSD | once/day (ET open) | `signals.tom_state` → `edges/turn_of_month.py` |
-| 3 | BTCUSD, ETHUSD | once/day | `signals.crypto_entry` → MACD-RSI + engine barriers |
+## The four bricks (unchanged from the frozen book — see `wiki/system.md`)
+| Brick | Symbol | When it acts | Magic | Rule (source of truth) |
+|-------|--------|--------------|-------|------------------------|
+| 1 | NAS100 | intraday, US open | 101 | `signals.nas_orb_scan` → `intraday/atr_breakout.py` |
+| 2 | XAUUSD | daily rollover | 102 | `signals.tom_state` → `edges/turn_of_month.py` |
+| 3 | BTCUSD, ETHUSD | daily rollover | 103/104 | `signals.crypto_entry` → MACD-RSI + engine barriers |
+| 4 | NAS100 | daily rollover | 105 | `signals.ibs_state` → `edges/ibs.py` |
+
+Bricks 1 and 4 share the NAS100 instrument but are different mechanisms (intraday
+breakout vs daily-close reversion, daily-R corr ≈ 0) and different magics, so they hold
+**separate positions** and never interfere. Brick 4 is long-only with no TP: it exits on
+the broker-managed stop, on `IBS > 0.8` at a close, or after 30 D1 bars.
 
 ## Before anything: verify live == backtest
 ```bash
 python -m edgelab.live.verify
 ```
 Expected: brick1 830/830 exact, brick3 identical, brick2 ~98% (2 holiday-shifted
-month-ends — the business-day calendar approximation, see below).
+month-ends — the business-day calendar approximation, see below), brick4 **314/314
+trades exact** on signal math.
+
+⚠️ **Brick 4 live is ~0.8 R/yr thinner than its backtest, by construction.** `run_ibs`
+can re-enter on the *same daily bar* a stop fired, filling at that bar's **open** — a
+price already in the past by the time the stop hits. A live driver cannot do that, and
+this one does not try. Over 2018-07→2026-07 that is 13 trades and **+4.81 R/yr live vs
++5.64 R/yr backtest** (t even improves, 5.16 vs 4.77; PF 2.21 vs 1.99). `verify` prints
+the gap on every run so it can never drift unnoticed.
 
 ## Current mode: LIVE orders on a DEMO account
 `config_live.yaml` ships with `live_trading: true` — the runner **sends real MT5
@@ -83,7 +97,9 @@ running (or set `mt5_path:` in `config_live.yaml` so `mt5.initialize()` can laun
 enable "save account/password" in the terminal so it reconnects on its own.
 
 **Best of all: a VPS** with the terminal always up — the runner must be alive to enforce
-time-exits (brick 1 flat at 15:55 ET, brick 2 at the window end, brick 3 after 10 days).
+time-exits (brick 1 flat at 15:55 ET, brick 2 at the window end, brick 3 after 10 days,
+brick 4 on `IBS > 0.8` or 30 bars). Brick 4's **stop** is attached to the position, so the
+broker still protects it if the runner is down; only its signal/time exits need the runner.
 
 ## Auto-update from GitHub (no more manual file copies)
 With `auto_update: true` and the VPS folder as a **git clone**, the runner checks

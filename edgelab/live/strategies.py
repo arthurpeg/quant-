@@ -1,4 +1,4 @@
-"""Stateful LIVE drivers for the three bricks: signals -> orders via the broker.
+"""Stateful LIVE drivers for the four bricks: signals -> orders via the broker.
 
 Each strategy is a self-contained object with a ``.step(broker, risk, now_utc)`` method
 the runner calls every loop. A strategy:
@@ -18,13 +18,14 @@ import pandas as pd
 
 from edgelab.intraday.atr_breakout import ATRBreakParams
 from edgelab.edges.turn_of_month import TurnOfMonthParams
+from edgelab.edges.ibs import IBSParams
 from edgelab.live import signals as S
 from edgelab.live.broker import Broker
 from edgelab.live.risk import LiveRiskManager
 
 logger = logging.getLogger("edgelab.live.strategies")
 
-MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104}
+MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas_ibs": 105}
 
 
 def _mins(hhmm: str) -> int:
@@ -204,4 +205,94 @@ class CryptoMacdStrategy:
             broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                                 f"brick3_{plan.reason}", plan.sl_dist, ref, now_utc,
                                 bars_held_limit=self.time_exit_bars)
+        self._acted_day = bday
+
+
+class NasIbsStrategy:
+    """Brick 4 — NAS100 IBS reversion. Daily, long-only; holds up to `max_hold` bars.
+
+    Same cadence as bricks 2 & 3: decide ONCE per broker day at the daily-bar rollover
+    (00:00 server time), which is where the backtest fills (the next bar's open). No TP —
+    the exits are the broker-managed stop, ``IBS > ibs_high`` at a close, and the
+    ``max_hold``-bar timeout, both acted on at the following open.
+
+    ``bars_held`` is counted in **D1 BARS** (trading days), not calendar days, by locating
+    the entry bar in the broker's own D1 frame — NAS100 does not print a bar at weekends,
+    so a calendar-day count (which is right for 7d/7 crypto) would time-exit ~2 days early.
+
+    Over a weekend / market break the entry order is rejected with retcode 10018; the
+    runner retries quietly and the fill lands at the reopen — which IS the next bar's open,
+    i.e. exactly where the backtest enters.
+    """
+
+    def __init__(self, cfg_live: dict):
+        self.p = IBSParams(sl_atr=2.5)
+        self.logical = cfg_live.get("ibs_symbol", "NAS100")
+        self.magic = MAGIC["nas_ibs"]
+        self._acted_day = None
+        self._wait_logged = None
+
+    @staticmethod
+    def _bars_held(raw: pd.DataFrame, open_time: pd.Timestamp, last_closed_i: int) -> int | None:
+        """D1 bars between the entry bar and the last CLOSED bar, or None if not locatable."""
+        entry_day = pd.Timestamp(open_time).tz_convert("Europe/Athens").date()
+        dates = list(pd.to_datetime(raw["time"]).dt.date)
+        try:                                   # the entry bar = the bar of the broker day we entered on
+            entry_i = dates.index(entry_day)
+        except ValueError:
+            return None                        # entry day printed no bar (shouldn't happen) -> skip
+        return last_closed_i - entry_i
+
+    def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
+        bday = now_utc.tz_convert("Europe/Athens").date()
+        if bday == self._acted_day:
+            return
+
+        # RAW broker-time D1 (the backtest keys on the stored broker date — see edges/ibs.py).
+        # Drop the still-forming bar so the DECISION uses only completed bars.
+        raw = broker.get_bars_raw(self.logical, "D1", 120)
+        raw["time"] = pd.to_datetime(raw["time"], utc=True)
+        daily_all = raw.set_index("time")[["open", "high", "low", "close"]].astype(float).sort_index()
+        forming = len(daily_all) > 0 and daily_all.index[-1].date() == bday
+        daily = daily_all.iloc[:-1] if forming else daily_all
+        last_closed_i = len(daily) - 1
+        if last_closed_i < self.p.atr_p + 3:
+            return
+
+        st = S.ibs_state(daily, self.p)
+        pos = broker.open_position(self.magic)
+
+        if pos is not None:
+            held = self._bars_held(raw, pos.open_time, last_closed_i)
+            if not broker.live:                        # dry-run: resolve the stop on the bar
+                bar = daily_all.iloc[-1]
+                closed, px, why = broker.resolve_paper(pos, bar, now_utc, bars_held=held)
+                if closed:
+                    broker.close(pos, px, why, now_utc); self._acted_day = bday; return
+            if st.exit_signal or (held is not None and held >= self.p.max_hold):
+                why = "ibs_high" if st.exit_signal else "time_exit"
+                px = float(daily_all.iloc[-1]["close"])    # current price = the new bar's open
+                broker.close(pos, px, why, now_utc)
+            self._acted_day = bday
+            return
+
+        if st.entry_ok:
+            ok, why = risk.can_enter()
+            if not ok:
+                logger.info("brick4 skip entry: %s", why); self._acted_day = bday; return
+            if not forming:
+                # today's bar has not printed yet (market still in its break) -> the last
+                # close is STALE, and sizing/SL off a stale ref would not be a true 1R.
+                # Return WITHOUT marking the day done: retry until the session opens, which
+                # is where the backtest fills anyway (the next bar's open).
+                if self._wait_logged != bday:
+                    logger.info("brick4 entry pending: waiting for the %s bar to open", bday)
+                    self._wait_logged = bday
+                return
+            ref = float(daily_all.iloc[-1]["close"])       # fresh bar -> ~ this bar's open
+            sl = ref - st.sl_dist                          # long only, no TP
+            lots = broker.lots_for_risk(self.logical, +1, ref, sl, risk.risk_budget())
+            broker.place_market(self.logical, +1, lots, sl, None, self.magic,
+                                "brick4_ibs_reversion", st.sl_dist, ref, now_utc,
+                                bars_held_limit=self.p.max_hold)
         self._acted_day = bday

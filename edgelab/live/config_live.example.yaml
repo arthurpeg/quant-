@@ -36,6 +36,9 @@ symbol_map:
 nas_symbol: NAS100
 gold_symbol: XAUUSD
 crypto_symbols: [BTCUSD, ETHUSD]
+ibs_symbol: NAS100             # brick 4 (IBS reversion) — same instrument as brick 1, distinct
+                               # mechanism & magic (105); the two never share a position.
+enable_ibs: true               # set false to run the old 3-brick book
 
 # ---- risk / prop rules (static-DD firm) ------------------------------------
 # 1R = risk_per_trade * initial_balance (fixed-fractional, NO compounding).
@@ -57,7 +60,7 @@ propfirm:
 
 # ---- runner cadence --------------------------------------------------------
 poll_seconds: 20               # loop period; brick 1 needs sub-minute polling near the US open
-# Bricks 2 & 3 now decide at the broker DAILY-BAR ROLLOVER (00:00 server time) so live
+# Bricks 2, 3 & 4 decide at the broker DAILY-BAR ROLLOVER (00:00 server time) so live
 # enters at the bar open / exits at the bar close = matches the backtest (no intraday lag).
 # daily_decision_et is no longer used (kept only for backward compatibility).
 daily_decision_et: "09:45"

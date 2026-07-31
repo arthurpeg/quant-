@@ -1,7 +1,7 @@
-"""Pure LIVE signal functions for the 3 frozen bricks.
+"""Pure LIVE signal functions for the 4 frozen bricks.
 
 The whole point of this module: it REUSES the exact indicator math the backtest uses
-(Wilder ATR, MACD/RSI EWM, turn-of-month calendar, the low-vol regime gate) so the
+(Wilder ATR, MACD/RSI EWM, turn-of-month calendar, the low-vol regime gate, IBS) so the
 live decision cannot silently diverge from the backtest. Every function here takes a
 plain OHLC(V) DataFrame (already on a TRUE-UTC index — see edgelab.intraday.orb.to_true_utc)
 and returns a small, explicit decision object. NO order routing, NO MT5 here — this
@@ -11,6 +11,7 @@ Bricks:
   1) NAS100 US-open ATR breakout, low-vol regime   -> nas_orb_scan()
   2) XAUUSD turn-of-month, SL=1.5*ATR              -> tom_state()
   3) MACD(12,26,9)+RSI on BTC+ETH                   -> macd_rsi() / crypto_entry()
+  4) NAS100 IBS reversion, SL=2.5*ATR               -> ibs_state()
 """
 from __future__ import annotations
 
@@ -22,6 +23,7 @@ import pandas as pd
 # Reuse the SAME primitives the backtest uses (do not re-implement them here).
 from edgelab.intraday.atr_breakout import ATRBreakParams, _wilder_atr
 from edgelab.edges.turn_of_month import TurnOfMonthParams
+from edgelab.edges.ibs import IBSParams, _wilder_atr as _ibs_wilder_atr
 from edgelab.risk.trade_rules import atr as engine_atr  # Wilder ATR, min_periods=window
 
 
@@ -221,3 +223,54 @@ def crypto_entry(daily: pd.DataFrame, risk_cfg: dict) -> EntryPlan | None:
     else:
         tp_dist = float(risk_cfg["take_profit_atr"]) * entry_atr
     return EntryPlan(target, sl_dist, tp_dist, f"macd_rsi_{'long' if target>0 else 'short'}")
+
+
+# ===========================================================================
+# BRICK 4 — NAS100 IBS reversion (exp-009)
+# ===========================================================================
+@dataclass
+class IbsState:
+    """Decision for the NEXT bar's open, computed from the last CLOSED daily bar."""
+    ibs: float               # IBS of the last closed bar (nan if the bar had zero range)
+    entry_ok: bool           # IBS < ibs_low and a usable stop -> open LONG at the next open
+    exit_signal: bool        # IBS > ibs_high -> close at the next open
+    sl_dist: float = 0.0     # 1R in price = sl_atr * ATR14 (see the lag note below)
+
+
+def ibs_state(daily: pd.DataFrame, p: IBSParams | None = None) -> IbsState:
+    """IBS decision from CLOSED daily bars — mirrors edgelab.edges.ibs.run_ibs exactly.
+
+    ``daily`` = completed D1 bars (the still-forming bar of the current broker day must be
+    dropped by the caller), columns open/high/low/close, oldest first.
+
+    Index alignment with the backtest loop (entry bar ``t``, signal bar ``t-1``):
+      * entry test   ``ibs[t-1] < ibs_low``   -> here ``ibs.iloc[-1]`` (last closed bar);
+      * 1R distance  ``sl_atr * atr[t-1]`` where run_ibs's ``atr`` is ALREADY
+        ``_wilder_atr(...).shift(1)`` — so the stop uses the ATR through bar ``t-2``, one
+        bar staler than the signal bar. That double lag is the FROZEN rule (it is what
+        produced t=4.68); it is reproduced here on purpose, not corrected.
+      * exit test    ``ibs[t] > ibs_high`` -> also ``ibs.iloc[-1]``, acted on at the next open.
+    """
+    p = p or IBSParams()
+    d = daily.copy()
+    d.columns = [c.lower() for c in d.columns]
+    d = d[["open", "high", "low", "close"]].astype(float)
+    # Only what run_ibs itself requires: >=2 bars (the ATR is an EWM, finite from the start)
+    # plus finite IBS/ATR. Do NOT impose a longer warm-up here — that would silently skip
+    # entries the backtest takes (verify catches it).
+    if len(d) < 2:
+        return IbsState(float("nan"), False, False, 0.0)
+
+    h, l, c = d["high"], d["low"], d["close"]
+    rng = (h - l).replace(0.0, np.nan)
+    last_ibs = float(((c - l) / rng).iloc[-1])
+
+    atr_lagged = _ibs_wilder_atr(d, p.atr_p).shift(1)      # == run_ibs's `atr` series
+    atr_val = float(atr_lagged.iloc[-1])
+    sl_dist = p.sl_atr * atr_val if np.isfinite(atr_val) and atr_val > 0 else 0.0
+
+    ok = bool(np.isfinite(last_ibs))
+    return IbsState(ibs=last_ibs,
+                    entry_ok=ok and last_ibs < p.ibs_low and sl_dist > 0,
+                    exit_signal=ok and last_ibs > p.ibs_high,
+                    sl_dist=sl_dist)

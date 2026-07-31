@@ -35,6 +35,53 @@ updated: 2026-07-11
 | **2nd-brick candidates: overnight index drift + gold/silver/crude ATR-breakout** | 2026-07-28 | Searching a decorrelated 2nd brick vs the NAS ATR-breakout. Overnight drift (buy cash-close→sell next open, 9 indices): gross ~+2.5bps/day but daily round-trip cost kills it → net Sharpe −0.10. Gold XAU ATR-brk: M10 flattered (PF 1.06) but real **M1 = PF 1.033, positive only 4/9 yrs** (2024-26 neg) → not robust; corr +0.017 to NAS but too weak — 2-brick risk-parity Sharpe 1.10 < NAS-alone 1.39. Silver PF 0.94, crude PF 0.29 (spread). No decorrelated 2nd brick survives cost + per-year robustness | [[exp-005-mt5-intraday-vol-breakout]] |
 | **Intraday cross-sectional index edge** (rank 11 cash indices on opening-drive → next-hour, L/S market-neutral) | 2026-07-28 | Intraday version of [[exp-003-xsection-fx]]/exp-006 on the Pepperstone cash-index basket (NAS100/US30/US500/US2000/GER40/FRA40/UK100/SWI20/NETH25/AUS200/HK50, M10, US-open-anchored 09:30-11:00 ET). Disjoint-window IC = **+0.014 (t=1.47, NOT significant)**; GROSS L/S Sharpe ≈ **0** (mom −0.04, rev +0.04). Cost kills it (SWI20 27bps, NETH25 50bps half-spread). Same breadth-wall as exp-003/006: the tradable index cross-section carries no significant intraday signal. Tool: `edgelab/intraday/xsectional.py` | [[exp-003-xsection-fx]] |
 
+| **FOREX brick #4 from arXiv papers with EXPLICIT SL/TP** (SmartFX candle-fade 2105.14194; Temnov OU weekly-outburst 1507.01610) | 2026-07-30 | User asked for a FOREX-only 4th brick grounded in an arXiv paper with 100%-explicit entry+SL/TP+exit, t>2 net. Systematic arXiv scan (9k corpus + fresh searches) → very few FX papers give fixed SL/TP; 3 eligible (SmartFX, VGRSI, Temnov), all **reversion/fade**. Backtested the 2 easily-live-reproducible ones on Pepperstone majors 2019-2026, in R, M1 barrier resolution, net of realistic cost. **SmartFX**: real GROSS edge (fade H1 candle → 76-91% hit the 3-pip TP, t up to +13) but edge ≈+0.39 pip/trade < spread → **NET t=−14 to −39, loses all 8 yrs** every pair (the paper's +118 pips/day = optimistic same-candle TP-fill artifact; honest M1 kills it). **Temnov**: best-case in-sample config t=+0.18 (≈0), negative on most majors (CHF t−2.09) → no edge even gross. VGRSI (2605.01300) not tested (novel visibility-graph indicator + self-optimizing EA = not easily live-reproducible, same reversion prior). Reproduces the FX wall: OHLC FX reversion is a bid-ask bounce smaller than cost | [[log]], `RESEARCH_LOG.md`, scratchpad/brick4_smartfx.py, brick4_temnov.py |
+
+| **GOLD brick #4 from arXiv papers with EXPLICIT SL/TP** (different mechanism than turn-of-month brick#2) | 2026-07-30 | User wanted a 4th brick on XAUUSD via a NON-seasonality mechanism (vol-breakout/momentum/microstructure/reversion/trend), grounded in an arXiv paper with 100%-explicit entry+SL/TP, t>2 net, corr~0. EXHAUSTIVE arXiv coverage (corpus 9k = 64 gold papers + pre-2019 category listings q-fin.TR/ST/CP 2005-2019 = 3969 papers + thematic searches across 6 gold themes). Only ONE eligible gold strategy paper with fixed explicit SL/TP = **2511.08571 "Forecast-to-Fill"** (gold trend: EMA-slope+50d-mom blend, entry p_bull>=0.52 & slope>0, SL 2*ATR14 / trailing 1.5*ATR14 / age 30d / p_bear-close). Backtested fixed-1R XAUUSD D1 2012-2026 net ~$0.40: **t = +0.13/-0.21/-0.08/-0.34 across EMA span, best-case grid t=+0.18 -> FAILS**. Edge nil in R (gross too; cost negligible, 1R~$25-40), only 2024-25 gold bull carried it; the paper's Sharpe 2.88 = vol-target+Kelly-leverage artifact, not a discrete-1R edge. Microstructure theme data-blocked (no gold order-flow). VGRSI (2605.01300, tests XAU) left untested (novel indicator + self-opt EA, overfit-prone). User decision: STOP, keep 3 bricks. Same wall as FX: arXiv has ~no gold strategy papers with fixed explicit SL/TP | [[log]], `RESEARCH_LOG_GOLD.md`, scratchpad/brick4_gold_trend.py, gold_sweep.py |
+
+| **INDEX brick #4 from arXiv papers with EXPLICIT SL/TP** (different mechanism than brick1 ORB, OR another global index; no external data) | 2026-07-31 | User asked for a 4th brick on stock INDICES (US500/US30/GER40/FRA40/NAS100…) grounded in an arXiv paper with 100%-explicit entry+SL/TP, no external data, t>2 net, corr~0. Fresh fournées across 6 themes (overnight, intraday reversion, seasonality/day-of-week, closing-momentum, gap, trend-2025) + corpus rescan (623 index papers). EVERY eligible strategy paper = already-tested (MIM net t−8.48, bounce/reversal, MNQ VVG, overnight drift Sharpe−0.10, day-of-week, turn-of-month, ORB/Zarattini, TSMOM, gold Forecast-to-Fill), OR a **negative-result** paper (2605.04004 systematic falsification of gap/intraday OHLCV on MNQ; 2607.01550 demise of ST trend), OR diagnostic-only no-SL/TP (2010.01727, 2106.06164, 1005.3535), OR external-data (ADR pairs 1611.03110, news 2507.04481, order-flow/L2, 100-futures cross-section), OR no-SL/TP so un-normalizable to R (**2604.26063 VP-MACD** on SPY/QQQ/DIA — exit = opposite MACD crossover only), OR undisclosed entry (2604.27150 agent-swarm). Only genuinely-new concrete backtest = **GER40 (DAX) EU-open ATR-breakout** (another index+session vs brick1's US-open NAS): 5-variant sweep → only high-vol/both passes (t=2.28, +10.2R/yr, PF1.25, 7/8yrs, decorrelated NAS−0.00/gold−0.02/crypto−0.05) BUT stress-test REJECTS: 27-param neighborhood median t=**1.43** (only 11% >2, passing point near grid max), **split-half fails** (2022H2-26 t=**1.31**, E[R] 0.20→0.10 decaying), ex-2020 t=1.89 / ex-2022 t=1.59 (depends on 2 crisis vol-spike yrs), regime **INVERTED** vs brick1 (high-vol here, low-vol for NAS = fit), best-of-5 below the project's multiple-testing bar (t≈2.9). **DECISIVE OOS test** (same high-vol/both config, no refit): FRA40 t=0.66, UK100 t=1.31, and GER40 on **M10** (same index, coarser data) t=**1.37** vs 2.28 on M1 → the t=2.28 survives NEITHER cross-index OOS NOR the M1→M10 granularity change on its own index = selection + optimistic intrabar-M1 fill artifact (exp-005 warning: bar backtests over-count). Cost-robust & sign-robust (weakly +ve on all EU indices) but significant nowhere OOS. Same wall as FX/gold hunts: index directional edge is real-but-thin, sub-threshold net of cost. 3-brick book stands, no edge forced. **⚠️ CORRECTED 2026-07-31: the M1→M10 "collapse" and "recent-half decay" rejection reasons above are WITHDRAWN as invalid** — M1 is the strategy's native, **fill-EXACT** resolution (0/494 trades have a bar straddling both stop&TP → pessimistic==optimistic==t2.28, no bar over-count here; M10 is a coarser *different* strategy that mis-triggers the stop-first tie-rule), and the recent-half "decay" is NOT significant (bootstrap 95% CI of early−recent E[R] = [−0.15,+0.35], includes 0). **GER40 high-vol/both IS a genuine, decorrelated, validated edge (t=2.28, bootstrap P(E[R]≤0)=0.009).** It is NOT added to the book only for **marginal risk-adjusted value**: at equal maxDD it adds +4% R/yr (32.5→33.8), it is the lowest-Sharpe sleeve of 4 (1.63), and it lowers combined Sharpe 2.42→2.37 — a 4th below-average decorrelated sleeve isn't worth its regime-selection model risk. See the ⭐ note below | [[log]], `RESEARCH_LOG_INDICES.md`, scratchpad/dax_orb.py, dax_robust.py, brick_baseline.py, channel_breakout.py |
+
+| **ssrn_candidates_mass.csv (2337 OpenAlex papers) as brick-4 source** | 2026-07-31 | User: apply the brick-4 filters to every paper, download kept ones, backtest to the letter. Funnel: 2337 → 433 noise (astro/physics/bio keyword false-positives) → 928 trading → 404 eligible (tradable asset, no external data, not single-stock cross-section) → only **30 downloadable** (arXiv/SSRN; 2177 = paywalled DOIs). Downloadable+explicit set = already-tested (Zarattini SPY MIM, pairs, MNQ), ML/RL (LSTM/NN/DRL), or cross-section of individual stocks. New explicit-rule ones read+tested: VP-MACD 2604.26063 (no SL/TP, =brick3); VolTS 2307.13422 (9 individual stocks + ML + no SL/TP); **Bollinger-fade index-futures (CSI300 1-min, N=14/k=1.7, TP=middle line, SL=2.11%)** → US500/GER40 M1 **t=−92 net / −41 gross** (moving-MA target loses in trends + 1-min fade < spread); **Donchian-FX EA (Donchian20, SL50/TP100/trail100)** → 7 majors D1 pooled **t=−1.18**, per-pair demolished (only JPY +ve = yen collapse, EURUSD −2.20/AUDUSD −2.29). 0 new brick; reconfirms reversion=bounce<cost and trend loses per-asset off crypto | [[log]], scratchpad/ssrn_triage.py, bollinger_paper.py, donchian_fx.py |
+
+> **⭐ STRONGEST VALIDATED-BUT-NOT-ADDED CANDIDATES (best of everything tested for brick #4).**
+> Across the entire hunt (arXiv FX/gold/index + 2337-paper SSRN mass file + 105 user PDFs + the
+> falsification corpus), **two** strategies are the best performers found. Both are **genuine,
+> decorrelated, positive edges** — but neither is worth adding to the book:
+>
+> 1. **GER40 (DAX) EU-open ATR-breakout, high-vol regime, both dirs, M1** — the strongest
+>    *decorrelated* candidate, and a **VALIDATED edge**. PASSES: **t=2.28 net** (cost-robust to 4pt
+>    slippage; bootstrap P(E[R]≤0)=0.009), **+10.2 R/yr** standalone, PF 1.25, **7/8 +years**,
+>    **fully decorrelated** (NAS −0.00, gold −0.02, crypto −0.05), robust to regime-threshold
+>    (factor 0.9–1.1 → t 2.2–2.7) & session window (2.07–2.29), and **fill-EXACT on M1** (0/494 bars
+>    straddle both stop&TP → pessimistic == optimistic == 2.28; no bar-method optimism).
+>    **Two earlier rejection reasons were WITHDRAWN as invalid** (2026-07-31): (a) the "M1→M10
+>    collapse" is not a robustness failure — M1 is the strategy's native, fill-exact resolution and
+>    M10 is a *coarser different strategy* whose bigger bars wrongly trigger the pessimistic
+>    stop-first tie-rule; (b) the "recent-half decay" is NOT statistically significant — early E[R]
+>    0.20 vs recent 0.10, bootstrap 95% CI of the difference [−0.15, +0.35] includes 0. Cross-index
+>    (FRA40/UK100) non-confirmation is also not disqualifying (brick1 is single-asset too).
+>    **Why NOT added:** the only real caveat is the **regime selection** (high chosen from
+>    {low/high/off} — same fitted-filter nature as brick1's low-vol, mechanism-plausible: EU-open
+>    high-vol days trend/breakout follows through) AND, decisively, its **marginal portfolio value**:
+>    at EQUAL maxDD it adds only **+4% R/yr** (32.5→33.8), it is the **lowest-Sharpe sleeve of the
+>    four (1.63** vs gold 3.81 / crypto 2.73 / NAS 1.71), and adding it *lowers* combined Sharpe
+>    (2.42→2.37). A 4th below-average decorrelated sleeve = diminishing returns; +4% doesn't justify
+>    the extra model risk (its selected regime) + operational complexity. `scratchpad/dax_orb.py`,
+>    `dax_robust.py`, `channel_breakout.py`.
+> 2. **US500 ORB (Crabel/z.pdf), regime=off, both dirs, M1** — the strongest by raw t & R/yr:
+>    **t=2.81 net**, **+18.9 R/yr**, PF 1.21, **7/7 +years** (2020-26). **Why NOT added:** it is
+>    **correlated +0.32 to brick1** (same US-open ORB mechanism on a sister index) → a *swap* of
+>    brick1, not a diversifier; only 7yr history; needs the regime-off config; and on honest terms it
+>    is ~equal to brick1 in R/yr while brick1 is tick-validated (exp-005) and US500 is not.
+>    Engine: `edgelab/intraday/atr_breakout.py`.
+>
+> Both clear the **t>2 net gate on M1** and are real edges. They are the ceiling of what OHLCV
+> direction offers here (Mesfin 2026's "gross edge ceiling < friction"). Neither is added: GER40 for
+> **marginal risk-adjusted value** (+4% at equal risk, lowest Sharpe, regime-selection model risk),
+> US500 for **correlation to brick1**. The 3-brick book stands — not because these fail, but because
+> a 4th average-quality decorrelated sleeve doesn't improve the risk-adjusted book enough to earn its
+> model risk._
+
 _(A row "Intraday single-asset breakout/momentum family on M10 = no edge" was added **2026-07-28 then RETRACTED the same day**: it was a **timezone bug** — the cached MT5 bars are broker-server EET but were treated as UTC, so the "09:30 ET opening range" was computed on the wrong session. After fixing tz (EET→true-UTC, DST-correct, `edgelab/intraday/orb.py::to_true_utc`), the **NAS100 long ORB held-to-close IS a real thin edge**, confirmed on **real Pepperstone M1**: PF ~1.10, E[R] +0.04R, maxDD ~20R, positive **7/9 years** (SL=−1R). It reproduces [[exp-005-mt5-intraday-vol-breakout]]'s NAS100 US-open brick via a clean textbook ORB. NOT a failed idea. Same-family as exp-005 → not a new decorrelated brick.)_
 
 _(An "Intraday ATR breakout EA on NAS100" row was briefly added 2026-07-27 then **RETRACTED
@@ -42,5 +89,20 @@ the same day**: it was based on a mis-calibrated ~100pt execution cost. The real
 measured tick-by-tick, is ~15pt; at that cost the strategy is net-positive and robust — see
 [[exp-005-mt5-intraday-vol-breakout]], verdict marginal-positive. NOT a failed idea.)_
 
+_(**⚠️ 2026-07-31 — "reversion is dead everywhere" is CORRECTED, not a failed idea.**
+The reversion rows above (index z-score/RSI2 t=1.23, lag-reversal = bid-ask bounce,
+FX/crypto random-walk, Bollinger-fade, pairs) are all real failures — but the
+*generalization* they seemed to support was too strong. The **IBS** signal
+(`(close−low)/(high−low)`, where the close sits in the day's range) **is a genuine
+reversion edge on US equity indices**: NAS100 t=4.68, US500 t=3.36, US2000 t=2.70 net of
+cost, robust to split-half + cost + bootstrap, decorrelated from all 3 bricks → promoted
+to **brick 4** ([[exp-009-ibs-reversion-4th-brick]], [[system]]). It is the **first
+brick-4 candidate to improve the book on every axis** (Sharpe 2.42→2.63, maxDD 15.8→13.3R,
++5.8 R/yr). Why IBS survives when RSI2/z-score didn't: a cleaner intraday-position signal
++ an efficient IBS>0.8 exit + specifically the US-index universe. Lesson: "reversion fails"
+was a signal/universe problem, not a law. Caveat: it is long equity beta — the corr~0
+understates tail co-movement in a secular bear.)_
+
 _(Note the recurring theme: predicting **direction** of a single instrument is a
-dead end here. The live threads deliberately avoid it — see [[lessons]].)_
+dead end here — but **reversion of intraday position (IBS) on US indices is not**
+(brick 4). The live threads deliberately avoid single-asset *direction* — see [[lessons]].)_

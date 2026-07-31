@@ -46,19 +46,28 @@ updated: 2026-07-11
   `python -m pytest edgelab/tests`. All params in `edgelab/config.yaml`; see
   `edgelab/README.md`. Isolated to avoid shadowing the root `backtest.py`.
   [[prop-firm-universe]], [[cross-sectional-vs-directional]]
+- `edgelab/edges/ibs.py` — brick 4: IBS reversion (`run_ibs`, `ibs_daily_R`), R-based with
+  the mandatory ATR stop. [[exp-009-ibs-reversion-4th-brick]]
 - `edgelab/reports/monte_carlo_static.py` — canonical Monte Carlo of the frozen
-  3-brick book (no compounding, fixed-fractional trade-R on a calendar index):
-  1-yr R distribution + static-DD challenge time-to-pass + funded optimal sizing. [[system]]
+  **4-brick** book (no compounding, fixed-fractional trade-R on a calendar index):
+  `build_daily_R()` (the book's daily-R series) + `simulate()` (block bootstrap) feed both
+  the CLI printout and the HTML reports — 1-yr R distribution + static-DD challenge
+  time-to-pass + funded optimal sizing. [[system]]
+- `edgelab/reports/build_reports.py` — **rebuilds both HTML reports** from one run
+  (`portfolio_backtest.html` + `monte_carlo.html`, plus `_out/` and root `RAPPORT_*.html`
+  copies). Run after adding or changing a brick. [[system]]
 - `edgelab/reports/payout_frequency.py` — funded payout-cadence study (biweekly vs
   monthly vs quarterly; buffer policy). Reuses the same corrected R series. [[system]]
 
 ## edgelab/live — live / forward-test runner (2026-07-29)
-- `edgelab/live/` — one Python process runs the frozen 3-brick book on MT5/Pepperstone,
-  **dry-run by default** (pulls bars, logs would-be orders, paper-tallies R). Modules:
+- `edgelab/live/` — one Python process runs the frozen **4-brick** book on MT5/Pepperstone
+  (brick 4 wired 2026-07-31, magic 105), **dry-run by default** (pulls bars, logs would-be
+  orders, paper-tallies R). Modules:
   `signals.py` (pure decisions reusing the exact backtest math), `broker.py` (MT5 conn +
   order routing + dry-run paper book), `risk.py` (1R sizing + shared static-DD prop gate),
   `strategies.py` (per-brick drivers), `runner.py` (event loop: `python -m edgelab.live.runner`),
-  `verify.py` (proves live==backtest: brick1 830/830, brick3 identical, brick2 ~98%),
+  `verify.py` (proves live==backtest: brick1 830/830, brick3 identical, brick2 ~98%,
+  brick4 314/314 trades + a printed live-vs-backtest R gap),
   `config_live.yaml` (symbol map + `live_trading` flag + risk%). See `edgelab/live/README.md`.
   Resilience: runner self-heals dropped MT5 conn (health-check + reconnect), rotating
   `_out/runner.log`, exit 42 on blown account; single-instance mutex in `runner.py`.

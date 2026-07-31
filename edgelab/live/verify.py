@@ -15,6 +15,7 @@ import pandas as pd
 from edgelab.intraday.orb import load_bars
 from edgelab.intraday.atr_breakout import run_atr_breakout, ATRBreakParams, _mins
 from edgelab.edges.turn_of_month import run_turn_of_month, TurnOfMonthParams
+from edgelab.edges.ibs import run_ibs, IBSParams
 from edgelab.risk.trade_rules import TradeRules
 from edgelab.config import load_config
 from edgelab.live import signals as S
@@ -122,6 +123,90 @@ def verify_brick3() -> bool:
     return ok
 
 
+def _ibs_bars() -> pd.DataFrame:
+    d = pd.read_parquet(MT5_DIR / "NAS100_D1.parquet")
+    d.columns = [c.lower() for c in d.columns]
+    d["t"] = pd.to_datetime(d["time"], utc=True)
+    return d.set_index("t")[["open", "high", "low", "close"]].astype(float).sort_index()
+
+
+def verify_brick4() -> bool:
+    """Brick 4 parity, in two parts (stricter than bricks 1-3 — compares whole TRADES).
+
+    (a) SIGNAL MATH — replay run_ibs's own loop structure but take every decision from
+        ``S.ibs_state``. Must be trade-for-trade IDENTICAL: that is what proves the live
+        signal layer cannot diverge from the frozen backtest. This is the PASS/FAIL gate.
+
+    (b) DRIVER CADENCE — replay the real driver's once-per-rollover cadence
+        (``NasIbsStrategy.step``) and report the residual gap. The only structural
+        difference is that run_ibs may re-enter on the SAME bar a stop fired, filling at
+        that bar's OPEN — a price that is already in the past by then. Live cannot do that
+        and does not try to; the gap is reported in R so it is never silently ignored.
+    """
+    p = IBSParams(sl_atr=2.5)
+    d = _ibs_bars()
+    o, lo, c = d["open"].to_numpy(), d["low"].to_numpy(), d["close"].to_numpy()
+    idx, n = d.index, len(d)
+    # every decision the two replays consume, taken from the LIVE signal function
+    states = [None] + [S.ibs_state(d.iloc[:T], p) for T in range(1, n + 1)]   # states[T] <- bars 0..T-1
+
+    def trade(entry_i, entry_px, risk, exit_px, why):
+        return (pd.Timestamp(idx[entry_i]).tz_localize(None), round(entry_px, 3),
+                round(exit_px, 3), why, round((exit_px - entry_px - p.cost_price) / risk, 6))
+
+    # ---- (a) run_ibs's structure, live's decisions --------------------------------
+    a_trades, in_pos, entry_i, entry_px, risk, stop = [], False, -1, 0.0, 0.0, 0.0
+    for t in range(n):
+        if in_pos:
+            why = exit_px = None
+            if lo[t] <= stop:
+                exit_px, why = (stop if o[t] >= stop else o[t]), "stop"
+            elif states[t + 1].exit_signal or (t - entry_i) >= p.max_hold:
+                why = "ibs" if states[t + 1].exit_signal else "time"
+                exit_px = o[t + 1] if t + 1 < n else c[t]
+                why = why if t + 1 < n else "eod"
+            if why:
+                a_trades.append(trade(entry_i, entry_px, risk, exit_px, why)); in_pos = False
+        if (not in_pos) and t >= 1 and states[t].entry_ok:
+            entry_i, entry_px, risk = t, o[t], states[t].sl_dist
+            stop, in_pos = entry_px - risk, True
+            if lo[t] <= stop:
+                a_trades.append(trade(entry_i, entry_px, risk,
+                                      stop if o[t] >= stop else o[t], "stop")); in_pos = False
+
+    bt = run_ibs("NAS100", p)
+    bt_trades = [(pd.Timestamp(r["entry_dt"]), round(float(r["entry"]), 3), round(float(r["exit"]), 3),
+                  r["reason"], round(float(r["R"]), 6)) for _, r in bt.iterrows()]
+    mism = [(x, y) for x, y in zip(a_trades, bt_trades) if x != y]
+    same = len(a_trades) == len(bt_trades) and not mism
+    print(f"  BRICK 4 (NAS IBS) signal math: backtest {len(bt_trades)} trades, live-decisions "
+          f"{len(a_trades)}, {len(bt_trades) - len(mism)}/{len(bt_trades)} exact match")
+    for x, y in mism[:5]:
+        print(f"    MISMATCH live={x} backtest={y}")
+
+    # ---- (b) the driver's real rollover-only cadence --------------------------------
+    b_trades, in_pos, entry_i, entry_px, risk, stop = [], False, -1, 0.0, 0.0, 0.0
+    for T in range(1, n):
+        st = states[T]                                   # what the driver sees at this rollover
+        if in_pos and (st.exit_signal or (T - 1 - entry_i) >= p.max_hold):
+            b_trades.append(trade(entry_i, entry_px, risk, o[T],
+                                  "ibs" if st.exit_signal else "time")); in_pos = False
+        if (not in_pos) and st.entry_ok:
+            entry_i, entry_px, risk = T, o[T], st.sl_dist
+            stop, in_pos = entry_px - risk, True
+        if in_pos and lo[T] <= stop:                     # intrabar stop, managed by the broker
+            b_trades.append(trade(entry_i, entry_px, risk,
+                                  stop if o[T] >= stop else o[T], "stop")); in_pos = False
+
+    bt_R = sum(t[4] for t in bt_trades)
+    dr_R = sum(t[4] for t in b_trades)
+    extra = len(bt_trades) - len(b_trades)
+    print(f"  BRICK 4 (NAS IBS) driver cadence: {len(b_trades)} trades vs {len(bt_trades)} backtest "
+          f"({extra:+d} same-bar re-entries live cannot take) | total R {dr_R:+.1f} vs {bt_R:+.1f} "
+          f"({dr_R - bt_R:+.1f} R over {len(bt)} trades)")
+    return same
+
+
 def main():
     print("=" * 70)
     print("  LIVE-vs-BACKTEST signal verification")
@@ -129,9 +214,10 @@ def main():
     r1 = verify_brick1()
     r2 = verify_brick2()
     r3 = verify_brick3()
+    r4 = verify_brick4()
     print("-" * 70)
     print(f"  brick1={'PASS' if r1 else 'FAIL'}  brick2={'PASS' if r2 else 'FAIL'}  "
-          f"brick3={'PASS' if r3 else 'FAIL'}")
+          f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}")
     print("=" * 70)
 
 

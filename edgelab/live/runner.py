@@ -29,7 +29,8 @@ from edgelab.config import load_config
 from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
-from edgelab.live.strategies import NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy
+from edgelab.live.strategies import (NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy,
+                                     NasIbsStrategy)
 
 LOG = logging.getLogger("edgelab.live.runner")
 CFG_LIVE = Path(__file__).resolve().parent / "config_live.yaml"
@@ -49,6 +50,8 @@ def build(cfg_live: dict):
     strategies = [NasOrbStrategy(cfg_live), GoldTomStrategy(cfg_live)]
     for coin in cfg_live.get("crypto_symbols", ["BTCUSD", "ETHUSD"]):
         strategies.append(CryptoMacdStrategy(cfg_live, coin, risk_cfg))
+    if cfg_live.get("enable_ibs", True):          # brick 4 (exp-009); set false to disable
+        strategies.append(NasIbsStrategy(cfg_live))
     return broker, risk, strategies
 
 
