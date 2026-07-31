@@ -18,7 +18,10 @@ from pathlib import Path
 
 DEFAULT_CSV = Path(__file__).resolve().parent / "_out" / "trades.csv"
 
-# symbol -> which brick it belongs to
+# symbol -> which brick it belongs to. FALLBACK ONLY: NAS100 is traded by BOTH brick 1
+# and brick 4, so this map cannot disambiguate it. The journal's `reason` field is the
+# authority ("brick4_ibs_reversion" on entries, "brick4:ibs_high" on exits — see
+# Broker._tag); this map is used only for legacy rows written before the tagging.
 BRICK = {
     "NAS100": "brick1 (NAS ORB)",
     "XAUUSD": "brick2 (gold ToM)",
@@ -26,8 +29,21 @@ BRICK = {
     "ETHUSD": "brick3 (crypto)",
 }
 
+# magic / reason tag -> display label (must match strategies.MAGIC)
+BRICK_LABEL = {
+    "brick1": "brick 1 - NAS ORB",
+    "brick2": "brick 2 - gold ToM",
+    "brick3": "brick 3 - crypto",
+    "brick4": "brick 4 - NAS IBS",
+}
+MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "brick4"}
 
-def _brick(symbol: str) -> str:
+
+def _brick(symbol: str, reason: str = "") -> str:
+    """Which brick a journal row belongs to — from its `reason` tag when present."""
+    head = str(reason or "").split("_")[0].split(":")[0]
+    if head in BRICK_LABEL:
+        return BRICK_LABEL[head]
     return BRICK.get(symbol, f"other ({symbol})")
 
 
@@ -111,7 +127,7 @@ def summarise(csv_path: Path) -> None:
         print("\n  --- per brick (closed) ---")
         byb = defaultdict(list)
         for r in exits:
-            byb[_brick(r["symbol"])].append(r["R"])
+            byb[_brick(r["symbol"], r.get("reason", ""))].append(r["R"])
         for b in sorted(byb):
             v = byb[b]; w = sum(1 for x in v if x > 0)
             print(f"    {b:18} n={len(v):>3}  win {100*w/len(v):>3.0f}%  totR {sum(v):>+7.2f}")
@@ -135,7 +151,7 @@ def summarise(csv_path: Path) -> None:
             e = last_entry.get(s, {})
             side = "LONG" if str(e.get("dir", "")).lstrip("+") not in ("-1",) else "SHORT"
             print(f"    {s:8} {side:5} entered {(_dt(e.get('time','')) or '?')}  "
-                  f"@ {e.get('price','?')}  ({_brick(s)})")
+                  f"@ {e.get('price','?')}  ({_brick(s, e.get('reason', ''))})")
     print("=" * 64)
 
 
@@ -161,7 +177,7 @@ def build_report_text(csv_path: Path, header: list[str] | None = None) -> str:
         lines.append(f"closed {len(exits)} | realised {tot:+.2f} R | win {100*len(w)/len(Rs):.0f}% | PF {pf:.2f}")
         byb = defaultdict(float)
         for r in exits:
-            byb[_brick(r["symbol"])] += r["R"]
+            byb[_brick(r["symbol"], r.get("reason", ""))] += r["R"]
         lines.append("  " + " | ".join(f"{b.split('(')[0].strip()} {v:+.1f}R" for b, v in sorted(byb.items())))
     else:
         lines.append("closed 0 | realised +0.00 R (nothing closed yet)")
@@ -177,13 +193,142 @@ def build_report_text(csv_path: Path, header: list[str] | None = None) -> str:
     return "\n".join(lines)
 
 
-def send_discord(webhook_url: str, text: str, code: bool = True) -> int:
-    """POST ``text`` to a Discord webhook. ``code`` wraps it in a monospace block (good for
-    the report table); set False for a plain short message (alerts, emojis). Returns status."""
+GREEN, RED, GREY = 0x3BA55D, 0xED4245, 0x4F545C
+
+
+def _bar(frac: float, width: int = 14) -> str:
+    n = max(0, min(width, int(round(max(0.0, min(1.0, frac)) * width))))
+    return "█" * n + "░" * (width - n)
+
+
+def _et_date(dt: datetime, tz: str = "America/New_York"):
+    from zoneinfo import ZoneInfo
+    return dt.astimezone(ZoneInfo(tz)).date()
+
+
+def build_report_embed(csv_path: Path, ctx: dict) -> dict:
+    """The daily heartbeat as a Discord EMBED (colour + fields) instead of a code block.
+
+    ``ctx`` carries what only the runner knows: balance/1R/prop floors, the git commit,
+    and — importantly — ``open_positions`` read from the BROKER rather than from the CSV.
+    The journal can miss a position (one opened while the log path was unset stays absent
+    forever), so the broker is the authority on what is open right now.
+    """
+    rows = _parse(csv_path) if csv_path.exists() else []
+    exits = [r for r in rows if r["event"] == "exit" and r.get("R") is not None]
+    entries = [r for r in rows if r["event"] == "enter"]
+    now_et = ctx.get("now_et")
+    today = _et_date(now_et) if now_et else None
+
+    def _on_today(rs):
+        out = []
+        for r in rs:
+            d = _dt(r["time"])
+            if d and today and _et_date(d) == today:
+                out.append(r)
+        return out
+
+    t_exits, t_entries = _on_today(exits), _on_today(entries)
+    t_R = sum(r["R"] for r in t_exits)
+    tot = sum(r["R"] for r in exits)
+    wins = [r["R"] for r in exits if r["R"] > 0]
+    losses = [r["R"] for r in exits if r["R"] <= 0]
+
+    bal, init = ctx.get("balance"), ctx.get("initial")
+    pnl_pct = ((bal / init - 1.0) * 100.0) if (bal and init) else 0.0
+    colour = GREEN if (t_R > 0 or (not t_exits and pnl_pct > 0)) else RED if (t_R < 0 or pnl_pct < 0) else GREY
+
+    fields = []
+    fields.append({"name": "\U0001F4B0 Account", "inline": True,
+                   "value": f"**{bal:,.2f}**\n1R {ctx.get('one_r', 0):,.2f} · "
+                            f"{ctx.get('risk_pct', 0) * 100:.2f}%" if bal else "**n/a**"})
+    fields.append({"name": "\U0001F4C5 Today", "inline": True,
+                   "value": f"**{t_R:+.2f} R**\n{len(t_exits)} closed · {len(t_entries)} opened"})
+    win_txt = f"win {100 * len(wins) / len(exits):.0f}%" if exits else "win —"
+    fields.append({"name": "\U0001F4C8 Since start", "inline": True,
+                   "value": f"**{tot:+.2f} R**\n{len(exits)} closed · {win_txt}"})
+
+    # prop challenge progress: where the balance sits between the -10% floor and +15% target
+    tgt, dd = ctx.get("target_pct"), ctx.get("dd_pct")
+    if bal and init and tgt and dd:
+        floor_cash, target_cash = init * (1 - dd), init * (1 + tgt)
+        fields.append({"name": "\U0001F3AF Challenge", "inline": False,
+                       "value": f"`{_bar(max(pnl_pct, 0) / (tgt * 100))}`  **{pnl_pct:+.2f}%** "
+                                f"of +{tgt * 100:.0f}%\nfloor −{dd * 100:.0f}% at "
+                                f"`{floor_cash:,.0f}` · target `{target_cash:,.0f}`"})
+
+    # open positions — from the broker, not the journal
+    pos = ctx.get("open_positions")
+    if pos is None:                    # no broker view (CLI preview) -> derive from the journal
+        net, last = defaultdict(int), {}
+        for r in rows:
+            net[r["symbol"]] += 1 if r["event"] == "enter" else -1
+            if r["event"] == "enter":
+                last[r["symbol"]] = r
+        pos = [{"symbol": s, "direction": -1 if str(last[s]["dir"]).lstrip("+") == "-1" else 1,
+                "entry_price": float(last[s]["price"]), "days": None,
+                "magic": next((m for m, t in MAGIC_TAG.items()
+                               if t == str(last[s]["reason"]).split("_")[0]), None)}
+               for s, n in net.items() if n > 0]
+    if pos:
+        lines = []
+        for p in sorted(pos, key=lambda x: x["symbol"]):
+            side = "LONG" if p["direction"] > 0 else "SHORT"
+            dot = "\U0001F7E2" if p["direction"] > 0 else "\U0001F534"
+            held = f" · {p['days']}d" if p.get("days") is not None else ""
+            lines.append(f"{dot} **{p['symbol']}** {side} · "
+                         f"{BRICK_LABEL.get(MAGIC_TAG.get(p.get('magic'), ''), '?')} · "
+                         f"@{p['entry_price']:,.2f}{held}")
+        fields.append({"name": f"\U0001F4CC Open positions ({len(pos)})", "inline": False,
+                       "value": "\n".join(lines)[:1024]})
+    else:
+        fields.append({"name": "\U0001F4CC Open positions", "inline": False, "value": "flat"})
+
+    if exits:
+        byb = defaultdict(list)
+        for r in exits:
+            byb[_brick(r["symbol"], r.get("reason", ""))].append(r["R"])
+        tbl = ["{:<20}{:>4}{:>7}{:>8}".format("brick", "n", "win", "R")]
+        for b in sorted(byb):
+            v = byb[b]
+            tbl.append("{:<20}{:>4}{:>6.0f}%{:>+8.2f}".format(
+                b, len(v), 100 * sum(1 for x in v if x > 0) / len(v), sum(v)))
+        pf = (sum(wins) / -sum(losses)) if losses and sum(losses) != 0 else float("inf")
+        tbl.append("")
+        tbl.append("PF {:.2f}   avg {:+.2f} R   best {:+.2f}   worst {:+.2f}".format(
+            pf, tot / len(exits), max(r["R"] for r in exits), min(r["R"] for r in exits)))
+        fields.append({"name": "\U0001F9F1 By brick (closed)", "inline": False,
+                       "value": "```\n" + "\n".join(tbl)[:1000] + "\n```"})
+
+    foot = f"{now_et:%a %d %b %Y · %H:%M} ET" if now_et else "edgelab.live"
+    if ctx.get("commit"):
+        foot += f" · commit {ctx['commit']}"
+    if ctx.get("server"):
+        foot += f" · {ctx['server']}"
+    return {
+        "title": "\U0001F4CA edgelab.live — daily report",
+        "description": ("\U0001F7E2 runner **ALIVE**" if ctx.get("alive", True) else "\U0001F534 runner **DOWN**")
+                       + f" · {ctx.get('n_bricks', 4)} bricks armed",
+        "color": colour,
+        "fields": fields,
+        "footer": {"text": foot[:2048]},
+    }
+
+
+def send_discord(webhook_url: str, text: str | None = None, code: bool = True,
+                 embed: dict | None = None) -> int:
+    """POST to a Discord webhook. Pass ``embed`` for the rich daily report, or ``text``
+    for a plain message (``code`` wraps it in a monospace block). Returns the HTTP status."""
     import json
     import urllib.request
-    body = ("```\n" + text[:1900] + "\n```") if code else text[:1990]
-    data = json.dumps({"content": body, "username": "edgelab.live"}).encode("utf-8")
+    payload: dict = {"username": "edgelab.live"}
+    if embed is not None:
+        payload["embeds"] = [embed]
+        if text:
+            payload["content"] = text[:1990]
+    else:
+        payload["content"] = ("```\n" + (text or "")[:1900] + "\n```") if code else (text or "")[:1990]
+    data = json.dumps(payload).encode("utf-8")
     # Discord's edge rejects the default 'Python-urllib' UA with 403 -> send a real one.
     req = urllib.request.Request(webhook_url, data=data, headers={
         "Content-Type": "application/json",
@@ -193,13 +338,46 @@ def send_discord(webhook_url: str, text: str, code: bool = True) -> int:
         return getattr(resp, "status", 204)
 
 
+def _cli_ctx() -> dict:
+    """Best-effort report context for a CLI preview (no MT5): balances come from
+    config_live.yaml, open positions are derived from the journal."""
+    from datetime import timezone
+    from zoneinfo import ZoneInfo
+    cfg = {}
+    try:
+        import yaml
+        cfg = yaml.safe_load(open(Path(__file__).resolve().parent / "config_live.yaml",
+                                  encoding="utf-8")) or {}
+    except Exception:
+        pass
+    prop = cfg.get("propfirm") or {}
+    init = float(prop.get("initial_balance", 100000.0))
+    rp = float(cfg.get("risk_per_trade", 0.01))
+    return {"balance": init, "initial": init, "one_r": init * rp, "risk_pct": rp,
+            "dd_pct": prop.get("max_total_drawdown_pct"), "target_pct": prop.get("profit_target_pct"),
+            "now_et": datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York")),
+            "alive": True, "n_bricks": 4}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default=str(DEFAULT_CSV), help="path to trades.csv")
+    ap.add_argument("--preview", action="store_true",
+                    help="print the Discord embed JSON without sending it")
     ap.add_argument("--discord", help="send the report to this Discord webhook URL (a test send)")
     ap.add_argument("--alert-now", action="store_true",
                     help="fire the configured pre_session_alerts to Discord now (test)")
     args = ap.parse_args()
+    if args.preview:
+        import json
+        import sys
+        try:      # the Windows console defaults to cp1252 and cannot print the emoji
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+        print(json.dumps(build_report_embed(Path(args.csv), _cli_ctx()),
+                         indent=2, ensure_ascii=False))
+        return
     if args.alert_now:
         import yaml
         cfg = yaml.safe_load(open(Path(__file__).resolve().parent / "config_live.yaml", encoding="utf-8"))
@@ -228,7 +406,7 @@ def main() -> None:
                   "copied from Discord: https://discord.com/api/webhooks/<ID>/<TOKEN>")
             return
         try:
-            code = send_discord(args.discord, build_report_text(Path(args.csv), hdr))
+            code = send_discord(args.discord, embed=build_report_embed(Path(args.csv), _cli_ctx()))
             print(f"sent to Discord (HTTP {code}) - check your channel")
         except Exception as exc:
             print(f"Discord send FAILED: {exc}")

@@ -73,12 +73,26 @@ class Broker:
         self.symbol_map: dict = cfg_live.get("symbol_map", {})
         self._connected = False
         self.is_demo = None
+        self.server = None
         # paper book (dry-run)
         self.paper: dict[int, Position] = {}
         self.realized_R: float = 0.0
         self._paper_balance = float(cfg_live.get("paper_balance", 100000.0))
         # trade journal (both dry-run and live) — one CSV row per entry & exit
         self.trade_log_path = cfg_live.get("trade_log_csv")
+
+    @staticmethod
+    def _tag(pos: "Position", reason: str) -> str:
+        """Prefix an exit reason with the brick that owns the position ("brick4:ibs_high").
+
+        The journal's ENTRY rows already name the brick (the comment is "brick4_ibs_reversion"),
+        but its EXIT rows only carried "stop"/"take"/"time_exit"/"ibs_high" — so a closed
+        NAS100 trade could not be attributed to brick 1 or brick 4, which both trade that
+        symbol under their own magic. Tagging the reason keeps attribution exact without
+        touching the CSV schema (the field is free text; legacy rows just lack the prefix).
+        """
+        tag = str(pos.comment or "").split("_")[0]
+        return f"{tag}:{reason}" if tag.startswith("brick") else reason
 
     def _log_trade(self, row: dict) -> None:
         if not self.trade_log_path:
@@ -117,6 +131,7 @@ class Broker:
             self._connected = True
             info = mt5.account_info()
             server = str(getattr(info, "server", "?"))
+            self.server = server
             # trade_mode: 0=DEMO, 1=CONTEST, 2=REAL
             mode = getattr(info, "trade_mode", None)
             self.is_demo = (mode == getattr(mt5, "ACCOUNT_TRADE_MODE_DEMO", 0))
@@ -432,7 +447,7 @@ class Broker:
                         pos.symbol, exit_price, reason, R, self.realized_R)
             self._log_trade({"time": now_utc.isoformat(), "event": "exit", "symbol": pos.symbol,
                              "dir": pos.direction, "lots": pos.lots, "price": round(exit_price, 5),
-                             "sl": "", "tp": "", "reason": reason, "R": round(R, 3),
+                             "sl": "", "tp": "", "reason": self._tag(pos, reason), "R": round(R, 3),
                              "cumR": round(self.realized_R, 3)})
             return R
         import MetaTrader5 as mt5
@@ -458,7 +473,7 @@ class Broker:
         logger.info("[LIVE] EXIT %s @%.5f %s R=%+.2f", pos.symbol, res.price, reason, R)
         self._log_trade({"time": now_utc.isoformat(), "event": "exit", "symbol": pos.symbol,
                          "dir": pos.direction, "lots": pos.lots, "price": round(res.price, 5),
-                         "sl": "", "tp": "", "reason": reason, "R": round(R, 3),
+                         "sl": "", "tp": "", "reason": self._tag(pos, reason), "R": round(R, 3),
                          "cumR": ""})
         return R
 

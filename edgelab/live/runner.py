@@ -148,7 +148,8 @@ def _maybe_session_alerts(cfg_live: dict, now_utc: pd.Timestamp) -> None:
 _LAST_REPORT_DAY = None
 
 
-def _maybe_report(broker: Broker, risk: LiveRiskManager, cfg_live: dict, now_utc: pd.Timestamp) -> None:
+def _maybe_report(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: dict,
+                  now_utc: pd.Timestamp) -> None:
     """Once a day at ``daily_report_et``, push a heartbeat+summary to Discord. Its ABSENCE
     is the alert: no report = the runner is down. Sends even if MT5 hiccups (heartbeat)."""
     global _LAST_REPORT_DAY
@@ -160,19 +161,40 @@ def _maybe_report(broker: Broker, risk: LiveRiskManager, cfg_live: dict, now_utc
     rep_min = int(hhmm[:2]) * 60 + int(hhmm[3:])
     if et.date() == _LAST_REPORT_DAY or (et.hour * 60 + et.minute) < rep_min:
         return
-    from edgelab.live.summary import build_report_text, send_discord, DEFAULT_CSV
+    from edgelab.live.summary import (build_report_embed, build_report_text, send_discord,
+                                      DEFAULT_CSV, MAGIC_TAG)
     try:
         bal = broker.balance()
     except Exception:
         bal = float("nan")
-    header = [f"edgelab.live daily report - {et:%Y-%m-%d %H:%M} ET",
-              f"account {risk.initial_balance:.0f} | 1R {risk.risk_budget():.2f} | "
-              f"balance {bal:.2f} | runner ALIVE"]
+    # open positions from the BROKER (authoritative — the journal can miss one)
+    positions = []
+    for strat in strategies:
+        try:
+            p = broker.open_position(strat.magic)
+        except Exception:
+            p = None
+        if p is not None:
+            positions.append({"symbol": p.symbol, "direction": p.direction, "magic": p.magic,
+                              "entry_price": float(p.entry_price),
+                              "days": int((now_utc.normalize() - p.open_time.normalize()).days)})
+    ctx = {"balance": bal, "initial": risk.initial_balance, "one_r": risk.risk_budget(),
+           "risk_pct": risk.risk_per_trade, "dd_pct": risk.rules.max_total_drawdown_pct,
+           "target_pct": risk.rules.profit_target_pct, "now_et": et, "commit": _git_head(),
+           "server": broker.server, "alive": True, "open_positions": positions,
+           "n_bricks": len({MAGIC_TAG.get(s.magic, s.magic) for s in strategies})}
     try:
-        send_discord(url, build_report_text(DEFAULT_CSV, header))
+        send_discord(url, embed=build_report_embed(DEFAULT_CSV, ctx))
         LOG.info("daily Discord report sent")
     except Exception as exc:
-        LOG.warning("Discord report failed: %s", exc)
+        LOG.warning("Discord embed report failed (%s) -> falling back to plain text", exc)
+        try:   # the heartbeat matters more than the formatting
+            header = [f"edgelab.live daily report - {et:%Y-%m-%d %H:%M} ET",
+                      f"account {risk.initial_balance:.0f} | 1R {risk.risk_budget():.2f} | "
+                      f"balance {bal:.2f} | runner ALIVE"]
+            send_discord(url, build_report_text(DEFAULT_CSV, header))
+        except Exception as exc2:
+            LOG.warning("Discord report failed: %s", exc2)
     _LAST_REPORT_DAY = et.date()   # set even on failure -> one attempt/day, no spam
 
 
@@ -295,7 +317,7 @@ def main() -> int:
             now = pd.Timestamp.now(tz="UTC")
             one_pass(broker, risk, strategies, now)
             _maybe_session_alerts(cfg_live, now)
-            _maybe_report(broker, risk, cfg_live, now)
+            _maybe_report(broker, risk, strategies, cfg_live, now)
             if _check_update(cfg_live):
                 return EXIT_UPDATE   # supervisor git-pulls the new code + relaunches
             if risk.failed:
