@@ -1,0 +1,837 @@
+lang,repo,path,chars,fams,n_fam,external,ml,stoploss,timeframe,has_roi
+freqtrade,freqtrade/freqtrade-strategies,user_data/hyperopts/GodStraHo.py,8394,ichimoku|macd|stoch,3,False,False,,,False
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Bandtastic.py,7310,bbands|mfi,2,False,False,-0.345,15m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/BreakEven.py,2249,,0,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/CustomStoplossWithPSAR.py,3800,psar,1,False,False,-0.2,1h,False
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Diamond.py,8210,,0,False,False,-0.271,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/FixedRiskRewardLoss.py,4925,atr|psar,2,False,False,-0.9,,False
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/GodStra.py,6801,ichimoku,1,False,False,-0.34549,12h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Heracles.py,3866,donchian|keltner,2,False,False,-0.256,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/HourBasedStrategy.py,4270,,0,False,False,-0.292,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/InformativeSample.py,4773,sma,1,False,False,-0.1,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/MultiMa.py,3464,,0,False,False,-0.345,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/PatternRecognition.py,2674,,0,False,False,-0.288,1d,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/PowerTower.py,4317,,0,False,False,-0.288,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Strategy001.py,4103,heikin,1,False,False,-0.1,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Strategy001_custom_exit.py,4931,heikin|rsi,2,False,False,-0.1,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Strategy002.py,4363,bbands|psar|stoch,3,False,False,-0.1,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Strategy003.py,5110,bbands|mfi|psar|stoch,4,False,False,-0.1,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Strategy004.py,5472,adx|cci|stoch,3,False,False,-0.1,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Strategy005.py,6667,macd|psar|stoch,3,False,False,-0.1,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/Supertrend.py,7888,supertrend,1,False,False,-0.265,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/SwingHighToSky.py,3265,cci,1,False,False,-0.34338,15m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/TrendRiderStrategy.py,24740,adx|atr|bbands|macd|obv|rsi,6,True,False,-0.06,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/UniversalMACD.py,4558,macd,1,False,False,-0.318,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/ADXMomentum.py,2137,adx|psar,2,False,False,-0.25,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/ASDTSRockwellTrading.py,2575,macd,1,False,False,-0.3,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/AdxSmas.py,1784,adx,1,False,False,-0.25,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/AverageStrategy.py,2630,,0,False,False,-0.2,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/AwesomeMacd.py,1935,adx|macd,2,False,False,-0.25,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/BbandRsi.py,1854,bbands,1,False,False,-0.25,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/BinHV27.py,5879,adx,1,False,False,-0.5,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/BinHV45.py,2641,bbands,1,False,False,-0.05,1m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/CCIStrategy.py,4459,bbands|cci|mfi,3,False,False,-0.02,1m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/CMCWinner.py,3163,cci|mfi,2,False,False,-0.05,15m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/ClucMay72018.py,2893,adx|bbands|macd,3,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/CofiBitStrategy.py,3058,adx|stoch,2,False,False,-0.25,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/CombinedBinHAndCluc.py,3265,bbands,1,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/DoesNothingStrategy.py,1182,,0,False,False,-1.0,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/EMASkipPump.py,3020,bbands,1,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/Freqtrade_backtest_validation_freqtrade1.py,1646,,0,False,False,-0.9,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/Low_BB.py,3642,bbands|cci|macd|mfi,4,False,False,-0.015,1m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/MACDStrategy.py,3052,cci|macd,2,False,False,-0.3,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/MACDStrategy_crossed.py,2335,cci|macd,2,False,False,-0.3,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/MultiRSI.py,2343,,0,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/Quickie.py,2647,adx|bbands|macd,3,False,False,-0.25,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/ReinforcedAverageStrategy.py,3502,bbands,1,False,False,-0.2,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/ReinforcedQuickie.py,8264,bbands|cci|macd|mfi,4,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/ReinforcedSmoothScalp.py,5903,adx|bbands|cci|mfi|sma|stoch,6,False,False,-0.1,1m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/Scalp.py,2847,adx|bbands|stoch,3,False,False,-0.04,1m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/Simple.py,2695,bbands|macd,2,False,False,-0.25,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/SmoothOperator.py,13297,adx|bbands|cci|macd|mfi,5,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/SmoothScalp.py,3861,adx|bbands|cci|macd|mfi|stoch,6,False,False,-0.5,1m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/TDSequentialStrategy.py,6707,,0,False,False,-0.05,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/berlinguyinca/TechnicalExampleStrategy.py,1069,,0,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/futures/FAdxSmaStrategy.py,4091,adx,1,False,False,-0.05,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/futures/FOttStrategy.py,5701,adx|supertrend,2,True,False,-0.265,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/futures/FReinforcedStrategy.py,4780,adx|bbands,2,False,False,-0.05,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/futures/FSampleStrategy.py,5413,adx|bbands|macd|mfi|psar|stoch,6,False,False,-0.05,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/futures/FSupertrendStrategy.py,9193,supertrend,1,False,False,-0.265,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/futures/TrendFollowingStrategy.py,2441,obv,1,False,False,-0.265,5m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/futures/VolatilitySystem.py,6432,atr,1,False,False,-1.0,1h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/hlhb.py,3821,adx,1,False,False,-0.3211,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/lookahead_bias/DevilStra.py,26583,bbands|cci|macd|obv|stoch|williams,6,False,False,-0.28,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/lookahead_bias/GodStraNew.py,25708,adx|bbands|cci|macd|mfi|obv|psar|stoch|williams,9,False,False,-0.128,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/lookahead_bias/Zeus.py,4375,ichimoku,1,False,False,-0.256,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/lookahead_bias/wtc.py,5855,ema|ml|stoch,3,False,True,-0.128,30m,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/mabStra.py,4044,,0,False,False,-0.128,4h,True
+freqtrade,freqtrade/freqtrade-strategies,user_data/strategies/multi_tf.py,5345,,0,False,False,-0.1,5m,True
+freqtrade,iterativv/NostalgiaForInfinity,NostalgiaForInfinityX.py,1630239,adx|atr|bbands|cci|fib|heikin|mfi|pivot|rsi|sma|stoch|vwap|williams,13,False,False,-0.99,5m,True
+freqtrade,iterativv/NostalgiaForInfinity,NostalgiaForInfinityX2.py,624351,bbands|fib|heikin|pivot|williams,5,False,False,-0.99,5m,True
+freqtrade,iterativv/NostalgiaForInfinity,NostalgiaForInfinityX3.py,1959406,atr|bbands|cci|fib|heikin|pivot|williams,7,False,False,-0.99,5m,False
+freqtrade,iterativv/NostalgiaForInfinity,NostalgiaForInfinityX4.py,1959181,atr|bbands|cci|fib|heikin|pivot|williams,7,False,False,-0.99,5m,False
+freqtrade,iterativv/NostalgiaForInfinity,NostalgiaForInfinityX5.py,2405784,bbands|cci|fib|heikin|mfi|obv|pivot|stoch|williams,9,False,False,-0.99,5m,False
+freqtrade,iterativv/NostalgiaForInfinity,NostalgiaForInfinityX6.py,2923767,bbands|cci|fib|heikin|mfi|obv|pivot|stoch|williams,9,False,False,-0.99,5m,False
+freqtrade,iterativv/NostalgiaForInfinity,NostalgiaForInfinityX7.py,3240146,bbands|cci|fib|heikin|mfi|obv|pivot|psar|sma|stoch|williams,11,True,False,-0.99,5m,False
+freqtrade,iterativv/NostalgiaForInfinity,legacy/NostalgiaForInfinityNext.py,279211,atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|pivot|rsi|sma|stoch|williams,13,False,False,-0.5,5m,True
+freqtrade,iterativv/NostalgiaForInfinity,legacy/NostalgiaForInfinityNextGen.py,304415,bbands|cci|ema|fib|heikin|mfi|pivot|rsi|williams,9,False,False,-0.5,15m,True
+freqtrade,iterativv/NostalgiaForInfinity,tests/unit/test_data/input/Strategy.py,1593,,0,False,False,,,False
+freqtrade,iterativv/NostalgiaForInfinity,tests/unit/test_data/output/Strategy.py,983,,0,False,False,,,False
+freqtrade,iterativv/NostalgiaForInfinity,tools/ho_to_raw_codemod_nfi4.py,4459,,0,False,False,,,False
+freqtrade,eovie/freqtrade_strs,ClucHAnix/ClucHAnix.py,9520,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,eovie/freqtrade_strs,ClucHAnix/ClucHAnix_5m.py,10219,bbands|heikin,2,False,False,-0.99,5m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/BBMod.py,30120,adx|bbands|cci|ema|heikin|rsi|sma|stoch|vwap|williams,10,False,False,-0.99,5m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/BinHV27F.py,11249,adx,1,False,False,-0.25,5m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/BinHV27_short.py,18672,adx|atr,2,False,False,-0.1,5m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/ClucHAnix.py,8699,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/CombinedBinHAndCluc.py,6339,bbands,1,False,False,-0.99,5m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/ConsensusShort.py,17759,atr|ichimoku|macd|stoch,4,False,False,-0.99,5m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/HourBasedStrategy.py,1579,,0,False,False,-0.1,5m,True
+freqtrade,eovie/freqtrade_strs,binance/Archive/ReinforcedQuickie.py,20835,atr|bbands|cci|mfi,4,False,False,-0.99,5m,True
+freqtrade,eovie/freqtrade_strs,binance/dry_run/E0V1EN.py,5644,cci|stoch,2,False,False,-0.25,5m,True
+freqtrade,eovie/freqtrade_strs,binance/dry_run/buy1_and_buynew/E0V1E.py,4506,cci|stoch,2,False,False,-0.25,5m,True
+freqtrade,nateemma/strategies,Basket/BasketStrategy.py,25774,bbands,1,False,False,-0.99,4h,True
+freqtrade,nateemma/strategies,Basket/BuyHoldBasket.py,2788,,0,False,False,-1.0,,True
+freqtrade,nateemma/strategies,Basket/MomentumRegimeBasket.py,5975,,0,False,False,-0.99,1d,True
+freqtrade,nateemma/strategies,Basket/MomentumRegimeBasket15m.py,14028,vwap,1,False,False,-0.99,15m,True
+freqtrade,nateemma/strategies,Debug/DebugCheckRedundancy.py,28302,adx|macd|ml,3,False,True,,,False
+freqtrade,nateemma/strategies,Debug/DebugDfAnalyse.py,58435,ml,1,False,True,,,False
+freqtrade,nateemma/strategies,Debug/DebugEvaluateCtabGan.py,22168,,0,False,False,,,False
+freqtrade,nateemma/strategies,Debug/DebugEvaluateMTCtabGan.py,16472,,0,False,False,,,False
+freqtrade,nateemma/strategies,Debug/DebugNNMTStrategy.py,14053,adx,1,False,False,,,False
+freqtrade,nateemma/strategies,Debug/DebugNNStrategy.py,18799,adx,1,False,False,,,False
+freqtrade,nateemma/strategies,Debug/DebugRegimeIndicator.py,19294,adx|macd|rsi,3,False,False,,,False
+freqtrade,nateemma/strategies,Debug/DebugTradingType.py,12712,adx,1,False,False,,,False
+freqtrade,nateemma/strategies,Framework/BaseStrategy.py,41658,adx|ema|ml,3,False,True,-0.05,15m,True
+freqtrade,nateemma/strategies,Framework/CreateScalers.py,12521,ml,1,False,True,,,False
+freqtrade,nateemma/strategies,Framework/TrainingSignals.py,115403,adx|atr|bbands|cci|donchian|keltner|mfi|psar|rsi|vwap,10,False,False,,,False
+freqtrade,nateemma/strategies,Framework/test_base_strategy.py,16344,ml,1,False,True,,,False
+freqtrade,nateemma/strategies,Funding/FundingCarry.py,8740,,0,False,False,-0.99,1h,True
+freqtrade,nateemma/strategies,GANs/CreateGANBase.py,19515,ml,1,False,True,,,False
+freqtrade,nateemma/strategies,TSPredict/BuyRegions.py,15863,bbands|ml,2,False,True,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ADXMomentum.py,2103,adx|psar,2,False,False,-0.25,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,ADX_15M_USDT.py,2067,adx|psar,2,False,False,-0.1255,,True
+freqtrade,PeetCrypto/freqtrade-stuff,ASDTSRockwellTrading.py,2540,macd,1,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ActionZone.py,6666,,0,False,False,-1.0,1d,True
+freqtrade,PeetCrypto/freqtrade-stuff,AdxSmas.py,1749,adx,1,False,False,-0.25,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,AlligatorStrat.py,3502,cci|macd,2,False,False,-0.2,,True
+freqtrade,PeetCrypto/freqtrade-stuff,AlligatorStrategy.py,8852,stoch,1,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Apollo11 (1).py,7933,atr|bbands|ema|macd|sma,5,False,False,-0.16,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Apollo11.py,7933,atr|bbands|ema|macd|sma,5,False,False,-0.16,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Apollo11_TB_MOD_TranZ.py,33152,atr|bbands|ema|macd|sma,5,False,False,-0.15,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,AutoArimaTripleV1.py,13924,macd|psar,2,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,AverageStrategy.py,1964,,0,False,False,-0.2,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,AwesomeMacd.py,1900,adx|macd,2,False,False,-0.25,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,BBRSI.py,3402,bbands,1,False,False,-0.3639404146663022,,True
+freqtrade,PeetCrypto/freqtrade-stuff,BBRSIOptimizedStrategy.py,4182,bbands,1,False,False,-0.295,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BBRSITV.py,20936,ema|rsi,2,False,False,-0.25,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_3c.py,20701,adx|bbands|cci|ema|heikin|mfi|stoch|vwap|williams,9,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL.py,64487,adx|atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|sma|stoch|williams,12,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_BI-v4_EWO2-v3.py,45255,adx|atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|stoch|williams,11,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_BI.py,45236,adx|atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|stoch|williams,11,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_RNG.py,20867,adx|bbands|cci|ema|rsi|stoch|williams,7,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_RNG_TBS.py,35038,adx|bbands|cci|ema|rsi|stoch|williams,7,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_RNG_TBS_GOLD (2).py,35050,adx|bbands|cci|ema|rsi|stoch|williams,7,False,False,-0.049,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (10).py,230642,adx|atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|rsi|sma|stoch|vwap|williams,14,False,False,-0.13,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (7).py,230642,adx|atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|rsi|sma|stoch|vwap|williams,14,False,False,-0.13,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (8).py,230642,adx|atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|rsi|sma|stoch|vwap|williams,14,False,False,-0.13,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (9).py,230823,adx|atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|rsi|sma|stoch|vwap|williams,14,False,False,-0.13,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_RSI.py,3929,bbands,1,False,False,-0.06491,,True
+freqtrade,PeetCrypto/freqtrade-stuff,BB_Strategy04.py,6262,bbands,1,False,False,-0.32530922906811843,,True
+freqtrade,PeetCrypto/freqtrade-stuff,BBands.py,15379,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.05,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BBandsRSI.py,6295,bbands,1,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BbRoi.py,2466,bbands,1,False,False,-0.23701,,True
+freqtrade,PeetCrypto/freqtrade-stuff,BbandRsi.py,1914,bbands,1,False,False,-0.25,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BbandRsiRolling.py,2051,bbands,1,False,False,-0.08,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BcmbigzDevelop (1).py,53815,atr|bbands|macd|mfi,4,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BcmbigzV1 (1).py,23739,bbands|macd,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BeastBotXBLR6.py,49793,atr|bbands|cci|ema|macd|mfi|rsi|stoch|williams,9,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BeastBotXBLR7.py,52291,atr|bbands|cci|ema|macd|mfi|rsi|stoch|williams,9,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BigZ04.py,26505,bbands|macd,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BigZ04_TSL3.py,28684,atr|bbands|macd,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BigZ04_TSL4.py,29070,atr|bbands|ema|macd,4,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BinClucHyperOpt.py,6157,bbands,1,False,False,,1h,False
+freqtrade,PeetCrypto/freqtrade-stuff,BinClucMadDevelop.py,42857,atr|bbands|macd|mfi,4,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BinClucMadSMACore.py,57008,atr|bbands|ema|macd|mfi,5,False,False,-0.228,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BinClucMadSMADevelop.py,50925,atr|bbands|ema|macd|mfi,5,False,False,-0.228,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BinHV27.py,5843,adx,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BinHV45.py,2111,bbands,1,False,False,-0.05,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BlueEyes_MPP_v1.py,3135,ichimoku|pivot,2,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BreakEven.py,2222,,0,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,BuyAllSellAllStrategy.py,1151,,0,False,False,-0.25,5m,False
+freqtrade,PeetCrypto/freqtrade-stuff,CCIStrategy.py,4344,bbands|cci|mfi,3,False,False,-0.02,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CMCWinner.py,3157,cci|mfi,2,False,False,-0.05,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Chained.py,5863,,0,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Chispei.py,1930,,0,False,False,-0.32336,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Cluc4werk.py,6402,bbands,1,False,False,-0.02055,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Cluc5werk.py,9793,bbands,1,False,False,-0.22405,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Cluc6werk.py,5966,bbands,1,False,False,-0.31742,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Cluc7werk.py,4224,bbands,1,False,False,-0.02,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucCrypROI.py,10229,adx|bbands|psar,3,True,False,-0.32238,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucCrypSlow (1).py,9291,adx|bbands,2,True,False,-0.32238,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucFiatROI.py,6157,bbands|psar,2,True,False,-0.34299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucFiatSlow.py,4958,bbands,1,True,False,-0.34299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix (3).py,8070,bbands|heikin,2,False,False,-0.23144,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix 5m trailbuy2 + BBRSIV5 offsets.py,21764,bbands|ema|heikin,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix 5m trailbuy2 + dynamic offset.py,21764,bbands|ema|heikin,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix E01VE Offsets.py,13108,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix.py,11467,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix2.py,12908,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_5m.py,8755,bbands|heikin,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_5mTB1 (1).py,21764,bbands|ema|heikin,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_5mTB1.py,21764,bbands|ema|heikin,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_BB_RPB.py,23678,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_BB_RPB_HO2.py,23155,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_BB_RPB_MOD.py,21311,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_BB_RPB_MOD2.py,21437,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_BB_RPB_MOD2_TB.py,35040,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_BB_RPB_MOD_E0V1E_DYNAMIC_TB (1).py,34274,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_BB_RPB_MOD_trailing_buy.py,34251,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAnix_hhll (1).py,34704,bbands|heikin,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucHAwerk.py,13933,bbands|heikin,2,False,False,-0.02139,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ClucMay72018.py,2858,adx|bbands|macd,3,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CofiBitStrategy.py,2446,adx|stoch,2,False,False,-0.25,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndCluc.py,3228,bbands,1,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndCluc2021.py,3790,bbands,1,False,False,-0.09,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndCluc2021Bull.py,3804,bbands,1,False,False,-0.09,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV2.py,6119,atr|bbands|mfi|rsi|stoch,5,False,False,-0.05,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV4.py,4729,bbands,1,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV5.py,6798,bbands,1,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV6.py,10525,atr|bbands,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV6H.py,20405,atr|bbands,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV7.py,16156,atr|bbands|mfi,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV8.py,23831,atr|bbands|mfi,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV8Hyper.py,21408,atr|bbands|mfi,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHAndClucV8XH.py,23737,atr|bbands|mfi,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHClucAndMADV3.py,8682,bbands|macd,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHClucAndMADV6.py,13559,atr|bbands|macd,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CombinedBinHClucAndMADV9.py,20540,atr|bbands|macd,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Combined_NFIv6_SMA.py,193309,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Combined_NFIv7_SMA (1).py,221631,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Combined_NFIv7_SMA.py,221630,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CrossEMAStrategy.py,7825,stoch,1,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrog.py,24744,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.085,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogHO.py,25401,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.13,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogHO2.py,25376,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.13,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogHO2A.py,25377,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.13,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogHO3A1.py,25453,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogHO3A2.py,25451,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.239,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogHO3A3.py,25450,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogHO3A4.py,25449,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogNFI.py,210328,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogNFI2.py,87404,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogNFIHO1A.py,236623,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.299,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,CryptoFrogOffset.py,168296,adx|atr|bbands|heikin|macd|mfi|psar|stoch,8,True,False,-0.085,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,DIV_v1.py,4047,,0,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,DevilStra.py,26616,bbands|cci|macd|obv|stoch|williams,6,False,False,-0.28,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Dimond.py,5123,,0,False,False,-0.241,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Divergences.py,15834,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.1,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,DoesNothingStrategy.py,1148,,0,False,False,-0.25,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Dracula.py,10350,bbands|ema,2,False,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Dyna_opti.py,20797,atr|bbands,2,True,False,-0.28819,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,EMASkipPump.py,2985,bbands,1,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,EMAVolume.py,2364,,0,False,False,-0.2,,True
+freqtrade,PeetCrypto/freqtrade-stuff,ElliotV7.py,8611,bbands|ema|macd,3,False,False,-0.32,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ElliotV8.py,6548,ema,1,False,False,-0.32,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ElliotV8_original_ichiv3.py,7891,ema,1,False,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,EnsembleStrategy.py,6309,ichimoku|macd,2,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,EnsembleStrategyV1.py,7617,,0,False,False,-0.203,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,EnsembleStrategyV2.py,5187,,0,False,False,-0.148,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Example_Strat_With_FileLogging.py,3987,ichimoku,1,False,False,-0.2,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FRAYSTRAT (1).py,18086,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.1,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FRAYSTRAT-BTCUSDT-1H.py,18301,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.229,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FiveMinCrossAbove.py,3851,bbands,1,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FixedRiskRewardLoss.py,4891,atr|psar,2,False,False,-0.9,,False
+freqtrade,PeetCrypto/freqtrade-stuff,FrayLIVEBTC15m.py,17654,adx|bbands|heikin|macd|mfi|psar|stoch,7,True,False,-0.346,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FrayNew-HyperOpt (1).py,16660,adx|bbands|heikin|macd|mfi|psar|stoch,7,True,False,-0.29,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FrostAuraM115mStrategy.py,3918,bbands|macd|psar,3,False,False,-0.34316,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FrostAuraM11hStrategy.py,3952,bbands|macd|psar,3,False,False,-0.40618,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,FrostAuraM21hStrategy.py,3296,macd|psar|stoch,3,False,False,-0.44897,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FrostAuraM315mStrategy.py,4564,bbands|macd|psar|stoch,4,False,False,-0.41114,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,FrostAuraM31hStrategy.py,4610,bbands|macd|psar|stoch,4,False,False,-0.44439,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,GodStra.py,25442,adx|bbands|cci|macd|mfi|obv|psar|stoch|williams,9,False,False,-1.0,4h,False
+freqtrade,PeetCrypto/freqtrade-stuff,GodStraNew.py,6746,ichimoku,1,False,False,-0.34549,12h,True
+freqtrade,PeetCrypto/freqtrade-stuff,GodStraNew40.py,26784,adx|bbands|cci|macd|mfi|obv|psar|stoch|williams,9,False,False,-1.0,4h,False
+freqtrade,PeetCrypto/freqtrade-stuff,GodStraNew_SMAonly.py,26715,adx|bbands|cci|macd|mfi|obv|psar|stoch|williams,9,False,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,GymStrategy.py,12561,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.2,,False
+freqtrade,PeetCrypto/freqtrade-stuff,HLHB.py,3798,adx,1,False,False,-0.3211,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,HansenSmaOffsetV1.py,2548,,0,False,False,-99.0,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Heracles.py,3867,donchian|keltner,2,False,False,-0.256,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,HourBasedStrategy.py,4280,,0,False,False,-0.292,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,HyperStra_GSN_SMAOnly.py,15506,,0,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,HyperStra_SMAOnly.py,15503,,0,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichess.py,12916,heikin|ichimoku,2,False,False,-0.314,1d,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku.py,2269,ichimoku,1,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,IchimokuStrategy.py,2523,ichimoku,1,False,False,-0.1,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_SenkouSpanCross.py,2541,ichimoku,1,False,False,-0.99,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_v12.py,2592,ichimoku,1,False,False,-1.0,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_v30_DojiStar.py,2523,ichimoku,1,False,False,-1.0,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_v31_Heikin.py,3757,heikin|ichimoku,2,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_v32_HeikinAshi.py,2924,heikin|ichimoku,2,False,False,-1.0,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_v33_SAR.py,2745,ichimoku|psar,2,False,False,-1.0,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_v35_SAR_1d.py,4709,ichimoku|psar|stoch,3,False,False,-1.0,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Ichimoku_v37_HeikinAshi.py,4156,heikin|ichimoku,2,False,False,-0.99,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,IchisV1.py,9394,atr|heikin|ichimoku,3,False,False,-0.275,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,InformativeSample (1).py,4713,sma,1,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Inverse.py,10653,adx|atr|cci|mfi|stoch,5,False,False,-0.2,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,InverseV2.py,11756,adx|atr|cci|mfi|stoch,5,False,False,-0.2,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,JustROCR.py,842,,0,False,False,-0.2,,True
+freqtrade,PeetCrypto/freqtrade-stuff,JustROCR2.py,843,,0,False,False,-0.01,,True
+freqtrade,PeetCrypto/freqtrade-stuff,JustROCR3.py,843,,0,False,False,-0.01,,True
+freqtrade,PeetCrypto/freqtrade-stuff,JustROCR4.py,1179,,0,False,False,-0.15,,True
+freqtrade,PeetCrypto/freqtrade-stuff,JustROCR5.py,957,,0,False,False,-0.01,,True
+freqtrade,PeetCrypto/freqtrade-stuff,JustROCR6.py,1537,,0,False,False,-0.01,,True
+freqtrade,PeetCrypto/freqtrade-stuff,KAMACCIRSI.py,7648,cci,1,False,False,-0.32982,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,LongShortRangeTradingMachetesV1-1.py,28593,atr|cci,2,True,False,-0.1,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Low_BB.py,3607,bbands|cci|macd|mfi,4,False,False,-0.015,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,LuxOSC.py,7354,atr|supertrend,2,False,False,-0.99,5m,False
+freqtrade,PeetCrypto/freqtrade-stuff,MAC.py,6485,macd,1,False,False,-0.15,1d,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACD.py,14358,atr|bbands|macd,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACDCCI.py,2551,cci|macd,2,False,False,-0.3,,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACDRSI200.py,1979,macd,1,False,False,-0.04032,,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACDStrategy.py,2257,cci|macd,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACDStrategy_crossed.py,2300,cci|macd,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACD_EMA.py,2029,macd,1,False,False,-0.25,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACD_TRIPLE_MA.py,2664,macd,1,False,False,-0.03,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MACD_TRI_EMA.py,1733,macd,1,False,False,-0.03,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MADisplaceV3.py,8223,,0,False,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MFI.py,1753,mfi,1,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MabStra.py,4045,,0,False,False,-0.128,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Machete.py,16567,adx|atr|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,10,True,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MacheteV8b.py,39432,adx|atr|bbands|cci|heikin|ichimoku|macd|psar|stoch,9,True,False,-0.1,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MacheteV8bRallimod.py,45074,adx|atr|bbands|cci|ema|heikin|ichimoku|macd|psar|stoch,10,True,False,-0.05,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MacheteV8bRallimod2.py,25685,atr|bbands|ema|ichimoku,4,True,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MarketChyperHyperStrategy.py,21699,adx|macd|sma,3,False,False,-0.12447,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Martin.py,14614,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Miku_PP_v3.py,8196,fib|ichimoku|macd|pivot,4,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MiniLambo (2).py,24557,bbands|ema,2,False,False,-0.1,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MinmaxF.py,3682,,0,False,False,-0.05,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,MoniGoManiHyperStrategy.py,12477,adx|bbands|macd|mfi|psar|stoch|vwap,7,False,False,,,False
+freqtrade,PeetCrypto/freqtrade-stuff,MontrealStrategy.py,5455,bbands,1,False,False,-0.28646,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MultiMA_TSL.py,39035,atr|ema|heikin,3,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MultiMA_TSL3.py,36088,atr|ema|heikin,3,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MultiMa.py,3100,,0,False,False,-0.1,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,MultiOffsetLamboV0.py,6555,ema,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MultiRSI.py,2308,,0,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,MyStrategyNew10.py,11528,,0,False,False,-1.0,,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv4.py,13127,bbands|ema,2,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5.py,13316,bbands|ema,2,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5_antipump.py,17531,bbands|ema|mfi,3,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5_mod1 (1).py,28803,bbands|ema,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5_mod1.py,28803,bbands|ema,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5_mod2 (1).py,28902,bbands|ema,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5_mod2.py,28902,bbands|ema,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5_mod3 (1).py,28895,bbands|ema,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NASOSv5_mod3.py,28895,bbands|ema,2,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46.py,88832,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46Frog.py,103867,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46FrogZ.py,100884,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46Offset.py,90063,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46OffsetHOA1 (1).py,99344,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46OffsetHOA1.py,99344,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46Z (1).py,112009,bbands|macd|mfi,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI46Z.py,112009,bbands|macd|mfi,3,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI4Frog.py,69188,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI5MOHO.py,43861,bbands|mfi,2,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI5MOHO_WIP.py,65758,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI731 BUSD.py,364326,atr|bbands|ema|heikin|mfi|rsi|stoch|williams,8,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFI731_BUSD.py,364326,atr|bbands|ema|heikin|mfi|rsi|stoch|williams,8,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFIXMod1.3_TraNz (3).py,711690,adx|atr|bbands|cci|fib|heikin|ichimoku|mfi|pivot|rsi|stoch|williams,12,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFIXMod1.3_TraNz (4).py,711690,adx|atr|bbands|cci|fib|heikin|ichimoku|mfi|pivot|rsi|stoch|williams,12,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFIX_BB_RPB.py,655385,atr|bbands|cci|fib|heikin|ichimoku|mfi|pivot|rsi|stoch|williams,11,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NFi-772-KC.py,198273,atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|stoch|williams,10,False,False,-0.33,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NfiNextModded.py,270826,atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|pivot|rsi|sma|stoch|williams,13,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NoLost.py,1300,,0,False,False,-0.0,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,NormalizerStrategyHO2 (1).py,4764,,0,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,NormalizerStrategyHO2 (2).py,4764,,0,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,NormalizerStrategyHO2.py,4764,,0,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Nostalgia.py,286921,bbands|ema|mfi|stoch|williams,5,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityNext.py,317873,atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|pivot|rsi|sma|stoch|williams,13,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityNext7_15_5.py,318411,atr|bbands|cci|ema|fib|heikin|ichimoku|mfi|pivot|rsi|sma|stoch|williams,13,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityNextGen.py,316749,bbands|cci|ema|fib|heikin|ichimoku|mfi|pivot|rsi|williams,10,False,False,-0.5,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityNext_772SLMod.py,199451,atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|stoch|williams,10,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityNext_ChangeToTower_V5_2.py,236937,atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|stoch|williams,10,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityNext_ChangeToTower_V5_3.py,237173,atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|stoch|williams,10,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityNext_ChangeToTower_V6.py,239431,atr|bbands|cci|ema|heikin|ichimoku|mfi|rsi|stoch|williams,10,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV1.py,10388,atr|bbands,2,False,False,-0.36,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV2.py,12326,atr|bbands,2,False,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV3.py,33922,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV4.py,49931,bbands|mfi,2,False,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV4HO (1).py,53746,bbands|mfi,2,False,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV4HO.py,53746,bbands|mfi,2,False,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV5.py,60642,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV5MultiOffsetAndHO.py,65389,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV5MultiOffsetAndHO2 (1).py,65395,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV5MultiOffsetAndHO2.py,65395,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV6.py,190622,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV7.py,219227,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV7_SMA.py,221639,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV7_SMAv2 (2).py,224243,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV7_SMAv2_1 (1).py,224246,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityV7_SMAv2_1 (2).py,224246,bbands|mfi,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityX.py,630313,atr|bbands|cci|fib|heikin|ichimoku|mfi|pivot|rsi|williams,10,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityXw (1).py,961543,adx|atr|bbands|cci|fib|heikin|ichimoku|mfi|pivot|rsi|sma|stoch|williams,13,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NostalgiaForInfinityXw (2).py,646479,atr|bbands|cci|fib|heikin|ichimoku|mfi|pivot|rsi|stoch|williams,11,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffSetStrategy_V2.py,9690,ema,1,False,False,-0.35,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffsetStrategy.py,7900,ema,1,False,False,-0.35,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffsetStrategyHOv3_b.py,10053,ema,1,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffsetStrategyLite.py,3386,ema,1,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffsetStrategyModHO.py,11078,adx|ema,2,False,False,-0.32,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffsetStrategyX1.py,10749,ema,1,False,False,-0.35,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffsetStrategy_uzi.py,6626,ema,1,False,False,-0.07,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NotAnotherSMAOffsetStrategy_uzi3.py,11805,bbands|ema,2,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NowoIchimoku1hV1 (1).py,6907,bbands|ichimoku|stoch,3,False,False,-0.08,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,NowoIchimoku1hV1.py,6907,bbands|ichimoku|stoch,3,False,False,-0.08,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,NowoIchimoku1hV2 (1).py,8215,bbands|ichimoku|stoch,3,False,False,-0.345,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,NowoIchimoku1hV2.py,8215,bbands|ichimoku|stoch,3,False,False,-0.345,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,NowoIchimoku5mV2 (1).py,11846,bbands|ichimoku|stoch,3,False,False,-0.293,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,NowoIchimoku5mV2.py,11846,bbands|ichimoku|stoch,3,False,False,-0.293,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ObeliskIM_v1_1.py,5950,ichimoku,1,True,False,-0.04,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ObeliskRSI_v6_1.py,5543,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Obelisk_3EMA_StochRSI_ATR.py,7970,atr|stoch,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Obelisk_Ichimoku_Slow_v1_3.py,11065,atr|ema|ichimoku,3,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Obelisk_Ichimoku_ZEMA_v1.py,12138,atr|ichimoku,2,False,False,-0.294,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Obelisk_TradePro_Ichi_v1_1.py,11045,ichimoku,1,True,False,-0.015,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Obelisk_TradePro_Ichi_v2_1.py,7306,atr|ichimoku,2,True,False,-0.075,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,PRICEFOLLOWING (1).py,9990,adx|heikin|macd|psar|stoch,5,True,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,PRICEFOLLOWING2 (1).py,9987,adx|heikin|macd|psar|stoch,5,True,False,-0.1,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,PRICEFOLLOWINGX (1).py,11898,adx|bbands|heikin|macd|psar|stoch,6,True,False,-0.5,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Persia.py,213329,,0,False,False,-0.19,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Pmax.py,1468,atr,1,False,False,-1.0,5m,False
+freqtrade,PeetCrypto/freqtrade-stuff,PmaxHyper.py,5986,,0,False,False,,,False
+freqtrade,PeetCrypto/freqtrade-stuff,PrawnstarOBV.py,3573,obv,1,False,False,-0.15,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Prediction_Strategy.py,5199,ml,1,False,True,-0.9,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Pump_detection_exemple (1).py,12151,ichimoku,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Pump_detection_exemple.py,12152,ichimoku,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,QuickBuyStrategy.py,4056,bbands|macd|psar,3,False,False,-0.1,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Quickie.py,2612,adx|bbands|macd,3,False,False,-0.25,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,RSIDivergence.py,14149,ema|pivot,2,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,RalliV1.py,11460,ema,1,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,RalliV1_disable56.py,11516,ema,1,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,RaposaDivergenceV1.py,9455,,0,False,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ReinforcedAverageStrategy.py,3466,bbands,1,False,False,-0.2,4h,True
+freqtrade,PeetCrypto/freqtrade-stuff,ReinforcedQuickie.py,8229,bbands|cci|macd|mfi,4,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ReinforcedSmoothScalp.py,4149,adx|bbands|cci|mfi|sma|stoch,6,False,False,-0.1,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Renko.py,4337,atr,1,False,False,-100.0,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,RenkoYolo (1).py,1662,adx,1,False,False,-100.0,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,RenkoYolo.py,1662,adx,1,False,False,-100.0,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SAR (1).py,15208,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAIP3v2.py,6100,,0,False,False,-0.23,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOG.py,5674,,0,False,False,-0.23,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOPv1_TTF.py,6192,ema,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffset.py,3584,,0,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetProtectOptV0.py,9300,ema,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetProtectOptV1.py,5312,ema,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetProtectOptV1HO1 (1).py,5375,ema,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetProtectOptV1HO1.py,5375,ema,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetProtectOptV1Mod2_antipump (1).py,8869,ema,1,False,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetV2 (1).py,3969,,0,False,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetV2 (2).py,3969,,0,False,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SMAOffsetV2.py,3969,,0,False,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Sar.py,15100,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Saturn5.py,6990,atr|bbands|ema|macd|sma,5,False,False,-0.2,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Scalp.py,2812,adx|bbands|stoch,3,False,False,-0.04,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ScalpingCCI.py,4386,macd|pivot,2,False,False,-0.04,,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-0318.py,20689,fib,1,True,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-Badstreak.py,18233,fib,1,True,False,-0.2,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-Badstreak2.py,20390,,0,True,False,-0.3,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-v1.3.py,18826,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-v1.4.py,17771,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-v1.5.py,10621,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-v1.6.py,25359,fib,1,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-v1.py,14239,macd,1,True,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism-v2.py,20835,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism.py,19248,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism2MM.py,9848,,0,True,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Schism6.py,9578,,0,True,False,-0.5,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SchismLess-v2.py,9615,,0,True,False,-0.4,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SchismLess.py,9277,,0,True,False,-0.2,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Seb.py,7315,adx|bbands|cci|heikin|macd|psar|stoch,7,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Simple.py,2660,bbands|macd,2,False,False,-0.25,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Slowbro.py,3822,,0,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,SmoothOperator.py,13262,adx|bbands|cci|macd|mfi,5,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SmoothScalp.py,3826,adx|bbands|cci|macd|mfi|stoch,6,False,False,-0.5,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-Con-v1.py,28691,ichimoku|macd|stoch,3,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-Con.py,28691,ichimoku|macd|stoch,3,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-tradedbexp.py,34069,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v1.py,31243,fib,1,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v2.4 (1).py,24937,atr|ichimoku|macd|stoch,4,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v2.5.py,21793,atr,1,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v2.6.py,24883,atr|bbands,2,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v2.py,28153,,0,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v3-fuck (1).py,22700,atr,1,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v3-fuck.py,22700,atr,1,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis-v3.py,26677,atr,1,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis3.py,29459,atr,1,True,False,,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SolipsisMM.py,30202,fib,1,True,False,-0.3,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis_v3.py,24881,atr,1,True,False,,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis_v4.py,19189,atr,1,True,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Solipsis_v5.py,18248,atr,1,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SqueezeMomentum.py,19129,adx|donchian|ema|sma,4,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Stinkfist.py,14945,,0,True,False,-0.4,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,StochRSITEMA.py,5846,stoch,1,False,False,-0.02205,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SuperHV27.py,16681,adx,1,True,False,-0.4,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SuperTrend (1).py,5557,bbands|macd|supertrend,3,False,False,-0.02,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SuperTrendPure.py,3932,supertrend,1,False,False,-0.265,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Supertrend.py,4492,bbands|supertrend,2,False,False,-0.25,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SupertrendStrategy.py,10190,stoch|supertrend,2,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,Supertrend_ORIG.py,6229,atr|psar|supertrend,3,True,False,-1.0,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,SwingHigh.py,2317,cci|macd,2,False,False,-0.22274,,True
+freqtrade,PeetCrypto/freqtrade-stuff,SwingHighToSky.py,3251,cci,1,False,False,-0.34338,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TDSequentialStrategy.py,6680,,0,False,False,-0.05,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,TEMA.py,15324,adx|bbands|cci|heikin|keltner|macd|mfi|psar|stoch,9,True,False,-0.1,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TechnicalExampleStrategy.py,1034,,0,False,False,-0.05,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Test_MAMA4.py,13131,,0,False,False,-0.15,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TheForce.py,6102,macd|psar|stoch,3,False,False,-0.015,15m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TheRealPullbackV2.py,3608,bbands|cci|mfi|rsi|stoch,5,False,False,-0.035,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,ThreeCommasStrategy.py,1496,,0,False,False,,,False
+freqtrade,PeetCrypto/freqtrade-stuff,TrailingBuySellStrat (1).py,29004,ema,1,False,False,,,False
+freqtrade,PeetCrypto/freqtrade-stuff,TrailingBuyStrat.py,9127,,0,False,False,,,False
+freqtrade,PeetCrypto/freqtrade-stuff,TrailingBuyStrat2.py,13804,,0,False,False,,,False
+freqtrade,PeetCrypto/freqtrade-stuff,TrailingBuyStratCluc.py,25438,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TrailingBuyStratClucBBRPBMODE.py,35675,adx|bbands|ema|heikin|stoch,5,False,False,-0.99,1m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TrailingBuy_ClucHAnix_5m_E0V1E_by_TraNz (1).py,24955,bbands|heikin,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TrailingBuy_ClucHAnix_5m_E0V1E_by_TraNz.py,24955,bbands|heikin,2,False,False,-0.99,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,TrainCatBoostStrategy.py,5565,,0,False,False,,,False
+freqtrade,PeetCrypto/freqtrade-stuff,TrixStrategy.py,8829,stoch,1,False,False,-0.99,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,TrixV15Strategy.py,12284,stoch,1,False,False,-0.31,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,TrixV21Strategy.py,12875,atr|stoch,2,False,False,-0.31,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,TrixV23Strategy (1).py,14209,atr|stoch,2,False,False,-0.31,1h,True
+freqtrade,PeetCrypto/freqtrade-stuff,TuplaBollinger.py,2493,bbands,1,False,False,-0.25,5h,True
+freqtrade,PeetCrypto/freqtrade-stuff,UltimateMomentumIndicator.py,4964,mfi,1,False,False,-0.99,5m,False
+freqtrade,PeetCrypto/freqtrade-stuff,UpSliceStrategy.py,3743,,0,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,Uptrend.py,20634,,0,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,UziChan.py,27951,ema,1,False,False,-0.1,5m,True
+freqtrade,PeetCrypto/freqtrade-stuff,UziChan2 (1).py,28102,ema,1,False,False,-0.1,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/BinHV27.py,8794,adx,1,False,False,-0.5,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/BinHV45.py,2828,bbands,1,False,False,-0.13348,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Cluc4.py,3494,bbands,1,False,False,-0.01,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Cluc4werk.py,6402,bbands,1,False,False,-0.02055,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Cluc5werk.py,9793,bbands,1,False,False,-0.22405,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Cluc6werk.py,5966,bbands,1,False,False,-0.31742,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Cluc7werk.py,4224,bbands,1,False,False,-0.02,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/ClucCrypROI.py,10229,adx|bbands|psar,3,True,False,-0.32238,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/ClucCrypSlow.py,9291,adx|bbands,2,True,False,-0.32238,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/ClucFiatROI.py,6157,bbands|psar,2,True,False,-0.34299,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/ClucFiatSlow.py,4958,bbands,1,True,False,-0.34299,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/ClucHAnix.py,8070,bbands|heikin,2,False,False,-0.23144,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/ClucHAwerk.py,13933,bbands|heikin,2,False,False,-0.02139,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Cluckie.py,4782,adx|bbands,2,True,False,-0.015,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Enchilada.py,9070,psar,1,True,False,-0.085,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Fakebuy.py,10281,bbands,1,True,False,-0.085,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/FisherHull.py,2238,cci,1,False,False,-0.27654,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Guacamole.py,5806,macd|psar,2,True,False,-0.99,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Hacklemore.py,9602,macd|psar,2,True,False,-0.085,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Hacklemore2.py,5856,psar,1,True,False,-0.99,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Hacklemore3.py,6600,psar,1,True,False,-0.99,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/HacklemoreX.py,8721,bbands|macd|psar,3,True,False,-0.085,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Hacklemost.py,5921,adx|bbands|heikin|psar,4,True,False,-0.31765,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Ichis.py,5599,atr|ichimoku,2,False,False,-0.01,1h,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Infinite_ROI.py,4180,,0,False,False,,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/KAMACCIRSI.py,7589,cci,1,False,False,-0.11084,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/KamaRsi2.py,8065,cci|psar|supertrend,3,True,False,-1.0,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Kamaflage.py,5712,macd|psar,2,True,False,-1.0,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Lateralus.py,10153,bbands|macd,2,True,False,-0.085,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Pmax.py,1468,atr,1,False,False,-1.0,5m,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Renko.py,4337,atr,1,False,False,-100.0,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/RenkoYolo.py,1662,adx,1,False,False,-100.0,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-0318.py,20689,fib,1,True,False,-0.2,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-Badstreak.py,18233,fib,1,True,False,-0.2,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-Badstreak2.py,20390,,0,True,False,-0.3,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-v1.3.py,18826,,0,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-v1.4.py,17771,,0,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-v1.5.py,10621,,0,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-v1.6.py,25359,fib,1,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-v1.py,14239,macd,1,True,False,-0.5,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism-v2.py,20835,,0,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism.py,19248,,0,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism2MM.py,9848,,0,True,False,-0.99,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Schism6.py,9578,,0,True,False,-0.5,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/SchismLess-v2.py,9615,,0,True,False,-0.4,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/SchismLess.py,9277,,0,True,False,-0.2,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Slowbro.py,3822,,0,False,False,-0.99,1h,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-Con-v1.py,28691,ichimoku|macd|stoch,3,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-Con.py,28691,ichimoku|macd|stoch,3,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-tradedbexp.py,34069,,0,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-v1.py,31243,fib,1,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-v2.4.py,24937,atr|ichimoku|macd|stoch,4,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-v2.5.py,21793,atr,1,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-v2.6.py,24883,atr|bbands,2,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-v2.py,28153,,0,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-v3-fuck.py,22700,atr,1,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis-v3.py,26677,atr,1,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/SolipsisMM.py,30202,fib,1,True,False,-0.3,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis_v3.py,24881,atr,1,True,False,,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Solipsis_v4.py,19189,atr,1,True,False,-0.1,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Stinkfist.py,14945,,0,True,False,-0.4,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/StochRSITEMA.py,5846,stoch,1,False,False,-0.02205,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/SuperHV27.py,16681,adx,1,True,False,-0.4,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Supertrend.py,4492,bbands|supertrend,2,False,False,-0.25,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/Supertrend_ORIG.py,6229,atr|psar|supertrend,3,True,False,-1.0,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/XtraThicc.py,3364,,0,False,False,-0.1,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/YOLO.py,1869,adx,1,False,False,-0.01,1m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/consensus_strat.py,2320,ichimoku|macd|stoch,3,False,False,-0.0203,15m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/gettinMoist.py,3071,macd,1,False,False,-0.99,5m,True
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/BinHV45HyperOpt.py,3371,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/Cluc4werkHyperopt.py,9472,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/Cluc5werkHyperopt.py,10149,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/Cluc6werkHyperopt.py,11786,adx,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/Cluc7werkHyperopt.py,6794,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/ClucCrypROIHyperopt.py,10305,adx,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/ClucCrypSlowHyperopt.py,10462,adx,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/ClucFiatROIHyperopt.py,6796,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/ClucFiatSlowHyperopt.py,6797,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/ClucHAnixHyperopt.py,8799,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/ClucHAwerkHyperopt.py,10761,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/CluckieHyp.py,6843,adx,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/FisherHullHyp.py,4139,cci,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/GuacamoleHyp.py,4319,macd,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/HackieHyp.py,7656,adx,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/HacklemoreOpt.py,7059,adx|psar,2,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/HacklemostOpt.py,7063,adx|psar,2,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/KAMACCIRSI_Hyperopt.py,7445,cci,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/KamaRsi2Hyp.py,7975,cci|psar|supertrend,3,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/KamaflageHyp.py,4319,macd,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/LateralusHyp.py,2847,macd,1,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/PmaxHyper.py,5130,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/RenkoHyp.py,3664,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/Schism2HypMM.py,4416,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp-Badstreak.py,4274,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp-Badstreak2.py,2932,,0,False,False,,4h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp-v1.3.py,3677,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp-v1.4.py,2596,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp-v1.5.py,2213,,0,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp-v1.6.py,3548,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp-v2.py,2787,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismHyp.py,4170,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SchismLessHyp.py,2420,,0,False,False,,4h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-Con-v1.py,3826,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-Con.py,3826,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-v1.py,5590,fib,1,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-v2.4.py,5658,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-v2.5.py,5868,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-v2.6.py,9534,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-v2.py,4544,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp-v3.py,9051,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisHyp_v3.py,9551,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SolipsisMMHyp.py,5647,fib,1,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/StinkfistHyp.py,4286,,0,False,False,,1h,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/StochRSITEMAHyperopt.py,4411,stoch,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SuperHV27Hyp.py,7250,adx,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/SupertrendHyp.py,6392,psar|supertrend,2,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/archived/hyperopts/YOLOHyp.py,3994,adx,1,False,False,,,False
+freqtrade,werkkrew/freqtrade-strategies,strategies/solipsis/Solipsis_v5.py,18248,atr,1,False,False,-0.99,5m,True
+freqtrade,paulcpk/freqtrade-strategies-that-work,DoubleEMACrossoverWithTrend.py,2497,,0,True,False,-0.2,1h,True
+freqtrade,paulcpk/freqtrade-strategies-that-work,EMAPriceCrossoverWithThreshold.py,2281,,0,False,False,-0.15,1h,True
+freqtrade,paulcpk/freqtrade-strategies-that-work,MACDCrossoverWithTrend.py,2575,macd,1,False,False,-0.2,1h,True
+freqtrade,paulcpk/freqtrade-strategies-that-work,RSIDirectionalWithTrend.py,2534,,0,True,False,-0.1,1h,True
+freqtrade,paulcpk/freqtrade-strategies-that-work,RSIDirectionalWithTrendSlow.py,2558,,0,True,False,-0.2,1h,True
+freqtrade,Rikj000/MoniGoMani,Legacy MoniGoMani/user_data/hyperopts/MoniGoManiHyperOpt.py,26146,adx|bbands|macd|vwap,4,False,False,,,False
+freqtrade,Rikj000/MoniGoMani,Legacy MoniGoMani/user_data/strategies/MoniGoMani.py,53122,adx|bbands|macd|vwap,4,False,False,-0.1,1h,True
+freqtrade,Rikj000/MoniGoMani,Legacy MoniGoMani/user_data/strategies/MoniGoManiHyperOpted.py,32765,adx|bbands|macd|vwap,4,False,False,-0.34755,1h,True
+freqtrade,Rikj000/MoniGoMani,user_data/strategies/MoniGoManiHyperStrategy.py,11273,adx|bbands|macd|vwap,4,False,False,,,False
+freqtrade,ssssi/freqtrade_strs,ClucHAnix/ClucHAnix.py,9520,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,ssssi/freqtrade_strs,ClucHAnix/ClucHAnix_5m.py,10219,bbands|heikin,2,False,False,-0.99,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/BBMod.py,30120,adx|bbands|cci|ema|heikin|rsi|sma|stoch|vwap|williams,10,False,False,-0.99,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/BinHV27F.py,11249,adx,1,False,False,-0.25,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/BinHV27_short.py,18672,adx|atr,2,False,False,-0.1,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/ClucHAnix.py,8699,bbands|heikin,2,False,False,-0.99,1m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/CombinedBinHAndCluc.py,6339,bbands,1,False,False,-0.99,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/ConsensusShort.py,17759,atr|ichimoku|macd|stoch,4,False,False,-0.99,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/HourBasedStrategy.py,1579,,0,False,False,-0.1,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/Archive/ReinforcedQuickie.py,20835,atr|bbands|cci|mfi,4,False,False,-0.99,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/dry_run/E0V1EN.py,5644,cci|stoch,2,False,False,-0.25,5m,True
+freqtrade,ssssi/freqtrade_strs,binance/dry_run/buy1_and_buynew/E0V1E.py,4506,cci|stoch,2,False,False,-0.25,5m,True
+freqtrade,froggleston/cryptofrog-strategies,CryptoFrog.py,25118,adx|atr|bbands|heikin|mfi|psar|stoch,7,True,False,-0.085,5m,True
+freqtrade,raph92/freqtrade-strategies,user_data/strategies/conductor/conductor.py,16918,,0,False,False,-0.31,,True
+freqtrade,raph92/freqtrade-strategies,user_data/strategies/gumbo1.py,5264,bbands|ema|stoch,3,False,False,-0.25,5m,True
+freqtrade,raph92/freqtrade-strategies,user_data/strategies/im_test.py,7683,stoch,1,False,False,-0.25,5m,True
+freqtrade,raph92/freqtrade-strategies,user_data/strategies/indicator_mix.py,4146,,0,False,False,-0.25,5m,True
+pine,Alorse/pinescript-strategies,indicators/BB Winner.pine,7530,bbands|rsi,2,False,False,,,False
+pine,Alorse/pinescript-strategies,multi/Alert BB + RSI.pine,5759,bbands|macd|rsi,3,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/MTF BB.pine,4315,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/MTF RSI.pine,1111,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/MTF+MACD.pine,8433,macd|pivot,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/MacdNew.pine,7341,macd|pivot,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/grid/GridBotDir [Alorse].pine,7195,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/BB + Aroon.pine,1183,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/BB Divergence.pine,1933,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/BB Winner LITE.pine,2030,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/BB Winner PRO.pine,7509,bbands|rsi,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/Bollinger Breakout [kodify].pine,1862,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/Exceeded candle.pine,1927,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/MEMA + BB + RSI [Alorse].pine,4905,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/mean-reversion/Multi BB.pine,1957,bbands,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/2 EMA:SMA + RSI.pine,2257,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/DMI Winner.pine,2963,adx,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/Double RSI.pine,1312,rsi,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/MACD + BB + RSI.pine,6266,adx|bbands|macd|rsi,4,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/MACD + DMI.pine,1602,atr|macd,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/MACD Long Strategy [Bunghole].pine,3413,macd,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/MACD+RSI.pine,2379,macd,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/QQE signals.pine,2186,rsi,1,True,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/RSI + 1200.pine,2671,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/RSI + EMA.pine,1744,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/Stoch RSI Crossover Strat + EMA - YT-Trade Pro.pine,3547,atr|sma|stoch,3,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/StochRSI + Supertrend Strategy.pine,1875,atr|stoch|supertrend,3,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/TTM Squeeze.pine,1751,donchian|keltner,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/momentum/Williams Vix Fix.pine,2407,bbands,1,True,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Flawless Victory.pine,4531,bbands|mfi,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Full Candle.pine,2585,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Improvising [Alorse].pine,3060,macd|rsi,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Javo v1 [Repaint].pine,1737,heikin,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Omar Edited WF.pine,7998,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Omar MMR [Alorse].pine,3276,macd|rsi,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Password protected.pine,1764,bbands|sma,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Pin Bar Magic v1.pine,3812,atr,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/StratBase.pine,2010,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/Strategy Tester [Lupown].pine,5236,adx|atr|donchian,3,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/other/TTM Squeeze EMA Strategy [Alorse].pine,4306,donchian|keltner,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/3 EMA:SMA + Cross.pine,4419,donchian,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/Double Supertrend.pine,3608,atr|supertrend,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/EMA Moving away Strategy [Alorse].pine,1784,,0,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/HA UnivLong&Short Futures.pine,1718,heikin,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/Heikin Ashi Strategy V2 [FAKE].pine,3085,heikin|macd,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/MA Cross + DMI.pine,2689,adx,1,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/Supertrend + EMA rebound [Alorse].pine,3020,atr|supertrend,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/Supertrend + RSI.pine,2033,atr|rsi|supertrend,3,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/Supertrend.pine,2071,atr|supertrend,2,False,False,,,False
+pine,Alorse/pinescript-strategies,strategies/trend/Tendency EMA + RSI.pine,2328,bbands|rsi,2,False,False,,,False
+pine,AlbertoCuadra/algo_trading_weighted_strategy,weighted_strategy.pine,64581,atr|macd|stoch|supertrend,4,False,False,,,False
+mql,EA31337/EA31337-classes,Account/tests/Account.test.mq5,1400,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Account/tests/AccountForex.test.mq5,1412,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Buffer/tests/BufferCandle.test.mq5,1862,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Buffer/tests/BufferTick.test.mq5,1786,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicator/tests/IndicatorTf.test.mq5,3802,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/Special/tests/Indi_Custom.test.mq5,2243,rsi,1,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/Tick/tests/Indi_TickMt.test.mq5,1962,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_AC.test.mq5,2037,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_AD.test.mq5,2037,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ADX.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ADXW.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_AMA.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_AO.test.mq5,2037,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ASI.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ATR.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Alligator.test.mq5,2058,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_AppliedPrice.test.mq5,2102,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_BWMFI.test.mq5,2049,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_BWZT.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Bands.test.mq5,2046,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_BearsPower.test.mq5,2061,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_BullsPower.test.mq5,2061,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_CCI.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_CHO.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_CHV.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ColorBars.test.mq5,2058,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ColorCandlesDaily.test.mq5,2082,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ColorLine.test.mq5,2058,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_CustomMovingAverage.test.mq5,2088,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_DEMA.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_DeMarker.test.mq5,2055,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Demo.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_DetrendedPrice.test.mq5,2073,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Drawer.test.mq5,2049,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Envelopes.test.mq5,2058,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Force.test.mq5,2046,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_FractalAdaptiveMA.test.mq5,2070,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Fractals.test.mq5,2055,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Gator.test.mq5,2046,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_HeikenAshi.test.mq5,2061,heikin,1,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Ichimoku.test.mq5,2055,ichimoku,1,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Killzones.test.mq5,2059,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_MA.test.mq5,2037,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_MACD.test.mq5,2043,macd,1,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_MFI.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_MassIndex.test.mq5,2058,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Momentum.test.mq5,2055,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_OBV.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_OHLC.test.mq5,2048,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_OsMA.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Pattern.test.mq5,2063,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Pivot.test.mq5,2046,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Price.test.mq5,2052,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_PriceChannel.test.mq5,2067,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_PriceFeeder.test.mq5,2064,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_PriceVolumeTrend.test.mq5,2079,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_RS.test.mq5,2037,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_RSI.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_RVI.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_RateOfChange.test.mq5,2067,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_SAR.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_StdDev.test.mq5,2049,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Stochastic.test.mq5,2061,stoch,1,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_TEMA.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_TRIX.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_UltimateOscillator.test.mq5,2085,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_VIDYA.test.mq5,2046,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_VROC.test.mq5,2043,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_Volumes.test.mq5,2052,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_WPR.test.mq5,2040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_WilliamsAD.test.mq5,2061,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ZigZag.test.mq5,2049,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Indicators/tests/Indi_ZigZagColor.test.mq5,2064,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/Task.test.mq5,2619,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/TaskAction.test.mq5,3074,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/TaskCondition.test.mq5,3231,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/TaskGetter.test.mq5,2921,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/TaskManager.test.mq5,3604,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/TaskObject.test.mq5,3040,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/TaskSetter.test.mq5,2593,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/Taskable.car.test.mq5,5151,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Task/tests/Taskable.test.mq5,3675,,0,False,False,,,False
+mql,EA31337/EA31337-classes,Tick/tests/TickManager.test.mq5,1682,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/BufferFXTTest.mq5,1440,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/BufferStructTest.mq5,2820,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/BufferTest.mq5,2356,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/DatabaseTest.mq5,2997,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/DateTimeTest.mq5,3498,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/DrawIndicatorTest.mq5,5383,bbands|sma,2,False,False,,,False
+mql,EA31337/EA31337-classes,tests/EATest.mq5,3469,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/IndicatorsTest.mq5,45124,adx|atr|bbands|cci|heikin|ichimoku|macd|mfi|obv|pivot|psar|sma|stoch|williams,14,False,False,,,False
+mql,EA31337/EA31337-classes,tests/MathTest.mq5,2775,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/OrderQueryTest.mq5,5024,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/OrderTest.mq5,6326,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/StatsTest.mq5,2574,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/StrategyTest-RSI.mq5,5951,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/StrategyTest.mq5,4701,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/TickerTest.mq5,4302,,0,False,False,,,False
+mql,EA31337/EA31337-classes,tests/ValueStorageTest.mq5,4773,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/experts/ZigZag EA.mq4,88062,donchian,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/experts/tools/Account Guard.mq4,22883,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/experts/tools/HtmlReport2Chart.mq4,42418,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/ALMA.mq4,30689,sma,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Average Range.mq4,9261,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/BFX Volume.mq4,20114,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Bollinger Bands.mq4,10271,bbands|sma,2,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Brackets.mq4,8402,donchian,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/CCI.mq4,18486,cci|sma,2,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/ChartInfos.mq4,311317,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Donchian Channel Width.mq4,9707,donchian,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Donchian Channel.mq4,58304,donchian,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Equity Recorder.mq4,9235,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Grid.mq4,19451,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/HalfTrend.mq4,16767,donchian|sma|supertrend,3,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Heikin-Ashi.mq4,18569,ema|heikin|sma,3,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Inside Bars.mq4,31420,ibs,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Instrument Infos.mq4,28735,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Jurik Moving Average.mq4,19618,sma,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Kaufman Volatility.mq4,5511,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Keltner Channel SR.mq4,16174,atr|keltner|sma,3,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Keltner Channel.mq4,10464,atr|keltner|sma,3,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/LFX Tracker.mq4,61345,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/MA Channel Band.mq4,19348,macd,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/MA Channel.mq4,15137,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/MACD.mq4,24889,atr|macd|sma,3,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Moving Average.mq4,24176,sma,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/NonLagMA.mq4,27027,sma,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/SuperBars.mq4,38232,donchian,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/SuperTrend.mq4,19345,atr|cci|sma|supertrend,4,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Tillson T3 Moving Average.mq4,33576,sma,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/Trend Bars.mq4,12874,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/indicators/ZigZag.mq4,75257,donchian,1,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/libraries/rsfStdlib.mq4,364619,psar,1,True,False,,,False
+mql,rosasurfer/mt4-mql,mql40/scripts/CloseOrders.mq4,16181,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/scripts/HedgePosition.mq4,4656,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/scripts/LFX.ExecuteTradeCmd.mq4,35787,,0,False,False,,,False
+mql,rosasurfer/mt4-mql,mql40/scripts/LFX.OpenPosition.mq4,18044,,0,False,False,,,False

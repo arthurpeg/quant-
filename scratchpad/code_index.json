@@ -1,0 +1,5854 @@
+[
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/hyperopts/GodStraHo.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_hyperopts_GodStraHo.py",
+  "chars": 8394
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Bandtastic.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Bandtastic.py",
+  "chars": 7310
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/BreakEven.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_BreakEven.py",
+  "chars": 2249
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/CustomStoplossWithPSAR.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_CustomStoplossWithPSAR.py",
+  "chars": 3800
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Diamond.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Diamond.py",
+  "chars": 8210
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/FixedRiskRewardLoss.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_FixedRiskRewardLoss.py",
+  "chars": 4925
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/GodStra.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_GodStra.py",
+  "chars": 6801
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Heracles.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Heracles.py",
+  "chars": 3866
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/HourBasedStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_HourBasedStrategy.py",
+  "chars": 4270
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/InformativeSample.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_InformativeSample.py",
+  "chars": 4773
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/MultiMa.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_MultiMa.py",
+  "chars": 3464
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/PatternRecognition.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_PatternRecognition.py",
+  "chars": 2674
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/PowerTower.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_PowerTower.py",
+  "chars": 4317
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Strategy001.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Strategy001.py",
+  "chars": 4103
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Strategy001_custom_exit.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Strategy001_custom_exit.py",
+  "chars": 4931
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Strategy002.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Strategy002.py",
+  "chars": 4363
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Strategy003.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Strategy003.py",
+  "chars": 5110
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Strategy004.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Strategy004.py",
+  "chars": 5472
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Strategy005.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Strategy005.py",
+  "chars": 6667
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/Supertrend.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_Supertrend.py",
+  "chars": 7888
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/SwingHighToSky.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_SwingHighToSky.py",
+  "chars": 3265
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/TrendRiderStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_TrendRiderStrategy.py",
+  "chars": 24740
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/UniversalMACD.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_UniversalMACD.py",
+  "chars": 4558
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/ADXMomentum.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_ADXMomentum.py",
+  "chars": 2137
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/ASDTSRockwellTrading.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_ASDTSRockwellTrading.py",
+  "chars": 2575
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/AdxSmas.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_AdxSmas.py",
+  "chars": 1784
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/AverageStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_AverageStrategy.py",
+  "chars": 2630
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/AwesomeMacd.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_AwesomeMacd.py",
+  "chars": 1935
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/BbandRsi.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_BbandRsi.py",
+  "chars": 1854
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/BinHV27.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_BinHV27.py",
+  "chars": 5879
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/BinHV45.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_BinHV45.py",
+  "chars": 2641
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/CCIStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_CCIStrategy.py",
+  "chars": 4459
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/CMCWinner.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_CMCWinner.py",
+  "chars": 3163
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/ClucMay72018.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_ClucMay72018.py",
+  "chars": 2893
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/CofiBitStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_CofiBitStrategy.py",
+  "chars": 3058
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/CombinedBinHAndCluc.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_CombinedBinHAndCluc.py",
+  "chars": 3265
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/DoesNothingStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_DoesNothingStrategy.py",
+  "chars": 1182
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/EMASkipPump.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_EMASkipPump.py",
+  "chars": 3020
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/Freqtrade_backtest_validation_freqtrade1.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_Freqtrade_backtest_validation_freqtrade1.py",
+  "chars": 1646
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/Low_BB.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_Low_BB.py",
+  "chars": 3642
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/MACDStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_MACDStrategy.py",
+  "chars": 3052
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/MACDStrategy_crossed.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_MACDStrategy_crossed.py",
+  "chars": 2335
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/MultiRSI.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_MultiRSI.py",
+  "chars": 2343
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/Quickie.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_Quickie.py",
+  "chars": 2647
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/ReinforcedAverageStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_ReinforcedAverageStrategy.py",
+  "chars": 3502
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/ReinforcedQuickie.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_ReinforcedQuickie.py",
+  "chars": 8264
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/ReinforcedSmoothScalp.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_ReinforcedSmoothScalp.py",
+  "chars": 5903
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/Scalp.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_Scalp.py",
+  "chars": 2847
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/Simple.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_Simple.py",
+  "chars": 2695
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/SmoothOperator.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_SmoothOperator.py",
+  "chars": 13297
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/SmoothScalp.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_SmoothScalp.py",
+  "chars": 3861
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/TDSequentialStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_TDSequentialStrategy.py",
+  "chars": 6707
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/berlinguyinca/TechnicalExampleStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_berlinguyinca_TechnicalExampleStrategy.py",
+  "chars": 1069
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/futures/FAdxSmaStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_futures_FAdxSmaStrategy.py",
+  "chars": 4091
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/futures/FOttStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_futures_FOttStrategy.py",
+  "chars": 5701
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/futures/FReinforcedStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_futures_FReinforcedStrategy.py",
+  "chars": 4780
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/futures/FSampleStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_futures_FSampleStrategy.py",
+  "chars": 5413
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/futures/FSupertrendStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_futures_FSupertrendStrategy.py",
+  "chars": 9193
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/futures/TrendFollowingStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_futures_TrendFollowingStrategy.py",
+  "chars": 2441
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/futures/VolatilitySystem.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_futures_VolatilitySystem.py",
+  "chars": 6432
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/hlhb.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_hlhb.py",
+  "chars": 3821
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/lookahead_bias/DevilStra.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_lookahead_bias_DevilStra.py",
+  "chars": 26583
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/lookahead_bias/GodStraNew.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_lookahead_bias_GodStraNew.py",
+  "chars": 25708
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/lookahead_bias/Zeus.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_lookahead_bias_Zeus.py",
+  "chars": 4375
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/lookahead_bias/wtc.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_lookahead_bias_wtc.py",
+  "chars": 5855
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/mabStra.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_mabStra.py",
+  "chars": 4044
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "freqtrade/freqtrade-strategies",
+  "path": "user_data/strategies/multi_tf.py",
+  "file": "scratchpad\\code\\freqtrade\\freqtrade__freqtrade-strategies\\user_data_strategies_multi_tf.py",
+  "chars": 5345
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "NostalgiaForInfinityX.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\NostalgiaForInfinityX.py",
+  "chars": 1630239
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "NostalgiaForInfinityX2.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\NostalgiaForInfinityX2.py",
+  "chars": 624351
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "NostalgiaForInfinityX3.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\NostalgiaForInfinityX3.py",
+  "chars": 1959406
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "NostalgiaForInfinityX4.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\NostalgiaForInfinityX4.py",
+  "chars": 1959181
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "NostalgiaForInfinityX5.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\NostalgiaForInfinityX5.py",
+  "chars": 2405784
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "NostalgiaForInfinityX6.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\NostalgiaForInfinityX6.py",
+  "chars": 2923767
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "NostalgiaForInfinityX7.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\NostalgiaForInfinityX7.py",
+  "chars": 3240146
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "legacy/NostalgiaForInfinityNext.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\legacy_NostalgiaForInfinityNext.py",
+  "chars": 279211
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "legacy/NostalgiaForInfinityNextGen.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\legacy_NostalgiaForInfinityNextGen.py",
+  "chars": 304415
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "tests/unit/test_data/input/Strategy.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\tests_unit_test_data_input_Strategy.py",
+  "chars": 1593
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "tests/unit/test_data/output/Strategy.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\tests_unit_test_data_output_Strategy.py",
+  "chars": 983
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "iterativv/NostalgiaForInfinity",
+  "path": "tools/ho_to_raw_codemod_nfi4.py",
+  "file": "scratchpad\\code\\freqtrade\\iterativv__NostalgiaForInfinity\\tools_ho_to_raw_codemod_nfi4.py",
+  "chars": 4459
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "ClucHAnix/ClucHAnix.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\ClucHAnix_ClucHAnix.py",
+  "chars": 9520
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "ClucHAnix/ClucHAnix_5m.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\ClucHAnix_ClucHAnix_5m.py",
+  "chars": 10219
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/BBMod.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_BBMod.py",
+  "chars": 30120
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/BinHV27F.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_BinHV27F.py",
+  "chars": 11249
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/BinHV27_short.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_BinHV27_short.py",
+  "chars": 18672
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/ClucHAnix.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_ClucHAnix.py",
+  "chars": 8699
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/CombinedBinHAndCluc.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_CombinedBinHAndCluc.py",
+  "chars": 6339
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/ConsensusShort.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_ConsensusShort.py",
+  "chars": 17759
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/HourBasedStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_HourBasedStrategy.py",
+  "chars": 1579
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/Archive/ReinforcedQuickie.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_Archive_ReinforcedQuickie.py",
+  "chars": 20835
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/dry_run/E0V1EN.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_dry_run_E0V1EN.py",
+  "chars": 5644
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "eovie/freqtrade_strs",
+  "path": "binance/dry_run/buy1_and_buynew/E0V1E.py",
+  "file": "scratchpad\\code\\freqtrade\\eovie__freqtrade_strs\\binance_dry_run_buy1_and_buynew_E0V1E.py",
+  "chars": 4506
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Basket/BasketStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Basket_BasketStrategy.py",
+  "chars": 25774
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Basket/BuyHoldBasket.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Basket_BuyHoldBasket.py",
+  "chars": 2788
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Basket/MomentumRegimeBasket.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Basket_MomentumRegimeBasket.py",
+  "chars": 5975
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Basket/MomentumRegimeBasket15m.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Basket_MomentumRegimeBasket15m.py",
+  "chars": 14028
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugCheckRedundancy.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugCheckRedundancy.py",
+  "chars": 28302
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugDfAnalyse.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugDfAnalyse.py",
+  "chars": 58435
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugEvaluateCtabGan.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugEvaluateCtabGan.py",
+  "chars": 22168
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugEvaluateMTCtabGan.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugEvaluateMTCtabGan.py",
+  "chars": 16472
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugNNMTStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugNNMTStrategy.py",
+  "chars": 14053
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugNNStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugNNStrategy.py",
+  "chars": 18799
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugRegimeIndicator.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugRegimeIndicator.py",
+  "chars": 19294
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Debug/DebugTradingType.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Debug_DebugTradingType.py",
+  "chars": 12712
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Framework/BaseStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Framework_BaseStrategy.py",
+  "chars": 41658
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Framework/CreateScalers.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Framework_CreateScalers.py",
+  "chars": 12521
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Framework/TrainingSignals.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Framework_TrainingSignals.py",
+  "chars": 115403
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Framework/test_base_strategy.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Framework_test_base_strategy.py",
+  "chars": 16344
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "Funding/FundingCarry.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\Funding_FundingCarry.py",
+  "chars": 8740
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "GANs/CreateGANBase.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\GANs_CreateGANBase.py",
+  "chars": 19515
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "nateemma/strategies",
+  "path": "TSPredict/BuyRegions.py",
+  "file": "scratchpad\\code\\freqtrade\\nateemma__strategies\\TSPredict_BuyRegions.py",
+  "chars": 15863
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ADXMomentum.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ADXMomentum.py",
+  "chars": 2103
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ADX_15M_USDT.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ADX_15M_USDT.py",
+  "chars": 2067
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ASDTSRockwellTrading.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ASDTSRockwellTrading.py",
+  "chars": 2540
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ActionZone.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ActionZone.py",
+  "chars": 6666
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "AdxSmas.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\AdxSmas.py",
+  "chars": 1749
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "AlligatorStrat.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\AlligatorStrat.py",
+  "chars": 3502
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "AlligatorStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\AlligatorStrategy.py",
+  "chars": 8852
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Apollo11 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Apollo11__1_.py",
+  "chars": 7933
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Apollo11.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Apollo11.py",
+  "chars": 7933
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Apollo11_TB_MOD_TranZ.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Apollo11_TB_MOD_TranZ.py",
+  "chars": 33152
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "AutoArimaTripleV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\AutoArimaTripleV1.py",
+  "chars": 13924
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "AverageStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\AverageStrategy.py",
+  "chars": 1964
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "AwesomeMacd.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\AwesomeMacd.py",
+  "chars": 1900
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BBRSI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BBRSI.py",
+  "chars": 3402
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BBRSIOptimizedStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BBRSIOptimizedStrategy.py",
+  "chars": 4182
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BBRSITV.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BBRSITV.py",
+  "chars": 20936
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_3c.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_3c.py",
+  "chars": 20701
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL.py",
+  "chars": 64487
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_BI-v4_EWO2-v3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_BI-v4_EWO2-v3.py",
+  "chars": 45255
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_BI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_BI.py",
+  "chars": 45236
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_RNG.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_RNG.py",
+  "chars": 20867
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_RNG_TBS.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_RNG_TBS.py",
+  "chars": 35038
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_RNG_TBS_GOLD (2).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_RNG_TBS_GOLD__2_.py",
+  "chars": 35050
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (10).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN__10_.py",
+  "chars": 230642
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (7).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN__7_.py",
+  "chars": 230642
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (8).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN__8_.py",
+  "chars": 230642
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN (9).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RPB_TSL_SMA_Tranz_1_5_2_MAIN__9_.py",
+  "chars": 230823
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_RSI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_RSI.py",
+  "chars": 3929
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BB_Strategy04.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BB_Strategy04.py",
+  "chars": 6262
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BBands.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BBands.py",
+  "chars": 15379
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BBandsRSI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BBandsRSI.py",
+  "chars": 6295
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BbRoi.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BbRoi.py",
+  "chars": 2466
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BbandRsi.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BbandRsi.py",
+  "chars": 1914
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BbandRsiRolling.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BbandRsiRolling.py",
+  "chars": 2051
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BcmbigzDevelop (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BcmbigzDevelop__1_.py",
+  "chars": 53815
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BcmbigzV1 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BcmbigzV1__1_.py",
+  "chars": 23739
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BeastBotXBLR6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BeastBotXBLR6.py",
+  "chars": 49793
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BeastBotXBLR7.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BeastBotXBLR7.py",
+  "chars": 52291
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BigZ04.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BigZ04.py",
+  "chars": 26505
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BigZ04_TSL3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BigZ04_TSL3.py",
+  "chars": 28684
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BigZ04_TSL4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BigZ04_TSL4.py",
+  "chars": 29070
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BinClucHyperOpt.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BinClucHyperOpt.py",
+  "chars": 6157
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BinClucMadDevelop.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BinClucMadDevelop.py",
+  "chars": 42857
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BinClucMadSMACore.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BinClucMadSMACore.py",
+  "chars": 57008
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BinClucMadSMADevelop.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BinClucMadSMADevelop.py",
+  "chars": 50925
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BinHV27.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BinHV27.py",
+  "chars": 5843
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BinHV45.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BinHV45.py",
+  "chars": 2111
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BlueEyes_MPP_v1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BlueEyes_MPP_v1.py",
+  "chars": 3135
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BreakEven.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BreakEven.py",
+  "chars": 2222
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "BuyAllSellAllStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\BuyAllSellAllStrategy.py",
+  "chars": 1151
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CCIStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CCIStrategy.py",
+  "chars": 4344
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CMCWinner.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CMCWinner.py",
+  "chars": 3157
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Chained.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Chained.py",
+  "chars": 5863
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Chispei.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Chispei.py",
+  "chars": 1930
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Cluc4werk.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Cluc4werk.py",
+  "chars": 6402
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Cluc5werk.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Cluc5werk.py",
+  "chars": 9793
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Cluc6werk.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Cluc6werk.py",
+  "chars": 5966
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Cluc7werk.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Cluc7werk.py",
+  "chars": 4224
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucCrypROI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucCrypROI.py",
+  "chars": 10229
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucCrypSlow (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucCrypSlow__1_.py",
+  "chars": 9291
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucFiatROI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucFiatROI.py",
+  "chars": 6157
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucFiatSlow.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucFiatSlow.py",
+  "chars": 4958
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix (3).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix__3_.py",
+  "chars": 8070
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix 5m trailbuy2 + BBRSIV5 offsets.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_5m_trailbuy2___BBRSIV5_offsets.py",
+  "chars": 21764
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix 5m trailbuy2 + dynamic offset.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_5m_trailbuy2___dynamic_offset.py",
+  "chars": 21764
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix E01VE Offsets.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_E01VE_Offsets.py",
+  "chars": 13108
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix.py",
+  "chars": 11467
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix2.py",
+  "chars": 12908
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_5m.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_5m.py",
+  "chars": 8755
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_5mTB1 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_5mTB1__1_.py",
+  "chars": 21764
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_5mTB1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_5mTB1.py",
+  "chars": 21764
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_BB_RPB.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_BB_RPB.py",
+  "chars": 23678
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_BB_RPB_HO2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_BB_RPB_HO2.py",
+  "chars": 23155
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_BB_RPB_MOD.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_BB_RPB_MOD.py",
+  "chars": 21311
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_BB_RPB_MOD2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_BB_RPB_MOD2.py",
+  "chars": 21437
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_BB_RPB_MOD2_TB.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_BB_RPB_MOD2_TB.py",
+  "chars": 35040
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_BB_RPB_MOD_E0V1E_DYNAMIC_TB (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_BB_RPB_MOD_E0V1E_DYNAMIC_TB__1_.py",
+  "chars": 34274
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_BB_RPB_MOD_trailing_buy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_BB_RPB_MOD_trailing_buy.py",
+  "chars": 34251
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAnix_hhll (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAnix_hhll__1_.py",
+  "chars": 34704
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucHAwerk.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucHAwerk.py",
+  "chars": 13933
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ClucMay72018.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ClucMay72018.py",
+  "chars": 2858
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CofiBitStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CofiBitStrategy.py",
+  "chars": 2446
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndCluc.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndCluc.py",
+  "chars": 3228
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndCluc2021.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndCluc2021.py",
+  "chars": 3790
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndCluc2021Bull.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndCluc2021Bull.py",
+  "chars": 3804
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV2.py",
+  "chars": 6119
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV4.py",
+  "chars": 4729
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV5.py",
+  "chars": 6798
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV6.py",
+  "chars": 10525
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV6H.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV6H.py",
+  "chars": 20405
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV7.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV7.py",
+  "chars": 16156
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV8.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV8.py",
+  "chars": 23831
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV8Hyper.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV8Hyper.py",
+  "chars": 21408
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHAndClucV8XH.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHAndClucV8XH.py",
+  "chars": 23737
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHClucAndMADV3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHClucAndMADV3.py",
+  "chars": 8682
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHClucAndMADV6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHClucAndMADV6.py",
+  "chars": 13559
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CombinedBinHClucAndMADV9.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CombinedBinHClucAndMADV9.py",
+  "chars": 20540
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Combined_NFIv6_SMA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Combined_NFIv6_SMA.py",
+  "chars": 193309
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Combined_NFIv7_SMA (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Combined_NFIv7_SMA__1_.py",
+  "chars": 221631
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Combined_NFIv7_SMA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Combined_NFIv7_SMA.py",
+  "chars": 221630
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CrossEMAStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CrossEMAStrategy.py",
+  "chars": 7825
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrog.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrog.py",
+  "chars": 24744
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogHO.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogHO.py",
+  "chars": 25401
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogHO2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogHO2.py",
+  "chars": 25376
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogHO2A.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogHO2A.py",
+  "chars": 25377
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogHO3A1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogHO3A1.py",
+  "chars": 25453
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogHO3A2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogHO3A2.py",
+  "chars": 25451
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogHO3A3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogHO3A3.py",
+  "chars": 25450
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogHO3A4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogHO3A4.py",
+  "chars": 25449
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogNFI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogNFI.py",
+  "chars": 210328
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogNFI2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogNFI2.py",
+  "chars": 87404
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogNFIHO1A.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogNFIHO1A.py",
+  "chars": 236623
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "CryptoFrogOffset.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\CryptoFrogOffset.py",
+  "chars": 168296
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "DIV_v1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\DIV_v1.py",
+  "chars": 4047
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "DevilStra.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\DevilStra.py",
+  "chars": 26616
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Dimond.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Dimond.py",
+  "chars": 5123
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Divergences.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Divergences.py",
+  "chars": 15834
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "DoesNothingStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\DoesNothingStrategy.py",
+  "chars": 1148
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Dracula.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Dracula.py",
+  "chars": 10350
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Dyna_opti.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Dyna_opti.py",
+  "chars": 20797
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "EMASkipPump.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\EMASkipPump.py",
+  "chars": 2985
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "EMAVolume.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\EMAVolume.py",
+  "chars": 2364
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ElliotV7.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ElliotV7.py",
+  "chars": 8611
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ElliotV8.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ElliotV8.py",
+  "chars": 6548
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ElliotV8_original_ichiv3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ElliotV8_original_ichiv3.py",
+  "chars": 7891
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "EnsembleStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\EnsembleStrategy.py",
+  "chars": 6309
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "EnsembleStrategyV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\EnsembleStrategyV1.py",
+  "chars": 7617
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "EnsembleStrategyV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\EnsembleStrategyV2.py",
+  "chars": 5187
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Example_Strat_With_FileLogging.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Example_Strat_With_FileLogging.py",
+  "chars": 3987
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FRAYSTRAT (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FRAYSTRAT__1_.py",
+  "chars": 18086
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FRAYSTRAT-BTCUSDT-1H.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FRAYSTRAT-BTCUSDT-1H.py",
+  "chars": 18301
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FiveMinCrossAbove.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FiveMinCrossAbove.py",
+  "chars": 3851
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FixedRiskRewardLoss.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FixedRiskRewardLoss.py",
+  "chars": 4891
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FrayLIVEBTC15m.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FrayLIVEBTC15m.py",
+  "chars": 17654
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FrayNew-HyperOpt (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FrayNew-HyperOpt__1_.py",
+  "chars": 16660
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FrostAuraM115mStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FrostAuraM115mStrategy.py",
+  "chars": 3918
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FrostAuraM11hStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FrostAuraM11hStrategy.py",
+  "chars": 3952
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FrostAuraM21hStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FrostAuraM21hStrategy.py",
+  "chars": 3296
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FrostAuraM315mStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FrostAuraM315mStrategy.py",
+  "chars": 4564
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "FrostAuraM31hStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\FrostAuraM31hStrategy.py",
+  "chars": 4610
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "GodStra.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\GodStra.py",
+  "chars": 25442
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "GodStraNew.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\GodStraNew.py",
+  "chars": 6746
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "GodStraNew40.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\GodStraNew40.py",
+  "chars": 26784
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "GodStraNew_SMAonly.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\GodStraNew_SMAonly.py",
+  "chars": 26715
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "GymStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\GymStrategy.py",
+  "chars": 12561
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "HLHB.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\HLHB.py",
+  "chars": 3798
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "HansenSmaOffsetV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\HansenSmaOffsetV1.py",
+  "chars": 2548
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Heracles.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Heracles.py",
+  "chars": 3867
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "HourBasedStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\HourBasedStrategy.py",
+  "chars": 4280
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "HyperStra_GSN_SMAOnly.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\HyperStra_GSN_SMAOnly.py",
+  "chars": 15506
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "HyperStra_SMAOnly.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\HyperStra_SMAOnly.py",
+  "chars": 15503
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichess.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichess.py",
+  "chars": 12916
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku.py",
+  "chars": 2269
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "IchimokuStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\IchimokuStrategy.py",
+  "chars": 2523
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_SenkouSpanCross.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_SenkouSpanCross.py",
+  "chars": 2541
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_v12.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_v12.py",
+  "chars": 2592
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_v30_DojiStar.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_v30_DojiStar.py",
+  "chars": 2523
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_v31_Heikin.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_v31_Heikin.py",
+  "chars": 3757
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_v32_HeikinAshi.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_v32_HeikinAshi.py",
+  "chars": 2924
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_v33_SAR.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_v33_SAR.py",
+  "chars": 2745
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_v35_SAR_1d.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_v35_SAR_1d.py",
+  "chars": 4709
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Ichimoku_v37_HeikinAshi.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Ichimoku_v37_HeikinAshi.py",
+  "chars": 4156
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "IchisV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\IchisV1.py",
+  "chars": 9394
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "InformativeSample (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\InformativeSample__1_.py",
+  "chars": 4713
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Inverse.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Inverse.py",
+  "chars": 10653
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "InverseV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\InverseV2.py",
+  "chars": 11756
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "JustROCR.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\JustROCR.py",
+  "chars": 842
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "JustROCR2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\JustROCR2.py",
+  "chars": 843
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "JustROCR3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\JustROCR3.py",
+  "chars": 843
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "JustROCR4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\JustROCR4.py",
+  "chars": 1179
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "JustROCR5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\JustROCR5.py",
+  "chars": 957
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "JustROCR6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\JustROCR6.py",
+  "chars": 1537
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "KAMACCIRSI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\KAMACCIRSI.py",
+  "chars": 7648
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "LongShortRangeTradingMachetesV1-1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\LongShortRangeTradingMachetesV1-1.py",
+  "chars": 28593
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Low_BB.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Low_BB.py",
+  "chars": 3607
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "LuxOSC.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\LuxOSC.py",
+  "chars": 7354
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MAC.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MAC.py",
+  "chars": 6485
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACD.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACD.py",
+  "chars": 14358
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACDCCI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACDCCI.py",
+  "chars": 2551
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACDRSI200.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACDRSI200.py",
+  "chars": 1979
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACDStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACDStrategy.py",
+  "chars": 2257
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACDStrategy_crossed.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACDStrategy_crossed.py",
+  "chars": 2300
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACD_EMA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACD_EMA.py",
+  "chars": 2029
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACD_TRIPLE_MA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACD_TRIPLE_MA.py",
+  "chars": 2664
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MACD_TRI_EMA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MACD_TRI_EMA.py",
+  "chars": 1733
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MADisplaceV3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MADisplaceV3.py",
+  "chars": 8223
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MFI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MFI.py",
+  "chars": 1753
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MabStra.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MabStra.py",
+  "chars": 4045
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Machete.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Machete.py",
+  "chars": 16567
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MacheteV8b.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MacheteV8b.py",
+  "chars": 39432
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MacheteV8bRallimod.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MacheteV8bRallimod.py",
+  "chars": 45074
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MacheteV8bRallimod2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MacheteV8bRallimod2.py",
+  "chars": 25685
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MarketChyperHyperStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MarketChyperHyperStrategy.py",
+  "chars": 21699
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Martin.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Martin.py",
+  "chars": 14614
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Miku_PP_v3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Miku_PP_v3.py",
+  "chars": 8196
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MiniLambo (2).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MiniLambo__2_.py",
+  "chars": 24557
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MinmaxF.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MinmaxF.py",
+  "chars": 3682
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MoniGoManiHyperStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MoniGoManiHyperStrategy.py",
+  "chars": 12477
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MontrealStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MontrealStrategy.py",
+  "chars": 5455
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MultiMA_TSL.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MultiMA_TSL.py",
+  "chars": 39035
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MultiMA_TSL3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MultiMA_TSL3.py",
+  "chars": 36088
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MultiMa.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MultiMa.py",
+  "chars": 3100
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MultiOffsetLamboV0.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MultiOffsetLamboV0.py",
+  "chars": 6555
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MultiRSI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MultiRSI.py",
+  "chars": 2308
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "MyStrategyNew10.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\MyStrategyNew10.py",
+  "chars": 11528
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv4.py",
+  "chars": 13127
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5.py",
+  "chars": 13316
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5_antipump.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5_antipump.py",
+  "chars": 17531
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5_mod1 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5_mod1__1_.py",
+  "chars": 28803
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5_mod1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5_mod1.py",
+  "chars": 28803
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5_mod2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5_mod2__1_.py",
+  "chars": 28902
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5_mod2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5_mod2.py",
+  "chars": 28902
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5_mod3 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5_mod3__1_.py",
+  "chars": 28895
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NASOSv5_mod3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NASOSv5_mod3.py",
+  "chars": 28895
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46.py",
+  "chars": 88832
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46Frog.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46Frog.py",
+  "chars": 103867
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46FrogZ.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46FrogZ.py",
+  "chars": 100884
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46Offset.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46Offset.py",
+  "chars": 90063
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46OffsetHOA1 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46OffsetHOA1__1_.py",
+  "chars": 99344
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46OffsetHOA1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46OffsetHOA1.py",
+  "chars": 99344
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46Z (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46Z__1_.py",
+  "chars": 112009
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI46Z.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI46Z.py",
+  "chars": 112009
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI4Frog.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI4Frog.py",
+  "chars": 69188
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI5MOHO.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI5MOHO.py",
+  "chars": 43861
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI5MOHO_WIP.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI5MOHO_WIP.py",
+  "chars": 65758
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI731 BUSD.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI731_BUSD.py",
+  "chars": 364326
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFI731_BUSD.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFI731_BUSD.py",
+  "chars": 364326
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFIXMod1.3_TraNz (3).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFIXMod1.3_TraNz__3_.py",
+  "chars": 711690
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFIXMod1.3_TraNz (4).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFIXMod1.3_TraNz__4_.py",
+  "chars": 711690
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFIX_BB_RPB.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFIX_BB_RPB.py",
+  "chars": 655385
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NFi-772-KC.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NFi-772-KC.py",
+  "chars": 198273
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NfiNextModded.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NfiNextModded.py",
+  "chars": 270826
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NoLost.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NoLost.py",
+  "chars": 1300
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NormalizerStrategyHO2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NormalizerStrategyHO2__1_.py",
+  "chars": 4764
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NormalizerStrategyHO2 (2).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NormalizerStrategyHO2__2_.py",
+  "chars": 4764
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NormalizerStrategyHO2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NormalizerStrategyHO2.py",
+  "chars": 4764
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Nostalgia.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Nostalgia.py",
+  "chars": 286921
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityNext.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityNext.py",
+  "chars": 317873
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityNext7_15_5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityNext7_15_5.py",
+  "chars": 318411
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityNextGen.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityNextGen.py",
+  "chars": 316749
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityNext_772SLMod.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityNext_772SLMod.py",
+  "chars": 199451
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityNext_ChangeToTower_V5_2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityNext_ChangeToTower_V5_2.py",
+  "chars": 236937
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityNext_ChangeToTower_V5_3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityNext_ChangeToTower_V5_3.py",
+  "chars": 237173
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityNext_ChangeToTower_V6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityNext_ChangeToTower_V6.py",
+  "chars": 239431
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV1.py",
+  "chars": 10388
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV2.py",
+  "chars": 12326
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV3.py",
+  "chars": 33922
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV4.py",
+  "chars": 49931
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV4HO (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV4HO__1_.py",
+  "chars": 53746
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV4HO.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV4HO.py",
+  "chars": 53746
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV5.py",
+  "chars": 60642
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV5MultiOffsetAndHO.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV5MultiOffsetAndHO.py",
+  "chars": 65389
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV5MultiOffsetAndHO2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV5MultiOffsetAndHO2__1_.py",
+  "chars": 65395
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV5MultiOffsetAndHO2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV5MultiOffsetAndHO2.py",
+  "chars": 65395
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV6.py",
+  "chars": 190622
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV7.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV7.py",
+  "chars": 219227
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV7_SMA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV7_SMA.py",
+  "chars": 221639
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV7_SMAv2 (2).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV7_SMAv2__2_.py",
+  "chars": 224243
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV7_SMAv2_1 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV7_SMAv2_1__1_.py",
+  "chars": 224246
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityV7_SMAv2_1 (2).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityV7_SMAv2_1__2_.py",
+  "chars": 224246
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityX.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityX.py",
+  "chars": 630313
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityXw (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityXw__1_.py",
+  "chars": 961543
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NostalgiaForInfinityXw (2).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NostalgiaForInfinityXw__2_.py",
+  "chars": 646479
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffSetStrategy_V2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffSetStrategy_V2.py",
+  "chars": 9690
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffsetStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffsetStrategy.py",
+  "chars": 7900
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffsetStrategyHOv3_b.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffsetStrategyHOv3_b.py",
+  "chars": 10053
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffsetStrategyLite.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffsetStrategyLite.py",
+  "chars": 3386
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffsetStrategyModHO.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffsetStrategyModHO.py",
+  "chars": 11078
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffsetStrategyX1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffsetStrategyX1.py",
+  "chars": 10749
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffsetStrategy_uzi.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffsetStrategy_uzi.py",
+  "chars": 6626
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NotAnotherSMAOffsetStrategy_uzi3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NotAnotherSMAOffsetStrategy_uzi3.py",
+  "chars": 11805
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NowoIchimoku1hV1 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NowoIchimoku1hV1__1_.py",
+  "chars": 6907
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NowoIchimoku1hV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NowoIchimoku1hV1.py",
+  "chars": 6907
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NowoIchimoku1hV2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NowoIchimoku1hV2__1_.py",
+  "chars": 8215
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NowoIchimoku1hV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NowoIchimoku1hV2.py",
+  "chars": 8215
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NowoIchimoku5mV2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NowoIchimoku5mV2__1_.py",
+  "chars": 11846
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "NowoIchimoku5mV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\NowoIchimoku5mV2.py",
+  "chars": 11846
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ObeliskIM_v1_1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ObeliskIM_v1_1.py",
+  "chars": 5950
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ObeliskRSI_v6_1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ObeliskRSI_v6_1.py",
+  "chars": 5543
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Obelisk_3EMA_StochRSI_ATR.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Obelisk_3EMA_StochRSI_ATR.py",
+  "chars": 7970
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Obelisk_Ichimoku_Slow_v1_3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Obelisk_Ichimoku_Slow_v1_3.py",
+  "chars": 11065
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Obelisk_Ichimoku_ZEMA_v1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Obelisk_Ichimoku_ZEMA_v1.py",
+  "chars": 12138
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Obelisk_TradePro_Ichi_v1_1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Obelisk_TradePro_Ichi_v1_1.py",
+  "chars": 11045
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Obelisk_TradePro_Ichi_v2_1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Obelisk_TradePro_Ichi_v2_1.py",
+  "chars": 7306
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "PRICEFOLLOWING (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\PRICEFOLLOWING__1_.py",
+  "chars": 9990
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "PRICEFOLLOWING2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\PRICEFOLLOWING2__1_.py",
+  "chars": 9987
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "PRICEFOLLOWINGX (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\PRICEFOLLOWINGX__1_.py",
+  "chars": 11898
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Persia.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Persia.py",
+  "chars": 213329
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Pmax.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Pmax.py",
+  "chars": 1468
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "PmaxHyper.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\PmaxHyper.py",
+  "chars": 5986
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "PrawnstarOBV.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\PrawnstarOBV.py",
+  "chars": 3573
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Prediction_Strategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Prediction_Strategy.py",
+  "chars": 5199
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Pump_detection_exemple (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Pump_detection_exemple__1_.py",
+  "chars": 12151
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Pump_detection_exemple.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Pump_detection_exemple.py",
+  "chars": 12152
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "QuickBuyStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\QuickBuyStrategy.py",
+  "chars": 4056
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Quickie.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Quickie.py",
+  "chars": 2612
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "RSIDivergence.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\RSIDivergence.py",
+  "chars": 14149
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "RalliV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\RalliV1.py",
+  "chars": 11460
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "RalliV1_disable56.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\RalliV1_disable56.py",
+  "chars": 11516
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "RaposaDivergenceV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\RaposaDivergenceV1.py",
+  "chars": 9455
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ReinforcedAverageStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ReinforcedAverageStrategy.py",
+  "chars": 3466
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ReinforcedQuickie.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ReinforcedQuickie.py",
+  "chars": 8229
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ReinforcedSmoothScalp.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ReinforcedSmoothScalp.py",
+  "chars": 4149
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Renko.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Renko.py",
+  "chars": 4337
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "RenkoYolo (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\RenkoYolo__1_.py",
+  "chars": 1662
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "RenkoYolo.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\RenkoYolo.py",
+  "chars": 1662
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SAR (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SAR__1_.py",
+  "chars": 15208
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAIP3v2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAIP3v2.py",
+  "chars": 6100
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOG.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOG.py",
+  "chars": 5674
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOPv1_TTF.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOPv1_TTF.py",
+  "chars": 6192
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffset.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffset.py",
+  "chars": 3584
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetProtectOptV0.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetProtectOptV0.py",
+  "chars": 9300
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetProtectOptV1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetProtectOptV1.py",
+  "chars": 5312
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetProtectOptV1HO1 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetProtectOptV1HO1__1_.py",
+  "chars": 5375
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetProtectOptV1HO1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetProtectOptV1HO1.py",
+  "chars": 5375
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetProtectOptV1Mod2_antipump (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetProtectOptV1Mod2_antipump__1_.py",
+  "chars": 8869
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetV2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetV2__1_.py",
+  "chars": 3969
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetV2 (2).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetV2__2_.py",
+  "chars": 3969
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SMAOffsetV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SMAOffsetV2.py",
+  "chars": 3969
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Sar.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Sar.py",
+  "chars": 15100
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Saturn5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Saturn5.py",
+  "chars": 6990
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Scalp.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Scalp.py",
+  "chars": 2812
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ScalpingCCI.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ScalpingCCI.py",
+  "chars": 4386
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-0318.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-0318.py",
+  "chars": 20689
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-Badstreak.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-Badstreak.py",
+  "chars": 18233
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-Badstreak2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-Badstreak2.py",
+  "chars": 20390
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-v1.3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-v1.3.py",
+  "chars": 18826
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-v1.4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-v1.4.py",
+  "chars": 17771
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-v1.5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-v1.5.py",
+  "chars": 10621
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-v1.6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-v1.6.py",
+  "chars": 25359
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-v1.py",
+  "chars": 14239
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism-v2.py",
+  "chars": 20835
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism.py",
+  "chars": 19248
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism2MM.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism2MM.py",
+  "chars": 9848
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Schism6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Schism6.py",
+  "chars": 9578
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SchismLess-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SchismLess-v2.py",
+  "chars": 9615
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SchismLess.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SchismLess.py",
+  "chars": 9277
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Seb.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Seb.py",
+  "chars": 7315
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Simple.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Simple.py",
+  "chars": 2660
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Slowbro.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Slowbro.py",
+  "chars": 3822
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SmoothOperator.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SmoothOperator.py",
+  "chars": 13262
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SmoothScalp.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SmoothScalp.py",
+  "chars": 3826
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-Con-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-Con-v1.py",
+  "chars": 28691
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-Con.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-Con.py",
+  "chars": 28691
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-tradedbexp.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-tradedbexp.py",
+  "chars": 34069
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v1.py",
+  "chars": 31243
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v2.4 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v2.4__1_.py",
+  "chars": 24937
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v2.5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v2.5.py",
+  "chars": 21793
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v2.6.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v2.6.py",
+  "chars": 24883
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v2.py",
+  "chars": 28153
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v3-fuck (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v3-fuck__1_.py",
+  "chars": 22700
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v3-fuck.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v3-fuck.py",
+  "chars": 22700
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis-v3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis-v3.py",
+  "chars": 26677
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis3.py",
+  "chars": 29459
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SolipsisMM.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SolipsisMM.py",
+  "chars": 30202
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis_v3.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis_v3.py",
+  "chars": 24881
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis_v4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis_v4.py",
+  "chars": 19189
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Solipsis_v5.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Solipsis_v5.py",
+  "chars": 18248
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SqueezeMomentum.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SqueezeMomentum.py",
+  "chars": 19129
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Stinkfist.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Stinkfist.py",
+  "chars": 14945
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "StochRSITEMA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\StochRSITEMA.py",
+  "chars": 5846
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SuperHV27.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SuperHV27.py",
+  "chars": 16681
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SuperTrend (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SuperTrend__1_.py",
+  "chars": 5557
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SuperTrendPure.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SuperTrendPure.py",
+  "chars": 3932
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Supertrend.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Supertrend.py",
+  "chars": 4492
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SupertrendStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SupertrendStrategy.py",
+  "chars": 10190
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Supertrend_ORIG.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Supertrend_ORIG.py",
+  "chars": 6229
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SwingHigh.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SwingHigh.py",
+  "chars": 2317
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "SwingHighToSky.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\SwingHighToSky.py",
+  "chars": 3251
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TDSequentialStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TDSequentialStrategy.py",
+  "chars": 6680
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TEMA.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TEMA.py",
+  "chars": 15324
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TechnicalExampleStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TechnicalExampleStrategy.py",
+  "chars": 1034
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Test_MAMA4.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Test_MAMA4.py",
+  "chars": 13131
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TheForce.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TheForce.py",
+  "chars": 6102
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TheRealPullbackV2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TheRealPullbackV2.py",
+  "chars": 3608
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "ThreeCommasStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\ThreeCommasStrategy.py",
+  "chars": 1496
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrailingBuySellStrat (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrailingBuySellStrat__1_.py",
+  "chars": 29004
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrailingBuyStrat.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrailingBuyStrat.py",
+  "chars": 9127
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrailingBuyStrat2.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrailingBuyStrat2.py",
+  "chars": 13804
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrailingBuyStratCluc.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrailingBuyStratCluc.py",
+  "chars": 25438
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrailingBuyStratClucBBRPBMODE.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrailingBuyStratClucBBRPBMODE.py",
+  "chars": 35675
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrailingBuy_ClucHAnix_5m_E0V1E_by_TraNz (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrailingBuy_ClucHAnix_5m_E0V1E_by_TraNz__1_.py",
+  "chars": 24955
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrailingBuy_ClucHAnix_5m_E0V1E_by_TraNz.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrailingBuy_ClucHAnix_5m_E0V1E_by_TraNz.py",
+  "chars": 24955
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrainCatBoostStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrainCatBoostStrategy.py",
+  "chars": 5565
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrixStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrixStrategy.py",
+  "chars": 8829
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrixV15Strategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrixV15Strategy.py",
+  "chars": 12284
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrixV21Strategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrixV21Strategy.py",
+  "chars": 12875
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TrixV23Strategy (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TrixV23Strategy__1_.py",
+  "chars": 14209
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "TuplaBollinger.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\TuplaBollinger.py",
+  "chars": 2493
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "UltimateMomentumIndicator.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\UltimateMomentumIndicator.py",
+  "chars": 4964
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "UpSliceStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\UpSliceStrategy.py",
+  "chars": 3743
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "Uptrend.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\Uptrend.py",
+  "chars": 20634
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "UziChan.py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\UziChan.py",
+  "chars": 27951
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "PeetCrypto/freqtrade-stuff",
+  "path": "UziChan2 (1).py",
+  "file": "scratchpad\\code\\freqtrade\\PeetCrypto__freqtrade-stuff\\UziChan2__1_.py",
+  "chars": 28102
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/BinHV27.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_BinHV27.py",
+  "chars": 8794
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/BinHV45.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_BinHV45.py",
+  "chars": 2828
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Cluc4.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Cluc4.py",
+  "chars": 3494
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Cluc4werk.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Cluc4werk.py",
+  "chars": 6402
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Cluc5werk.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Cluc5werk.py",
+  "chars": 9793
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Cluc6werk.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Cluc6werk.py",
+  "chars": 5966
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Cluc7werk.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Cluc7werk.py",
+  "chars": 4224
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/ClucCrypROI.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_ClucCrypROI.py",
+  "chars": 10229
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/ClucCrypSlow.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_ClucCrypSlow.py",
+  "chars": 9291
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/ClucFiatROI.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_ClucFiatROI.py",
+  "chars": 6157
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/ClucFiatSlow.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_ClucFiatSlow.py",
+  "chars": 4958
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/ClucHAnix.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_ClucHAnix.py",
+  "chars": 8070
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/ClucHAwerk.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_ClucHAwerk.py",
+  "chars": 13933
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Cluckie.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Cluckie.py",
+  "chars": 4782
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Enchilada.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Enchilada.py",
+  "chars": 9070
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Fakebuy.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Fakebuy.py",
+  "chars": 10281
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/FisherHull.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_FisherHull.py",
+  "chars": 2238
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Guacamole.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Guacamole.py",
+  "chars": 5806
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Hacklemore.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Hacklemore.py",
+  "chars": 9602
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Hacklemore2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Hacklemore2.py",
+  "chars": 5856
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Hacklemore3.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Hacklemore3.py",
+  "chars": 6600
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/HacklemoreX.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_HacklemoreX.py",
+  "chars": 8721
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Hacklemost.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Hacklemost.py",
+  "chars": 5921
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Ichis.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Ichis.py",
+  "chars": 5599
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Infinite_ROI.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Infinite_ROI.py",
+  "chars": 4180
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/KAMACCIRSI.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_KAMACCIRSI.py",
+  "chars": 7589
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/KamaRsi2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_KamaRsi2.py",
+  "chars": 8065
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Kamaflage.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Kamaflage.py",
+  "chars": 5712
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Lateralus.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Lateralus.py",
+  "chars": 10153
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Pmax.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Pmax.py",
+  "chars": 1468
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Renko.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Renko.py",
+  "chars": 4337
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/RenkoYolo.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_RenkoYolo.py",
+  "chars": 1662
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-0318.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-0318.py",
+  "chars": 20689
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-Badstreak.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-Badstreak.py",
+  "chars": 18233
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-Badstreak2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-Badstreak2.py",
+  "chars": 20390
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-v1.3.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-v1.3.py",
+  "chars": 18826
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-v1.4.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-v1.4.py",
+  "chars": 17771
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-v1.5.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-v1.5.py",
+  "chars": 10621
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-v1.6.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-v1.6.py",
+  "chars": 25359
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-v1.py",
+  "chars": 14239
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism-v2.py",
+  "chars": 20835
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism.py",
+  "chars": 19248
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism2MM.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism2MM.py",
+  "chars": 9848
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Schism6.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Schism6.py",
+  "chars": 9578
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/SchismLess-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_SchismLess-v2.py",
+  "chars": 9615
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/SchismLess.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_SchismLess.py",
+  "chars": 9277
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Slowbro.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Slowbro.py",
+  "chars": 3822
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-Con-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-Con-v1.py",
+  "chars": 28691
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-Con.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-Con.py",
+  "chars": 28691
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-tradedbexp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-tradedbexp.py",
+  "chars": 34069
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-v1.py",
+  "chars": 31243
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-v2.4.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-v2.4.py",
+  "chars": 24937
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-v2.5.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-v2.5.py",
+  "chars": 21793
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-v2.6.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-v2.6.py",
+  "chars": 24883
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-v2.py",
+  "chars": 28153
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-v3-fuck.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-v3-fuck.py",
+  "chars": 22700
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis-v3.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis-v3.py",
+  "chars": 26677
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/SolipsisMM.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_SolipsisMM.py",
+  "chars": 30202
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis_v3.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis_v3.py",
+  "chars": 24881
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Solipsis_v4.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Solipsis_v4.py",
+  "chars": 19189
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Stinkfist.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Stinkfist.py",
+  "chars": 14945
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/StochRSITEMA.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_StochRSITEMA.py",
+  "chars": 5846
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/SuperHV27.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_SuperHV27.py",
+  "chars": 16681
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Supertrend.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Supertrend.py",
+  "chars": 4492
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/Supertrend_ORIG.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_Supertrend_ORIG.py",
+  "chars": 6229
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/XtraThicc.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_XtraThicc.py",
+  "chars": 3364
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/YOLO.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_YOLO.py",
+  "chars": 1869
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/consensus_strat.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_consensus_strat.py",
+  "chars": 2320
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/gettinMoist.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_gettinMoist.py",
+  "chars": 3071
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/BinHV45HyperOpt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_BinHV45HyperOpt.py",
+  "chars": 3371
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/Cluc4werkHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_Cluc4werkHyperopt.py",
+  "chars": 9472
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/Cluc5werkHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_Cluc5werkHyperopt.py",
+  "chars": 10149
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/Cluc6werkHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_Cluc6werkHyperopt.py",
+  "chars": 11786
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/Cluc7werkHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_Cluc7werkHyperopt.py",
+  "chars": 6794
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/ClucCrypROIHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_ClucCrypROIHyperopt.py",
+  "chars": 10305
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/ClucCrypSlowHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_ClucCrypSlowHyperopt.py",
+  "chars": 10462
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/ClucFiatROIHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_ClucFiatROIHyperopt.py",
+  "chars": 6796
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/ClucFiatSlowHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_ClucFiatSlowHyperopt.py",
+  "chars": 6797
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/ClucHAnixHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_ClucHAnixHyperopt.py",
+  "chars": 8799
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/ClucHAwerkHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_ClucHAwerkHyperopt.py",
+  "chars": 10761
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/CluckieHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_CluckieHyp.py",
+  "chars": 6843
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/FisherHullHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_FisherHullHyp.py",
+  "chars": 4139
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/GuacamoleHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_GuacamoleHyp.py",
+  "chars": 4319
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/HackieHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_HackieHyp.py",
+  "chars": 7656
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/HacklemoreOpt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_HacklemoreOpt.py",
+  "chars": 7059
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/HacklemostOpt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_HacklemostOpt.py",
+  "chars": 7063
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/KAMACCIRSI_Hyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_KAMACCIRSI_Hyperopt.py",
+  "chars": 7445
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/KamaRsi2Hyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_KamaRsi2Hyp.py",
+  "chars": 7975
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/KamaflageHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_KamaflageHyp.py",
+  "chars": 4319
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/LateralusHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_LateralusHyp.py",
+  "chars": 2847
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/PmaxHyper.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_PmaxHyper.py",
+  "chars": 5130
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/RenkoHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_RenkoHyp.py",
+  "chars": 3664
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/Schism2HypMM.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_Schism2HypMM.py",
+  "chars": 4416
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp-Badstreak.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp-Badstreak.py",
+  "chars": 4274
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp-Badstreak2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp-Badstreak2.py",
+  "chars": 2932
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp-v1.3.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp-v1.3.py",
+  "chars": 3677
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp-v1.4.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp-v1.4.py",
+  "chars": 2596
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp-v1.5.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp-v1.5.py",
+  "chars": 2213
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp-v1.6.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp-v1.6.py",
+  "chars": 3548
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp-v2.py",
+  "chars": 2787
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismHyp.py",
+  "chars": 4170
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SchismLessHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SchismLessHyp.py",
+  "chars": 2420
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-Con-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-Con-v1.py",
+  "chars": 3826
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-Con.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-Con.py",
+  "chars": 3826
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-v1.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-v1.py",
+  "chars": 5590
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-v2.4.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-v2.4.py",
+  "chars": 5658
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-v2.5.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-v2.5.py",
+  "chars": 5868
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-v2.6.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-v2.6.py",
+  "chars": 9534
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-v2.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-v2.py",
+  "chars": 4544
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp-v3.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp-v3.py",
+  "chars": 9051
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisHyp_v3.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisHyp_v3.py",
+  "chars": 9551
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SolipsisMMHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SolipsisMMHyp.py",
+  "chars": 5647
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/StinkfistHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_StinkfistHyp.py",
+  "chars": 4286
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/StochRSITEMAHyperopt.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_StochRSITEMAHyperopt.py",
+  "chars": 4411
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SuperHV27Hyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SuperHV27Hyp.py",
+  "chars": 7250
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/SupertrendHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_SupertrendHyp.py",
+  "chars": 6392
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/archived/hyperopts/YOLOHyp.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_archived_hyperopts_YOLOHyp.py",
+  "chars": 3994
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "werkkrew/freqtrade-strategies",
+  "path": "strategies/solipsis/Solipsis_v5.py",
+  "file": "scratchpad\\code\\freqtrade\\werkkrew__freqtrade-strategies\\strategies_solipsis_Solipsis_v5.py",
+  "chars": 18248
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "paulcpk/freqtrade-strategies-that-work",
+  "path": "DoubleEMACrossoverWithTrend.py",
+  "file": "scratchpad\\code\\freqtrade\\paulcpk__freqtrade-strategies-that-work\\DoubleEMACrossoverWithTrend.py",
+  "chars": 2497
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "paulcpk/freqtrade-strategies-that-work",
+  "path": "EMAPriceCrossoverWithThreshold.py",
+  "file": "scratchpad\\code\\freqtrade\\paulcpk__freqtrade-strategies-that-work\\EMAPriceCrossoverWithThreshold.py",
+  "chars": 2281
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "paulcpk/freqtrade-strategies-that-work",
+  "path": "MACDCrossoverWithTrend.py",
+  "file": "scratchpad\\code\\freqtrade\\paulcpk__freqtrade-strategies-that-work\\MACDCrossoverWithTrend.py",
+  "chars": 2575
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "paulcpk/freqtrade-strategies-that-work",
+  "path": "RSIDirectionalWithTrend.py",
+  "file": "scratchpad\\code\\freqtrade\\paulcpk__freqtrade-strategies-that-work\\RSIDirectionalWithTrend.py",
+  "chars": 2534
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "paulcpk/freqtrade-strategies-that-work",
+  "path": "RSIDirectionalWithTrendSlow.py",
+  "file": "scratchpad\\code\\freqtrade\\paulcpk__freqtrade-strategies-that-work\\RSIDirectionalWithTrendSlow.py",
+  "chars": 2558
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "Rikj000/MoniGoMani",
+  "path": "Legacy MoniGoMani/user_data/hyperopts/MoniGoManiHyperOpt.py",
+  "file": "scratchpad\\code\\freqtrade\\Rikj000__MoniGoMani\\Legacy_MoniGoMani_user_data_hyperopts_MoniGoManiHyperOpt.py",
+  "chars": 26146
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "Rikj000/MoniGoMani",
+  "path": "Legacy MoniGoMani/user_data/strategies/MoniGoMani.py",
+  "file": "scratchpad\\code\\freqtrade\\Rikj000__MoniGoMani\\Legacy_MoniGoMani_user_data_strategies_MoniGoMani.py",
+  "chars": 53122
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "Rikj000/MoniGoMani",
+  "path": "Legacy MoniGoMani/user_data/strategies/MoniGoManiHyperOpted.py",
+  "file": "scratchpad\\code\\freqtrade\\Rikj000__MoniGoMani\\Legacy_MoniGoMani_user_data_strategies_MoniGoManiHyperOpted.py",
+  "chars": 32765
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "Rikj000/MoniGoMani",
+  "path": "user_data/strategies/MoniGoManiHyperStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\Rikj000__MoniGoMani\\user_data_strategies_MoniGoManiHyperStrategy.py",
+  "chars": 11273
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "ClucHAnix/ClucHAnix.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\ClucHAnix_ClucHAnix.py",
+  "chars": 9520
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "ClucHAnix/ClucHAnix_5m.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\ClucHAnix_ClucHAnix_5m.py",
+  "chars": 10219
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/BBMod.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_BBMod.py",
+  "chars": 30120
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/BinHV27F.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_BinHV27F.py",
+  "chars": 11249
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/BinHV27_short.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_BinHV27_short.py",
+  "chars": 18672
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/ClucHAnix.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_ClucHAnix.py",
+  "chars": 8699
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/CombinedBinHAndCluc.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_CombinedBinHAndCluc.py",
+  "chars": 6339
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/ConsensusShort.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_ConsensusShort.py",
+  "chars": 17759
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/HourBasedStrategy.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_HourBasedStrategy.py",
+  "chars": 1579
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/Archive/ReinforcedQuickie.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_Archive_ReinforcedQuickie.py",
+  "chars": 20835
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/dry_run/E0V1EN.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_dry_run_E0V1EN.py",
+  "chars": 5644
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "ssssi/freqtrade_strs",
+  "path": "binance/dry_run/buy1_and_buynew/E0V1E.py",
+  "file": "scratchpad\\code\\freqtrade\\ssssi__freqtrade_strs\\binance_dry_run_buy1_and_buynew_E0V1E.py",
+  "chars": 4506
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "froggleston/cryptofrog-strategies",
+  "path": "CryptoFrog.py",
+  "file": "scratchpad\\code\\freqtrade\\froggleston__cryptofrog-strategies\\CryptoFrog.py",
+  "chars": 25118
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "raph92/freqtrade-strategies",
+  "path": "user_data/strategies/conductor/conductor.py",
+  "file": "scratchpad\\code\\freqtrade\\raph92__freqtrade-strategies\\user_data_strategies_conductor_conductor.py",
+  "chars": 16918
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "raph92/freqtrade-strategies",
+  "path": "user_data/strategies/gumbo1.py",
+  "file": "scratchpad\\code\\freqtrade\\raph92__freqtrade-strategies\\user_data_strategies_gumbo1.py",
+  "chars": 5264
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "raph92/freqtrade-strategies",
+  "path": "user_data/strategies/im_test.py",
+  "file": "scratchpad\\code\\freqtrade\\raph92__freqtrade-strategies\\user_data_strategies_im_test.py",
+  "chars": 7683
+ },
+ {
+  "lang": "freqtrade",
+  "repo": "raph92/freqtrade-strategies",
+  "path": "user_data/strategies/indicator_mix.py",
+  "file": "scratchpad\\code\\freqtrade\\raph92__freqtrade-strategies\\user_data_strategies_indicator_mix.py",
+  "chars": 4146
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "indicators/BB Winner.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\indicators_BB_Winner.pine",
+  "chars": 7530
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "multi/Alert BB + RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\multi_Alert_BB___RSI.pine",
+  "chars": 5759
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/MTF BB.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_MTF_BB.pine",
+  "chars": 4315
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/MTF RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_MTF_RSI.pine",
+  "chars": 1111
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/MTF+MACD.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_MTF_MACD.pine",
+  "chars": 8433
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/MacdNew.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_MacdNew.pine",
+  "chars": 7341
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/grid/GridBotDir [Alorse].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_grid_GridBotDir__Alorse_.pine",
+  "chars": 7195
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/BB + Aroon.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_BB___Aroon.pine",
+  "chars": 1183
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/BB Divergence.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_BB_Divergence.pine",
+  "chars": 1933
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/BB Winner LITE.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_BB_Winner_LITE.pine",
+  "chars": 2030
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/BB Winner PRO.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_BB_Winner_PRO.pine",
+  "chars": 7509
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/Bollinger Breakout [kodify].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_Bollinger_Breakout__kodify_.pine",
+  "chars": 1862
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/Exceeded candle.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_Exceeded_candle.pine",
+  "chars": 1927
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/MEMA + BB + RSI [Alorse].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_MEMA___BB___RSI__Alorse_.pine",
+  "chars": 4905
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/mean-reversion/Multi BB.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_mean-reversion_Multi_BB.pine",
+  "chars": 1957
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/2 EMA:SMA + RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_2_EMA_SMA___RSI.pine",
+  "chars": 2257
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/DMI Winner.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_DMI_Winner.pine",
+  "chars": 2963
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/Double RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_Double_RSI.pine",
+  "chars": 1312
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/MACD + BB + RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_MACD___BB___RSI.pine",
+  "chars": 6266
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/MACD + DMI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_MACD___DMI.pine",
+  "chars": 1602
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/MACD Long Strategy [Bunghole].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_MACD_Long_Strategy__Bunghole_.pine",
+  "chars": 3413
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/MACD+RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_MACD_RSI.pine",
+  "chars": 2379
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/QQE signals.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_QQE_signals.pine",
+  "chars": 2186
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/RSI + 1200.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_RSI___1200.pine",
+  "chars": 2671
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/RSI + EMA.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_RSI___EMA.pine",
+  "chars": 1744
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/Stoch RSI Crossover Strat + EMA - YT-Trade Pro.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_Stoch_RSI_Crossover_Strat___EMA_-_YT-Trade_Pro.pine",
+  "chars": 3547
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/StochRSI + Supertrend Strategy.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_StochRSI___Supertrend_Strategy.pine",
+  "chars": 1875
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/TTM Squeeze.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_TTM_Squeeze.pine",
+  "chars": 1751
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/momentum/Williams Vix Fix.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_momentum_Williams_Vix_Fix.pine",
+  "chars": 2407
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Flawless Victory.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Flawless_Victory.pine",
+  "chars": 4531
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Full Candle.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Full_Candle.pine",
+  "chars": 2585
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Improvising [Alorse].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Improvising__Alorse_.pine",
+  "chars": 3060
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Javo v1 [Repaint].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Javo_v1__Repaint_.pine",
+  "chars": 1737
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Omar Edited WF.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Omar_Edited_WF.pine",
+  "chars": 7998
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Omar MMR [Alorse].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Omar_MMR__Alorse_.pine",
+  "chars": 3276
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Password protected.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Password_protected.pine",
+  "chars": 1764
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Pin Bar Magic v1.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Pin_Bar_Magic_v1.pine",
+  "chars": 3812
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/StratBase.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_StratBase.pine",
+  "chars": 2010
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/Strategy Tester [Lupown].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_Strategy_Tester__Lupown_.pine",
+  "chars": 5236
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/other/TTM Squeeze EMA Strategy [Alorse].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_other_TTM_Squeeze_EMA_Strategy__Alorse_.pine",
+  "chars": 4306
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/3 EMA:SMA + Cross.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_3_EMA_SMA___Cross.pine",
+  "chars": 4419
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/Double Supertrend.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_Double_Supertrend.pine",
+  "chars": 3608
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/EMA Moving away Strategy [Alorse].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_EMA_Moving_away_Strategy__Alorse_.pine",
+  "chars": 1784
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/HA UnivLong&Short Futures.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_HA_UnivLong_Short_Futures.pine",
+  "chars": 1718
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/Heikin Ashi Strategy V2 [FAKE].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_Heikin_Ashi_Strategy_V2__FAKE_.pine",
+  "chars": 3085
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/MA Cross + DMI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_MA_Cross___DMI.pine",
+  "chars": 2689
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/Supertrend + EMA rebound [Alorse].pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_Supertrend___EMA_rebound__Alorse_.pine",
+  "chars": 3020
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/Supertrend + RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_Supertrend___RSI.pine",
+  "chars": 2033
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/Supertrend.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_Supertrend.pine",
+  "chars": 2071
+ },
+ {
+  "lang": "pine",
+  "repo": "Alorse/pinescript-strategies",
+  "path": "strategies/trend/Tendency EMA + RSI.pine",
+  "file": "scratchpad\\code\\pine\\Alorse__pinescript-strategies\\strategies_trend_Tendency_EMA___RSI.pine",
+  "chars": 2328
+ },
+ {
+  "lang": "pine",
+  "repo": "AlbertoCuadra/algo_trading_weighted_strategy",
+  "path": "weighted_strategy.pine",
+  "file": "scratchpad\\code\\pine\\AlbertoCuadra__algo_trading_weighted_strategy\\weighted_strategy.pine",
+  "chars": 64581
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Account/tests/Account.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Account_tests_Account.test.mq5",
+  "chars": 1400
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Account/tests/AccountForex.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Account_tests_AccountForex.test.mq5",
+  "chars": 1412
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Buffer/tests/BufferCandle.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Buffer_tests_BufferCandle.test.mq5",
+  "chars": 1862
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Buffer/tests/BufferTick.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Buffer_tests_BufferTick.test.mq5",
+  "chars": 1786
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicator/tests/IndicatorTf.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicator_tests_IndicatorTf.test.mq5",
+  "chars": 3802
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/Special/tests/Indi_Custom.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_Special_tests_Indi_Custom.test.mq5",
+  "chars": 2243
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/Tick/tests/Indi_TickMt.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_Tick_tests_Indi_TickMt.test.mq5",
+  "chars": 1962
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_AC.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_AC.test.mq5",
+  "chars": 2037
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_AD.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_AD.test.mq5",
+  "chars": 2037
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ADX.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ADX.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ADXW.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ADXW.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_AMA.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_AMA.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_AO.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_AO.test.mq5",
+  "chars": 2037
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ASI.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ASI.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ATR.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ATR.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Alligator.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Alligator.test.mq5",
+  "chars": 2058
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_AppliedPrice.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_AppliedPrice.test.mq5",
+  "chars": 2102
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_BWMFI.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_BWMFI.test.mq5",
+  "chars": 2049
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_BWZT.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_BWZT.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Bands.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Bands.test.mq5",
+  "chars": 2046
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_BearsPower.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_BearsPower.test.mq5",
+  "chars": 2061
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_BullsPower.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_BullsPower.test.mq5",
+  "chars": 2061
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_CCI.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_CCI.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_CHO.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_CHO.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_CHV.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_CHV.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ColorBars.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ColorBars.test.mq5",
+  "chars": 2058
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ColorCandlesDaily.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ColorCandlesDaily.test.mq5",
+  "chars": 2082
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ColorLine.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ColorLine.test.mq5",
+  "chars": 2058
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_CustomMovingAverage.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_CustomMovingAverage.test.mq5",
+  "chars": 2088
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_DEMA.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_DEMA.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_DeMarker.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_DeMarker.test.mq5",
+  "chars": 2055
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Demo.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Demo.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_DetrendedPrice.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_DetrendedPrice.test.mq5",
+  "chars": 2073
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Drawer.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Drawer.test.mq5",
+  "chars": 2049
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Envelopes.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Envelopes.test.mq5",
+  "chars": 2058
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Force.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Force.test.mq5",
+  "chars": 2046
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_FractalAdaptiveMA.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_FractalAdaptiveMA.test.mq5",
+  "chars": 2070
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Fractals.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Fractals.test.mq5",
+  "chars": 2055
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Gator.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Gator.test.mq5",
+  "chars": 2046
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_HeikenAshi.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_HeikenAshi.test.mq5",
+  "chars": 2061
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Ichimoku.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Ichimoku.test.mq5",
+  "chars": 2055
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Killzones.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Killzones.test.mq5",
+  "chars": 2059
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_MA.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_MA.test.mq5",
+  "chars": 2037
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_MACD.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_MACD.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_MFI.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_MFI.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_MassIndex.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_MassIndex.test.mq5",
+  "chars": 2058
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Momentum.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Momentum.test.mq5",
+  "chars": 2055
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_OBV.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_OBV.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_OHLC.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_OHLC.test.mq5",
+  "chars": 2048
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_OsMA.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_OsMA.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Pattern.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Pattern.test.mq5",
+  "chars": 2063
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Pivot.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Pivot.test.mq5",
+  "chars": 2046
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Price.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Price.test.mq5",
+  "chars": 2052
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_PriceChannel.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_PriceChannel.test.mq5",
+  "chars": 2067
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_PriceFeeder.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_PriceFeeder.test.mq5",
+  "chars": 2064
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_PriceVolumeTrend.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_PriceVolumeTrend.test.mq5",
+  "chars": 2079
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_RS.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_RS.test.mq5",
+  "chars": 2037
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_RSI.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_RSI.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_RVI.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_RVI.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_RateOfChange.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_RateOfChange.test.mq5",
+  "chars": 2067
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_SAR.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_SAR.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_StdDev.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_StdDev.test.mq5",
+  "chars": 2049
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Stochastic.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Stochastic.test.mq5",
+  "chars": 2061
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_TEMA.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_TEMA.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_TRIX.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_TRIX.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_UltimateOscillator.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_UltimateOscillator.test.mq5",
+  "chars": 2085
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_VIDYA.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_VIDYA.test.mq5",
+  "chars": 2046
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_VROC.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_VROC.test.mq5",
+  "chars": 2043
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_Volumes.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_Volumes.test.mq5",
+  "chars": 2052
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_WPR.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_WPR.test.mq5",
+  "chars": 2040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_WilliamsAD.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_WilliamsAD.test.mq5",
+  "chars": 2061
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ZigZag.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ZigZag.test.mq5",
+  "chars": 2049
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Indicators/tests/Indi_ZigZagColor.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Indicators_tests_Indi_ZigZagColor.test.mq5",
+  "chars": 2064
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/Task.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_Task.test.mq5",
+  "chars": 2619
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/TaskAction.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_TaskAction.test.mq5",
+  "chars": 3074
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/TaskCondition.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_TaskCondition.test.mq5",
+  "chars": 3231
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/TaskGetter.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_TaskGetter.test.mq5",
+  "chars": 2921
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/TaskManager.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_TaskManager.test.mq5",
+  "chars": 3604
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/TaskObject.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_TaskObject.test.mq5",
+  "chars": 3040
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/TaskSetter.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_TaskSetter.test.mq5",
+  "chars": 2593
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/Taskable.car.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_Taskable.car.test.mq5",
+  "chars": 5151
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Task/tests/Taskable.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Task_tests_Taskable.test.mq5",
+  "chars": 3675
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "Tick/tests/TickManager.test.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\Tick_tests_TickManager.test.mq5",
+  "chars": 1682
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/BufferFXTTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_BufferFXTTest.mq5",
+  "chars": 1440
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/BufferStructTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_BufferStructTest.mq5",
+  "chars": 2820
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/BufferTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_BufferTest.mq5",
+  "chars": 2356
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/DatabaseTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_DatabaseTest.mq5",
+  "chars": 2997
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/DateTimeTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_DateTimeTest.mq5",
+  "chars": 3498
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/DrawIndicatorTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_DrawIndicatorTest.mq5",
+  "chars": 5383
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/EATest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_EATest.mq5",
+  "chars": 3469
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/IndicatorsTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_IndicatorsTest.mq5",
+  "chars": 45124
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/MathTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_MathTest.mq5",
+  "chars": 2775
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/OrderQueryTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_OrderQueryTest.mq5",
+  "chars": 5024
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/OrderTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_OrderTest.mq5",
+  "chars": 6326
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/StatsTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_StatsTest.mq5",
+  "chars": 2574
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/StrategyTest-RSI.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_StrategyTest-RSI.mq5",
+  "chars": 5951
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/StrategyTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_StrategyTest.mq5",
+  "chars": 4701
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/TickerTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_TickerTest.mq5",
+  "chars": 4302
+ },
+ {
+  "lang": "mql",
+  "repo": "EA31337/EA31337-classes",
+  "path": "tests/ValueStorageTest.mq5",
+  "file": "scratchpad\\code\\mql\\EA31337__EA31337-classes\\tests_ValueStorageTest.mq5",
+  "chars": 4773
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/experts/ZigZag EA.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_experts_ZigZag_EA.mq4",
+  "chars": 88062
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/experts/tools/Account Guard.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_experts_tools_Account_Guard.mq4",
+  "chars": 22883
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/experts/tools/HtmlReport2Chart.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_experts_tools_HtmlReport2Chart.mq4",
+  "chars": 42418
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/ALMA.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_ALMA.mq4",
+  "chars": 30689
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Average Range.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Average_Range.mq4",
+  "chars": 9261
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/BFX Volume.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_BFX_Volume.mq4",
+  "chars": 20114
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Bollinger Bands.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Bollinger_Bands.mq4",
+  "chars": 10271
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Brackets.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Brackets.mq4",
+  "chars": 8402
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/CCI.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_CCI.mq4",
+  "chars": 18486
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/ChartInfos.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_ChartInfos.mq4",
+  "chars": 311317
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Donchian Channel Width.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Donchian_Channel_Width.mq4",
+  "chars": 9707
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Donchian Channel.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Donchian_Channel.mq4",
+  "chars": 58304
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Equity Recorder.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Equity_Recorder.mq4",
+  "chars": 9235
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Grid.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Grid.mq4",
+  "chars": 19451
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/HalfTrend.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_HalfTrend.mq4",
+  "chars": 16767
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Heikin-Ashi.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Heikin-Ashi.mq4",
+  "chars": 18569
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Inside Bars.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Inside_Bars.mq4",
+  "chars": 31420
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Instrument Infos.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Instrument_Infos.mq4",
+  "chars": 28735
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Jurik Moving Average.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Jurik_Moving_Average.mq4",
+  "chars": 19618
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Kaufman Volatility.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Kaufman_Volatility.mq4",
+  "chars": 5511
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Keltner Channel SR.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Keltner_Channel_SR.mq4",
+  "chars": 16174
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Keltner Channel.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Keltner_Channel.mq4",
+  "chars": 10464
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/LFX Tracker.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_LFX_Tracker.mq4",
+  "chars": 61345
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/MA Channel Band.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_MA_Channel_Band.mq4",
+  "chars": 19348
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/MA Channel.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_MA_Channel.mq4",
+  "chars": 15137
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/MACD.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_MACD.mq4",
+  "chars": 24889
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Moving Average.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Moving_Average.mq4",
+  "chars": 24176
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/NonLagMA.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_NonLagMA.mq4",
+  "chars": 27027
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/SuperBars.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_SuperBars.mq4",
+  "chars": 38232
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/SuperTrend.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_SuperTrend.mq4",
+  "chars": 19345
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Tillson T3 Moving Average.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Tillson_T3_Moving_Average.mq4",
+  "chars": 33576
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/Trend Bars.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_Trend_Bars.mq4",
+  "chars": 12874
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/indicators/ZigZag.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_indicators_ZigZag.mq4",
+  "chars": 75257
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/libraries/rsfStdlib.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_libraries_rsfStdlib.mq4",
+  "chars": 364619
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/scripts/CloseOrders.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_scripts_CloseOrders.mq4",
+  "chars": 16181
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/scripts/HedgePosition.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_scripts_HedgePosition.mq4",
+  "chars": 4656
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/scripts/LFX.ExecuteTradeCmd.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_scripts_LFX.ExecuteTradeCmd.mq4",
+  "chars": 35787
+ },
+ {
+  "lang": "mql",
+  "repo": "rosasurfer/mt4-mql",
+  "path": "mql40/scripts/LFX.OpenPosition.mq4",
+  "file": "scratchpad\\code\\mql\\rosasurfer__mt4-mql\\mql40_scripts_LFX.OpenPosition.mq4",
+  "chars": 18044
+ }
+]
