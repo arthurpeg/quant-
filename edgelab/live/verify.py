@@ -174,7 +174,7 @@ def verify_brick4() -> bool:
                 a_trades.append(trade(entry_i, entry_px, risk,
                                       stop if o[t] >= stop else o[t], "stop")); in_pos = False
 
-    bt = run_ibs("NAS100", p)
+    bt = run_ibs("NAS100", p, cadence="literal")
     bt_trades = [(pd.Timestamp(r["entry_dt"]), round(float(r["entry"]), 3), round(float(r["exit"]), 3),
                   r["reason"], round(float(r["R"]), 6)) for _, r in bt.iterrows()]
     mism = [(x, y) for x, y in zip(a_trades, bt_trades) if x != y]
@@ -198,12 +198,11 @@ def verify_brick4() -> bool:
             b_trades.append(trade(entry_i, entry_px, risk,
                                   stop if o[T] >= stop else o[T], "stop")); in_pos = False
 
-    bt_R = sum(t[4] for t in bt_trades)
+    lit_R = sum(t[4] for t in bt_trades)
     dr_R = sum(t[4] for t in b_trades)
-    extra = len(bt_trades) - len(b_trades)
     print(f"  BRICK 4 (NAS IBS) driver cadence: {len(b_trades)} trades vs {len(bt_trades)} backtest "
-          f"({extra:+d} same-bar re-entries live cannot take) | total R {dr_R:+.1f} vs {bt_R:+.1f} "
-          f"({dr_R - bt_R:+.1f} R over {len(bt)} trades)")
+          f"| total R {dr_R:+.1f} vs {lit_R:+.1f} ({dr_R - lit_R:+.1f} R) - the reports "
+          f"use the LIVE cadence, run_ibs(cadence='live')")
     return same
 
 

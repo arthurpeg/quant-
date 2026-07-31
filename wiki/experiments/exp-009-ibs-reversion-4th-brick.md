@@ -27,7 +27,10 @@ in **R** to match the book. k-ATR sweep, all-prop-index generalization, correlat
 3 bricks via the exact `scratchpad/verify_bricks.py` daily-R construction, then the
 canonical block-bootstrap MC (`monte_carlo_static.py` methodology).
 
-**Result 1 — the IBS edge is a US-index phenomenon.** k=2.5·ATR, net of ~2pt:
+**Result 1 — the IBS edge is a US-index phenomenon.** k=2.5·ATR, net of ~2pt.
+⚠️ This universe sweep (and results 2–3) was run on the **exploratory `literal` loop**;
+the lead name's live-cadence figures are t=5.16 / +4.8 R/yr (see caveat 4). The ranking
+across assets is unaffected.
 
 | Asset | t | E[R] | R/yr | +yrs | | Asset | t |
 |---|---|---|---|---|---|---|---|
@@ -49,8 +52,8 @@ The honest signal is NAS100 / US500 / US2000 individually.
 
 Same order as the existing brick-brick corrs (~0.02). Elegant: IBS NAS100 is on the **same
 asset as brick 1** yet corr ≈ 0 — intraday breakout and daily-close reversion are
-orthogonal mechanisms on one instrument. (Canonical re-run on the report's daily-R
-construction: **+0.024 / −0.017 / −0.035**, max |corr| **0.035** — same verdict.)
+orthogonal mechanisms on one instrument. (Canonical live-cadence re-run on the report's
+daily-R construction: **−0.00 / −0.03 / −0.01**, max |corr| **0.03** — same verdict.)
 
 **Result 3 — robustness (the tests that killed GER40 / Forecast-to-Fill).**
 NAS100 IBS k=2.5: cost-robust to **6pt → t=4.44**; **split-half early t=3.32 / late t=3.30**
@@ -63,26 +66,28 @@ NAS100 IBS k=2.5: cost-robust to **6pt → t=4.44**; **split-half early t=3.32 /
 | | R/yr | maxDD | RoMaD | Sharpe |
 |---|---|---|---|---|
 | 3-brick | +32.5 | 15.8R | 2.06 | 2.42 |
-| **4-brick (+IBS)** | **+38.2** | **13.4R** | **2.85** | **2.63** |
+| **4-brick (+IBS), live cadence** | **+37.3** | **13.8R** | **2.71** | **2.59** |
 
 First candidate ever to **raise Sharpe AND lower maxDD AND add return** — the ⭐ ledger
 candidates (GER40, US500-ORB) *lowered* Sharpe or were correlated to brick 1.
 
 **Result 5 — Monte Carlo** (block-bootstrap B=14, 40k sims, canonical methodology):
-P(profit yr) **96.5%→98.2%**, median **+32.1→+37.6 R/yr**, **5th-pct year +2.6→+7.7 R**
-(the diversification signature — the bad-luck floor lifts), median maxDD 10.5→10.0 R,
-Sharpe 2.42→2.63. Challenge pass @1%/trade **90.0%→92.8%**, median time 4.2→3.8 mo; worst
-day unchanged −4.15R (IBS never trades the book's worst day) so the ~1.2% ceiling holds.
+P(profit yr) **96.5%→98.1%**, median **+32.1→+36.8 R/yr**, **5th-pct year +2.6→+7.1 R**
+(the diversification signature — the bad-luck floor lifts), median maxDD 10.5→9.9 R,
+Sharpe 2.42→2.59. Challenge pass @1%/trade **90.0%→92.6%**, median time 4.2→3.8 mo. Worst
+day moves −4.15→**−4.43 R** (IBS shifts which day is worst), so the structural sizing
+ceiling tightens from ~1.2% to **~1.1%/trade**.
 
-⚠️ Results 4–5 are the **canonical re-run** (2026-07-31, `edgelab/reports/build_reports.py`
-→ `monte_carlo_static.build_daily_R` + `simulate`). The first pass from the exploratory
-scratchpad scripts read marginally higher (+38.3 R/yr, maxDD 13.3 R, MC median +37.8,
-5th-pct +8.0) — same conclusion, ±0.1–0.6 R of construction/seed noise. The canonical
+⚠️ Results 4–5 are the **canonical re-run on the LIVE cadence** (2026-07-31,
+`edgelab/reports/build_reports.py` → `monte_carlo_static.build_daily_R` + `simulate`).
+Two successive corrections got here: the exploratory scratchpad pass read +38.3 R/yr, the
+first canonical pass +38.2, and the live-cadence recut **+37.3**. The last step is not
+noise — it removes IBS trades no deployed driver can take (see caveat 4). The canonical
 numbers are the ones in [[system]] and the two HTML reports.
 
 **Verdict.** ✅ **Candidate 4th brick = NAS100 IBS reversion, k=2.5·ATR.** Genuine,
 decorrelated, robust (cost + split-half + bootstrap), and it improves the book on every
-metric. **Caveats / not-yet-deployed:**
+metric, and it is **deployed live**. **Caveats:**
 1. **Long equity beta.** The whole IBS family is long-only reversion on US indices →
    structurally long equity. The daily-R corr ~0 **understates tail co-movement in a
    secular bear** (2018 −6R, 2022 −3.7R here, stop-bounded but real); a 2000-02-type
@@ -93,12 +98,17 @@ metric. **Caveats / not-yet-deployed:**
    but shared feed/regime risk); US500 variant avoids it but is more fragile.
 4. **DEPLOYED live 2026-07-31** ([`edgelab/edges/ibs.py`](../../edgelab/edges/ibs.py) +
    `edgelab/live/` `NasIbsStrategy`, magic 105). `verify` proves the live signal layer
-   reproduces **314/314 trades exactly**. But the deployable version earns
-   **+4.81 R/yr, not +5.64**: `run_ibs` can re-enter on the *same daily bar* a stop fired,
-   filling at that bar's **open** — a price already past by then. 13 such trades over
-   2018-07→2026-07 = **−6.8 R** that no live driver can capture. The edge is unharmed
-   (live-cadence **t=5.16 / PF 2.21 / 8-9 +yrs** vs backtest 4.77 / 1.99), but the book's
-   canonical +38.2 R/yr is **~0.8 R/yr optimistic** because the reports use `run_ibs`.
+   reproduces the exploratory loop **314/314 trades exactly**. But wiring it revealed that
+   the loop is **not fully reachable by any driver**: it earns **+4.81 R/yr, not +5.64**.
+   Three ordering artefacts, all from running the entry test *after* the exit block of the
+   same bar and testing the exit on the *current* bar rather than the last closed one:
+   (a) it can **re-enter on the very bar a stop fired**, at that bar's open — a price
+   already past; (b) it **never tests the exit on the entry bar**, so a signal exit needs
+   ≥2 bars while a driver can exit after one; (c) it resolves the stop *before* the entry.
+   The edge is unharmed — the live cadence is **stronger** (t 4.77→**5.16**, PF
+   1.99→**2.21**) — it is the R/yr that was optimistic. **The whole book was recut on the
+   live cadence** (2026-07-31): +38.2→**+37.3 R/yr**. `run_ibs(cadence="live")` is now the
+   default; `cadence="literal"` survives only for the `verify` parity proof.
 
 **Code.** [`edgelab/edges/ibs.py`](../../edgelab/edges/ibs.py) (the rule, R-based, canonical)
 and [`edgelab/reports/build_reports.py`](../../edgelab/reports/build_reports.py) (rebuilds

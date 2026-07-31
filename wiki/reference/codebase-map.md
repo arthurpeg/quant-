@@ -47,7 +47,9 @@ updated: 2026-07-11
   `edgelab/README.md`. Isolated to avoid shadowing the root `backtest.py`.
   [[prop-firm-universe]], [[cross-sectional-vs-directional]]
 - `edgelab/edges/ibs.py` — brick 4: IBS reversion (`run_ibs`, `ibs_daily_R`), R-based with
-  the mandatory ATR stop. [[exp-009-ibs-reversion-4th-brick]]
+  the mandatory ATR stop. `cadence='live'` (default, what the book uses) = the deployed
+  driver's once-per-rollover clock; `cadence='literal'` = the exploratory loop, kept only
+  for the `verify` parity proof. [[exp-009-ibs-reversion-4th-brick]]
 - `edgelab/reports/monte_carlo_static.py` — canonical Monte Carlo of the frozen
   **4-brick** book (no compounding, fixed-fractional trade-R on a calendar index):
   `build_daily_R()` (the book's daily-R series) + `simulate()` (block bootstrap) feed both

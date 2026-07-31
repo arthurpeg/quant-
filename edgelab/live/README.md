@@ -26,12 +26,15 @@ Expected: brick1 830/830 exact, brick3 identical, brick2 ~98% (2 holiday-shifted
 month-ends — the business-day calendar approximation, see below), brick4 **314/314
 trades exact** on signal math.
 
-⚠️ **Brick 4 live is ~0.8 R/yr thinner than its backtest, by construction.** `run_ibs`
-can re-enter on the *same daily bar* a stop fired, filling at that bar's **open** — a
-price already in the past by the time the stop hits. A live driver cannot do that, and
-this one does not try. Over 2018-07→2026-07 that is 13 trades and **+4.81 R/yr live vs
-+5.64 R/yr backtest** (t even improves, 5.16 vs 4.77; PF 2.21 vs 1.99). `verify` prints
-the gap on every run so it can never drift unnoticed.
+⚠️ **Brick 4's exploratory loop was not fully reachable by any driver** — it read
+**+5.64 R/yr** where only **+4.81** can be traded. Three ordering artefacts: it ran its
+entry test *after* the exit block of the same bar (so it could re-enter on the very bar a
+stop fired, at that bar's open — a price already past), it never tested the exit on the
+entry bar (a signal exit needed ≥2 bars; a driver can exit after one), and it resolved the
+stop before the entry. The edge is *stronger* on the live cadence (t 5.16 vs 4.77, PF 2.21
+vs 1.99) — only the R/yr was optimistic. **`run_ibs(cadence="live")` is now the default and
+the whole book is priced on it**; `cadence="literal"` survives only so `verify` can prove
+the live signal math reproduces the original loop. `verify` prints the gap on every run.
 
 ## Current mode: LIVE orders on a DEMO account
 `config_live.yaml` ships with `live_trading: true` — the runner **sends real MT5

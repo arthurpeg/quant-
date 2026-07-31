@@ -10,7 +10,8 @@ actually trades — not Yahoo. That makes this the LIVE-realistic book rather th
 Yahoo-optimistic one (Yahoo's longer history + different daily-close boundary).
 
 Bricks: NAS100 US-open ATR-breakout (low-vol) + XAU turn-of-month + MACD(12,26,9)+RSI BTC+ETH
-        + NAS100 IBS reversion (brick 4, added 2026-07-31 — see exp-009).
+        + NAS100 IBS reversion (brick 4, added 2026-07-31 - see exp-009), priced on the
+        LIVE driver cadence (run_ibs(cadence='live')) so the book is what can be traded.
 Run from repo root:  python edgelab/reports/monte_carlo_static.py
 Outputs: (0) full 1-yr R distribution, (1) +15%/-10%static/-5% challenge time-to-pass by sizing,
          (2) funded (-10% static, monthly payout resets to initial) optimal sizing.
@@ -72,7 +73,9 @@ def build_daily_R():
         cr.append(pd.Series(tr['ret'].values, index=ex))
         n_crypto += int((ex.dt.tz_localize(None) >= START).sum())
     crypto = pd.concat(cr).groupby(lambda x: pd.Timestamp(x).tz_localize(None).normalize()).sum()
-    i0 = run_ibs('NAS100', IBSParams(sl_atr=2.5))           # brick 4: IBS reversion
+    # brick 4: IBS reversion, on the cadence the deployed driver actually runs
+    # (cadence='live'; the exploratory 'literal' loop reads ~0.8 R/yr richer).
+    i0 = run_ibs('NAS100', IBSParams(sl_atr=2.5), cadence='live')
     ibs = pd.Series(i0['R'].values, index=pd.to_datetime(i0['exit_dt'])).groupby(lambda x: x.normalize()).sum()
     n_ibs = int((pd.to_datetime(i0['exit_dt']) >= START).sum())
     for x in (nas, gold, crypto, ibs):

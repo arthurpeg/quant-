@@ -21,7 +21,7 @@ status: frozen (in-sample; forward-test pending)
 | 1 | **US-open ATR breakout**, low-vol regime (ATR3<ATR20 on D1) | NAS100 (real M1) | intraday breakout | [`edgelab/intraday/atr_breakout.py`](../edgelab/intraday/atr_breakout.py) — `run_atr_breakout('NAS100', regime_mode='low', direction='both')` | +11.6 R/yr, PF 1.27 |
 | 2 | **Turn-of-month**, SL = 1.5·ATR14 | XAUUSD (D1) | seasonality | [`edgelab/edges/turn_of_month.py`](../edgelab/edges/turn_of_month.py) — `run_turn_of_month('XAUUSD', sl_atr=1.5)` | +2.2 R/yr, PF 1.68 |
 | 3 | **MACD(12,26,9)+RSI** ([arXiv 2206.12282](https://arxiv.org/abs/2206.12282)) | BTC+ETH (D1) | crypto trend | daily `BacktestEngine` + `macd_rsi` signal; data `data_cache_crypto/` (Yahoo) | +24.0 R/yr (Yahoo) / **+16.7 R/yr (Pepperstone, live data)** |
-| 4 | **IBS reversion**, SL = 2.5·ATR14 (buy IBS<0.2, exit IBS>0.8 / 30-bar) | NAS100 (D1) | intraday-position reversion | [`edgelab/edges/ibs.py`](../edgelab/edges/ibs.py) — `run_ibs('NAS100', IBSParams(sl_atr=2.5))` | **+5.2 R/yr, PF 1.94, t=4.68** |
+| 4 | **IBS reversion**, SL = 2.5·ATR14 (buy IBS<0.2, exit IBS>0.8 / 30-bar) | NAS100 (D1) | intraday-position reversion | [`edgelab/edges/ibs.py`](../edgelab/edges/ibs.py) — `run_ibs('NAS100', IBSParams(sl_atr=2.5))` (live cadence) | **+4.8 R/yr, PF 2.21, t=5.16** |
 
 Brick 4 (added 2026-07-31, [[exp-009-ibs-reversion-4th-brick]]) is the first brick-4
 candidate to **improve the book on every axis**. US500 IBS is the same-asset-avoiding
@@ -55,18 +55,17 @@ open. See [[ledger]] and [[lessons]].
 ## Decorrelation & combined backtest (equal 1 R/trade, 2018-07→2026-07, 8 yr)
 
 Pairwise daily-P&L correlations all ≈ 0. Brick 4 (IBS NAS100) vs the others:
-**+0.024 / −0.017 / −0.035** (NAS / gold / crypto) — same order as the existing
-brick-brick corrs (NAS/gold +0.019, NAS/crypto −0.014, gold/crypto −0.007). (The
-exploratory run reported +0.001/+0.016/−0.008 on a slightly different daily-R
-construction; both say the same thing — max |corr| ≈ 0.03.)
+**−0.00 / −0.03 / −0.01** (NAS / gold / crypto) — same order as the existing
+brick-brick corrs (NAS/gold +0.02, NAS/crypto −0.01, gold/crypto −0.01). Max |corr|
+across the whole 4×4 matrix is **0.03**.
 
 | Metric | 3-brick | **4-brick (+ IBS NAS100)** |
 |--------|---------|-----------|
-| **Total (Pepperstone, canonical)** | +263 R (+32.5 R/yr) | **+308 R (+38.2 R/yr)**; NAS +12.9 + gold +2.5 + crypto +17.1 + IBS +5.6 |
-| maxDD / RoMaD / Sharpe | 15.8 R / 2.06 / 2.42 | **13.4 R / 2.85 / 2.63** |
-| worst day | −4.15 R | −4.15 R (IBS never trades the worst day) |
-| MC median R/yr, P(profit) | +32.1, 96.5% | **+37.6, 98.2%** |
-| MC 5th-pct year, median maxDD | +2.6 R, 10.5 R | **+7.7 R, 10.0 R** |
+| **Total (Pepperstone + live cadence, canonical)** | +263 R (+32.5 R/yr) | **+301 R (+37.3 R/yr)**; NAS +12.9 + gold +2.5 + crypto +17.1 + IBS +4.8 |
+| maxDD / RoMaD / Sharpe | 15.8 R / 2.06 / 2.42 | **13.8 R / 2.71 / 2.59** |
+| worst day | −4.15 R | **−4.43 R** (IBS shifts which day is worst) |
+| MC median R/yr, P(profit) | +32.1, 96.5% | **+36.8, 98.1%** |
+| MC 5th-pct year, median maxDD | +2.6 R, 10.5 R | **+7.1 R, 9.9 R** |
 
 Adding brick 4 **raises return AND Sharpe AND lowers maxDD** — the first candidate to do
 all three (the ⭐ [[ledger]] candidates lowered Sharpe or correlated to brick 1). Combined
@@ -92,33 +91,33 @@ trade-R on a **calendar** index. The MC median matches the historical backtest t
 — the correctness check for a block-bootstrap. Reproducible:
 [`edgelab/reports/monte_carlo_static.py`](../edgelab/reports/monte_carlo_static.py).
 
-**4-brick, 1-year distribution (40k sims, blocks of 14 d):** P(profitable year) = **98.2%**,
-mean **+38.0 R** (historical +38.2).
+**4-brick, 1-year distribution (40k sims, blocks of 14 d):** P(profitable year) = **98.1%**,
+mean **+37.2 R** (historical +37.3).
 
 | Pct | annual R | maxDD R |
 |-----|---------:|--------:|
-| 5th | +7.7 | 5.9 |
-| 25th | +25.0 | 8.0 |
-| **50th** | **+37.6** | **10.0** |
-| 75th | +50.6 | 12.8 |
-| 95th | +69.7 | 18.5 |
+| 5th | +7.1 | 5.9 |
+| 25th | +24.3 | 7.9 |
+| **50th** | **+36.8** | **9.9** |
+| 75th | +49.8 | 12.7 |
+| 95th | +68.8 | 18.5 |
 
-maxDD tail: 99th pct 24.0 R, worst 44.9 R.
+maxDD tail: 99th pct 24.1 R, worst 46.0 R.
 
 ## Prop sizing — firm with STATIC drawdown (target +15% / total −10% / daily −5%)
 
-**Structural ceiling ≈ 1.2%/trade:** the worst historical day is −4.15 R, so above
-~1.2% the −5% daily rule starts causing breaches.
+**Structural ceiling ≈ 1.1%/trade:** the worst historical day is −4.43 R, so above
+~1.1% the −5% daily rule starts causing breaches.
 
 **Challenge (time-to-pass, 4-brick):**
-- **1.00%/trade = optimal** — **92.8%** pass in **~3.8 months** median, **0%** daily-rule breaches.
-- 0.75% = 96.5% pass, ~5.4 months (max safety).
-- ≥1.25% collapses pass rate (71.9%) as the daily rule bites (19.4% daily breaches).
+- **1.00%/trade = optimal** — **92.6%** pass in **~3.8 months** median, **0%** daily-rule breaches.
+- 0.75% = 96.3% pass, ~5.5 months (max safety).
+- ≥1.25% collapses pass rate (73.4%) as the daily rule bites (17.4% daily breaches).
 
 **Funded (static −10% floor, monthly payout resets balance to initial):**
-- **0.50%/trade** → ~**19.7%/yr** withdrawn, **1.8%** ruin/yr (keep-the-account choice).
-- 0.75% → ~28.9%/yr, ~12% ruin/yr.
-- **Never above 1%** — E[withdrawn] plateaus at 41–44% while ruin explodes past 49%.
+- **0.50%/trade** → ~**19.3%/yr** withdrawn, **1.9%** ruin/yr (keep-the-account choice).
+- 0.75% → ~28.3%/yr, ~12% ruin/yr.
+- **Never above 1%** — E[withdrawn] plateaus at 40–43% while ruin explodes past 49%.
 - **Asymmetric plan:** pass the challenge at 1.0% (speed), drop to 0.5% once funded (protection).
 
 **Payout cadence:** biweekly is **not** better. Annual income is ~flat across cadence,
@@ -149,9 +148,10 @@ live-realistic window; `scratchpad/verify_bricks.py`):
 | **combined** | — | **+32.5** | — | Sharpe **2.42** | 8/9 |
 
 Decorrelation confirmed: NAS/gold +0.02, NAS/crypto −0.01, gold/crypto −0.01.
-(This audit predates brick 4; **brick 4 IBS** n=300, +5.6 R/yr, t=4.68 was added and
-re-run into the canonical reports on **2026-07-31** — corrs to the three all ≤|0.03|,
-combined → +38.2 R/yr, Sharpe 2.63. See [[exp-009-ibs-reversion-4th-brick]].)
+(This audit predates brick 4; **brick 4 IBS** was added and re-run into the canonical
+reports on **2026-07-31**: on the live cadence n=287, **+4.8 R/yr, t=5.16**, corrs to the
+three all ≤|0.03|, combined → **+37.3 R/yr, Sharpe 2.59**.
+See [[exp-009-ibs-reversion-4th-brick]].)
 
 **(c) Robustness stress** (`scratchpad/robustness.py`) — the confidence order is
 **brick 3 > brick 1 > brick 2**:
@@ -179,13 +179,16 @@ only remaining judge is forward-test time; nothing in the code needs changing.
    data** (t=3.93, +16.7 R/yr) but crypto **prop-tradability varies by firm** — verify
    your firm allows it before deploying; brick 4 is **long equity beta** (corr ~0
    understates tail co-movement in a secular bear).
-2b. **Brick 4 live is thinner than its backtest by construction: +4.8 vs +5.6 R/yr.**
-   `run_ibs` can re-enter on the **same daily bar a stop fired**, filling at that bar's
-   *open* — a price already in the past by then. No live driver can take those (13 trades,
-   −6.8 R over 2018-07→2026-07). The edge itself is unaffected (live-cadence **t=5.16**,
-   PF 2.21, 8/9 +yrs — both *better* than the backtest's 4.77/1.99). The canonical reports
-   still use `run_ibs`, so the book's **+38.2 R/yr reads ~0.8 R/yr optimistic**.
-   `python -m edgelab.live.verify` prints this gap on every run.
+2b. **The whole book is now priced on the LIVE cadence** (recut 2026-07-31). Brick 4's
+   exploratory loop read **+5.6 R/yr**; only **+4.8** is reachable by a real driver, so the
+   book moved **+38.2 → +37.3 R/yr** (Sharpe 2.63 → 2.59, maxDD 13.4 → 13.8 R, worst day
+   −4.15 → −4.43 R). Three ordering artefacts of that loop caused it — same-bar re-entry
+   after a stop, no exit test on the entry bar, stop resolved before the entry — all
+   documented in `edgelab/edges/ibs.py::run_ibs`. `cadence="live"` (default) is the
+   tradeable book; `cadence="literal"` reproduces the exploratory loop and is used **only**
+   by `verify` to prove the live signal math matches it. The edge is *stronger* on the live
+   cadence (**t 4.77 → 5.16**, PF 1.99 → 2.21) — it is the R/yr that was optimistic, not
+   the edge. Bricks 1–3 were already live-cadence.
 3. Block-bootstrap **understates long crypto bear regimes** → real funded ruin likely
    a bit above the numbers above → argues for the conservative sizing end.
 

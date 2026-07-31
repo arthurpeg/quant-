@@ -57,14 +57,41 @@ def _wilder_atr(d: pd.DataFrame, n: int) -> pd.Series:
     return tr.ewm(alpha=1.0 / n, adjust=False).mean()
 
 
-def run_ibs(symbol: str = "NAS100", params: IBSParams | None = None) -> pd.DataFrame:
+def run_ibs(symbol: str = "NAS100", params: IBSParams | None = None,
+            cadence: str = "live") -> pd.DataFrame:
     """R-based IBS backtest with a MANDATORY stop. One position at a time.
 
     Signals fire on a bar close and fill at the NEXT bar's open (Pine default). The stop
     is checked intrabar on the daily low (gap-aware: a gap-through fills at the open).
     Returns a trades frame with an ``R`` column (net of round-trip cost) and ``exit_dt``.
+
+    ``cadence`` selects WHICH clock the rules are evaluated on:
+
+    * ``"live"`` (default, and what the portfolio / Monte-Carlo reports use) — the cadence
+      the deployed driver actually runs (`edgelab/live/strategies.py::NasIbsStrategy`):
+      **one decision per daily-bar rollover**, taken on the last CLOSED bar, filling at the
+      new bar's open. This is the book that can really be traded.
+    * ``"literal"`` — the original exploratory loop of [[exp-009]], kept so
+      `edgelab/live/verify.py` can prove the live signal math reproduces it exactly.
+
+    The two differ in three places, all artefacts of the literal loop's ordering — it ran
+    its entry test AFTER the exit block of the same bar, and evaluated the exit on the
+    CURRENT bar rather than the last closed one:
+
+    1. **Same-bar re-entry.** literal can re-open on the very bar a stop fired, filling at
+       that bar's OPEN — a price already in the past by then. Live cannot.
+    2. **No exit test on the entry bar.** literal never looks at the entry bar's own IBS
+       (it enters at the bottom of that iteration), so a signal exit needs >=2 bars. Live
+       sees the entry bar close at the next rollover and can exit after ONE bar.
+    3. **Stop before entry.** literal resolves the stop of bar t before considering an
+       entry on bar t; live is flat only from the next rollover on.
+
+    Net on NAS100 2018-07..2026-07: literal +5.64 R/yr, live **+4.81 R/yr** (t 4.77 -> 5.16,
+    PF 1.99 -> 2.21). The edge is unchanged; the literal figure was optimistic.
     """
     p = params or IBSParams()
+    if cadence not in ("live", "literal"):
+        raise ValueError(f"cadence must be 'live' or 'literal', got {cadence!r}")
     d = _load_d1(symbol)
     o, h, l, c = (d[x].to_numpy() for x in ("open", "high", "low", "close"))
     rng = np.where((h - l) == 0, np.nan, h - l)
@@ -72,50 +99,68 @@ def run_ibs(symbol: str = "NAS100", params: IBSParams | None = None) -> pd.DataF
     atr = _wilder_atr(d, p.atr_p).shift(1).to_numpy()   # prev-day ATR (causal, known at entry)
     idx = d.index
     n = len(d)
+    trades: list[dict] = []
+
+    def rec(entry_bar, exit_bar, entry_px, exit_px, risk, reason):
+        trades.append({"entry_dt": pd.Timestamp(idx[entry_bar]).tz_localize(None),
+                       "exit_dt": pd.Timestamp(idx[exit_bar]).tz_localize(None),
+                       "entry": entry_px, "exit": exit_px, "reason": reason,
+                       "bars_held": exit_bar - entry_bar, "r_dist": risk,
+                       "R": (exit_px - entry_px - p.cost_price) / risk})
+
+    def can_enter(t):
+        return (t >= 1 and ibs[t - 1] < p.ibs_low and np.isfinite(ibs[t - 1])
+                and np.isfinite(atr[t - 1]) and atr[t - 1] > 0)
 
     in_pos = False
     entry_bar = -1
     entry_px = stop = risk = np.nan
-    trades: list[dict] = []
 
-    for t in range(n):
-        if in_pos:
-            reason = None
-            exit_px = np.nan
-            if l[t] <= stop:                                   # intrabar stop
-                exit_px = stop if o[t] >= stop else o[t]        # gap-through -> open
-                reason = "stop"
-            else:
-                sig = (ibs[t] > p.ibs_high) or ((t - entry_bar) >= p.max_hold)
-                if sig and t + 1 < n:
-                    exit_px = o[t + 1]
-                    reason = "ibs" if ibs[t] > p.ibs_high else "time"
-                elif sig:
-                    exit_px = c[t]
-                    reason = "eod"
-            if reason:
-                R = (exit_px - entry_px - p.cost_price) / risk
-                trades.append({"entry_dt": pd.Timestamp(idx[entry_bar]).tz_localize(None),
-                               "exit_dt": pd.Timestamp(idx[t]).tz_localize(None),
-                               "entry": entry_px, "exit": exit_px, "reason": reason,
-                               "bars_held": t - entry_bar, "r_dist": risk, "R": R})
+    if cadence == "literal":
+        for t in range(n):
+            if in_pos:
+                reason = None
+                exit_px = np.nan
+                if l[t] <= stop:                                   # intrabar stop
+                    exit_px = stop if o[t] >= stop else o[t]        # gap-through -> open
+                    reason = "stop"
+                else:
+                    sig = (ibs[t] > p.ibs_high) or ((t - entry_bar) >= p.max_hold)
+                    if sig and t + 1 < n:
+                        exit_px = o[t + 1]
+                        reason = "ibs" if ibs[t] > p.ibs_high else "time"
+                    elif sig:
+                        exit_px = c[t]
+                        reason = "eod"
+                if reason:
+                    rec(entry_bar, t, entry_px, exit_px, risk, reason)
+                    in_pos = False
+
+            if (not in_pos) and can_enter(t):
+                entry_bar, entry_px = t, o[t]
+                risk = p.sl_atr * atr[t - 1]
+                stop = entry_px - risk
+                in_pos = True
+                if l[t] <= stop:                                    # entry-bar intrabar stop
+                    rec(t, t, entry_px, stop if o[t] >= stop else o[t], risk, "stop")
+                    in_pos = False
+        return pd.DataFrame(trades)
+
+    # ---- live cadence: one decision per rollover, on the last CLOSED bar ----------
+    for t in range(1, n):                    # t = the bar whose rollover we decide at
+        if in_pos:                           # (1) rollover exit fills at THIS bar's open
+            sig_ibs = ibs[t - 1] > p.ibs_high
+            if sig_ibs or (t - 1 - entry_bar) >= p.max_hold:
+                rec(entry_bar, t, entry_px, o[t], risk, "ibs" if sig_ibs else "time")
                 in_pos = False
-
-        if (not in_pos) and t >= 1 and (ibs[t - 1] < p.ibs_low) \
-                and np.isfinite(ibs[t - 1]) and np.isfinite(atr[t - 1]) and atr[t - 1] > 0:
-            entry_bar = t
-            entry_px = o[t]
+        if (not in_pos) and can_enter(t):    # (2) entry fills at THIS bar's open
+            entry_bar, entry_px = t, o[t]
             risk = p.sl_atr * atr[t - 1]
             stop = entry_px - risk
             in_pos = True
-            if l[t] <= stop:                                    # entry-bar intrabar stop
-                exit_px = stop if o[t] >= stop else o[t]
-                R = (exit_px - entry_px - p.cost_price) / risk
-                trades.append({"entry_dt": pd.Timestamp(idx[t]).tz_localize(None),
-                               "exit_dt": pd.Timestamp(idx[t]).tz_localize(None),
-                               "entry": entry_px, "exit": exit_px, "reason": "stop",
-                               "bars_held": 0, "r_dist": risk, "R": R})
-                in_pos = False
+        if in_pos and l[t] <= stop:          # (3) broker-managed stop, intrabar
+            rec(entry_bar, t, entry_px, stop if o[t] >= stop else o[t], risk, "stop")
+            in_pos = False
 
     return pd.DataFrame(trades)
 
