@@ -13,6 +13,21 @@ Design guarantees (all wiki-mandated):
 One position per symbol at a time; while in a trade, new entry signals are ignored
 until the position closes (barrier or time-exit). Position size risks a fixed
 fraction of current equity to the stop distance.
+
+``cadence`` controls WHEN those rules are evaluated:
+
+* ``"literal"`` (default, unchanged behaviour) — the classic loop: manage the open
+  position against bar ``i``, then consider an entry on that SAME bar. It can therefore
+  close and re-open inside one bar, filling the new trade at bar ``i``'s OPEN — a price
+  already in the past by the time the exit happened. Time-exit fires at the close of the
+  ``time_exit_bars``-th bar.
+* ``"live"`` — the cadence a once-per-bar driver can actually run (see
+  ``edgelab/live/strategies.py``): at the bar rollover it either manages the position or
+  opens one, never both, and the time-exit is decided at the rollover so it fills at the
+  bar's OPEN one bar later. Barriers still resolve intrabar (the broker holds them).
+
+Use ``"live"`` for anything that feeds the deployable book; ``"literal"`` reproduces
+historical runs. See wiki/system.md.
 """
 from __future__ import annotations
 
@@ -24,7 +39,7 @@ import pandas as pd
 
 from edgelab.backtest.costs import CostModel
 from edgelab.risk.propfirm import PropFirmRules, PropFirmState, PropVerdict
-from edgelab.risk.trade_rules import ExitReason, TradeRules, atr
+from edgelab.risk.trade_rules import ExitDecision, ExitReason, TradeRules, atr
 
 logger = logging.getLogger("edgelab.backtest.engine")
 
@@ -58,7 +73,15 @@ class BacktestResult:
 
 
 class BacktestEngine:
-    def __init__(self, cfg, cost_model: CostModel | None = None):
+    def __init__(self, cfg, cost_model: CostModel | None = None,
+                 cadence: str = "literal"):
+        # "live_reentry" = live cadence PLUS an intraday re-entry at the price the barrier
+        # just filled at. It is NOT what the deployed driver does (its `_acted_day` guard
+        # blocks a second action the same day) — it measures what a driver change would
+        # recover. Do not use it for the book; see wiki/system.md.
+        if cadence not in ("literal", "live", "live_reentry"):
+            raise ValueError(f"cadence must be 'literal', 'live' or 'live_reentry', got {cadence!r}")
+        self.cadence = cadence
         self.cfg = cfg
         self.rules = TradeRules.from_config(cfg.risk)
         self.prop_rules = PropFirmRules.from_config(cfg.propfirm)
@@ -94,6 +117,7 @@ class BacktestEngine:
         in_pos = False
         direction = 0
         entry_price = 0.0
+        reentry_price = 0.0
         entry_i = 0
         size = 0.0
         stop_price = 0.0
@@ -109,13 +133,24 @@ class BacktestEngine:
             realized_equity = equity  # equity from closed trades so far
 
             # --- 1) manage an OPEN position against THIS bar -----------------
+            closed_this_bar = False
             if in_pos:
                 bars_held = i - entry_i + 1
-                dec = self.rules.resolve_bar(
-                    direction, stop_price, take_price,
-                    highs[i], lows[i], bars_held, closes[i],
-                )
+                if self.cadence != "literal" and (i - entry_i) >= self.rules.time_exit_bars:
+                    # A once-per-bar driver decides the time-exit at the ROLLOVER, before
+                    # the bar trades -> it fills at this bar's OPEN, one bar later than the
+                    # literal loop's close-of-bar exit.
+                    dec = ExitDecision(True, float(opens[i]), ExitReason.TIME_EXIT)
+                else:
+                    # In live cadence the time-exit is owned by the driver (above), so the
+                    # bar may only resolve the BARRIERS -> pass bars_held=0 to suppress it.
+                    dec = self.rules.resolve_bar(
+                        direction, stop_price, take_price, highs[i], lows[i],
+                        0 if self.cadence != "literal" else bars_held, closes[i],
+                    )
                 if dec.exited:
+                    closed_this_bar = True
+                    reentry_price = float(dec.price)   # live_reentry fills here, not at the open
                     exit_price = float(dec.price)
                     gross = direction * (exit_price - entry_price) * size
                     exit_cost = self.costs.cost_amount(symbol, exit_price, size)
@@ -152,13 +187,19 @@ class BacktestEngine:
 
             # --- 3) consider a NEW entry (executed at THIS bar's open) -------
             # Signal was decided `lag` bars ago (no lookahead).
+            # In live cadence the driver handles the open position and RETURNS, so a bar
+            # that closed a trade can never also open one.
             sig_i = i - self.lag
-            if (not in_pos) and sig_i >= 0 and prop.can_trade:
+            if (not in_pos) and sig_i >= 0 and prop.can_trade \
+                    and not (self.cadence == "live" and closed_this_bar):
+                # live_reentry: the same-bar re-open fills at the barrier price the exit
+                # just printed, never at this bar's (already past) open.
                 desired = sig_arr[sig_i]
                 entry_atr = atr_arr[i - 1] if i >= 1 else np.nan
                 if desired != 0 and np.isfinite(entry_atr) and entry_atr > 0:
                     direction = int(desired)
-                    entry_price = opens[i]
+                    entry_price = (reentry_price if (self.cadence == "live_reentry"
+                                                    and closed_this_bar) else opens[i])
                     stop_price, take_price = self.rules.barrier_prices(
                         entry_price, direction, entry_atr)
                     sl_dist = abs(entry_price - stop_price)

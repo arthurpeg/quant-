@@ -7,6 +7,16 @@ updated: 2026-07-28
 
 # exp-008 — Crypto breakout: 3rd decorrelated brick
 
+> ⚠️ **CORRECTED 2026-07-31 — this page's headline numbers are on the LITERAL backtest
+> cadence and are optimistic.** The daily engine could close and re-open a position
+> inside one bar, filling at that bar's already-past open; the live driver cannot.
+> On the honest live cadence brick 3 is **+6.9 R/yr (not +17.2), PF 1.27, t=2.43,
+> 6/9 +years**, **49% of it is 2020**, and **ex-2020 t=1.30 (sub-threshold)**, with
+> 2024 and 2025 both negative. It is the book's weak link, not its workhorse.
+> Re-entering intraday at the honest price is *worse* still (+5.5 R/yr), so the gap
+> was pure artefact. See [[system]] and [[log]].
+
+
 **Question.** With crypto price data now pulled from Pepperstone (unlocking the
 largest previously-excluded slice of the arXiv corpus — 535/2800 papers are crypto,
 82 with a testable trend/vol/breakout family), is crypto trend-following a brick that

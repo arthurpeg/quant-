@@ -31,7 +31,10 @@ from edgelab.edges.ibs import run_ibs, IBSParams
 
 # Pepperstone crypto (the live feed). ETH history there starts 2018-06 -> window from 2018-07.
 CC = Path('data_cache_mt5'); cfg = load_config(); START = pd.Timestamp('2018-07-01')
-eng = BacktestEngine(cfg, cost_model=CostModel(10, 3, {'BTCUSD': 5, 'ETHUSD': 8}))
+# cadence='live': the crypto engine must not close and re-open inside one bar either
+# (the live CryptoMacdStrategy returns after handling a position) - see wiki/system.md.
+eng = BacktestEngine(cfg, cost_model=CostModel(10, 3, {'BTCUSD': 5, 'ETHUSD': 8}),
+                     cadence='live')
 
 BRICKS = ('NAS100 breakout', 'Gold turn-of-month', 'Crypto MACD-RSI', 'NAS100 IBS reversion')
 RISKS = (0.005, 0.0075, 0.01, 0.0125, 0.015, 0.02)

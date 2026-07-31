@@ -120,7 +120,36 @@ def verify_brick3() -> bool:
         else:
             line += "; currently flat (no entry)"
         print(line)
-    return ok
+
+    # CADENCE: the driver returns after handling an open position (`_acted_day` blocks a
+    # second action that day), so it can NEVER close and re-open inside one bar. The
+    # literal engine could, filling the re-entry at that bar's already-past open — worth
+    # +10.3 R/yr of pure artefact. Guard it: the book must be built on cadence='live'.
+    from edgelab.backtest.engine import BacktestEngine
+    from edgelab.backtest.costs import CostModel
+    from edgelab.reports.monte_carlo_static import load as load_pep, macd_rsi as pep_macd
+    cm = CostModel(10, 3, {'BTCUSD': 5, 'ETHUSD': 8})
+    W = pd.Timestamp('2018-07-01')
+    out = {}
+    for cad in ("literal", "live"):
+        e = BacktestEngine(cfg, cost_model=cm, cadence=cad)
+        rows = []
+        for s in ("BTCUSD", "ETHUSD"):
+            d = load_pep(s)
+            tr = e.run(d, pep_macd(d), s, "x").trades
+            tr["ex"] = pd.to_datetime(tr["exit_time"]).dt.tz_localize(None)
+            tr["en"] = pd.to_datetime(tr["entry_time"]).dt.tz_localize(None)
+            rows.append(tr)
+        out[cad] = rows
+    reent = sum(int((r.sort_values("en")["en"].dt.normalize()
+                     == r.sort_values("en")["ex"].dt.normalize().shift(1)).sum())
+                for r in out["live"])
+    yrs = 8.07
+    rr = {c: pd.concat(v)[pd.concat(v)["ex"] >= W]["ret"].sum() / yrs for c, v in out.items()}
+    print(f"  BRICK 3 cadence: live re-opens inside a bar {reent} times (must be 0) | "
+          f"R/yr live {rr['live']:+.2f} vs literal {rr['literal']:+.2f} "
+          f"({rr['live']-rr['literal']:+.2f}) - the book uses cadence='live'")
+    return ok and reent == 0
 
 
 def _ibs_bars() -> pd.DataFrame:
