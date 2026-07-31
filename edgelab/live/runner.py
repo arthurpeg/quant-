@@ -27,7 +27,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]   # the git repo root (…/edgel
 
 from edgelab.config import load_config
 from edgelab.risk.propfirm import PropFirmRules
-from edgelab.live.broker import Broker
+from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 from edgelab.live.strategies import NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy
 
@@ -171,13 +171,24 @@ def _maybe_report(broker: Broker, risk: LiveRiskManager, cfg_live: dict, now_utc
     _LAST_REPORT_DAY = et.date()   # set even on failure -> one attempt/day, no spam
 
 
+_MARKET_CLOSED_SINCE: dict[str, pd.Timestamp] = {}   # strat name -> when it first hit a closed market
+
+
 def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Timestamp) -> None:
     risk.on_equity(_equity(broker, risk), now_utc)
     for strat in strategies:
+        name = type(strat).__name__
         try:
             strat.step(broker, risk, now_utc)
+            if name in _MARKET_CLOSED_SINCE:   # a prior pass was waiting -> it just went through
+                waited = now_utc - _MARKET_CLOSED_SINCE.pop(name)
+                LOG.info("%s: market reopened, order placed (waited %s)", name, waited)
+        except MarketClosed as exc:            # expected daily break -> log once, keep retrying quietly
+            if name not in _MARKET_CLOSED_SINCE:
+                _MARKET_CLOSED_SINCE[name] = now_utc
+                LOG.info("%s: %s -> market closed, will retry until it opens (no error)", name, exc)
         except Exception as exc:               # never let one brick kill the loop
-            LOG.exception("strategy %s failed: %s", type(strat).__name__, exc)
+            LOG.exception("strategy %s failed: %s", name, exc)
 
 
 def status(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: dict) -> None:

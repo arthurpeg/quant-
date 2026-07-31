@@ -24,6 +24,14 @@ from edgelab.intraday.orb import to_true_utc, POINT_SIZE
 
 logger = logging.getLogger("edgelab.live.broker")
 
+
+class MarketClosed(RuntimeError):
+    """Raised when an order is rejected because the symbol's market is in its
+    (expected) daily maintenance break — retcode 10018. It is a transient the
+    caller should retry until the market reopens, NOT an error. The runner logs
+    it once and keeps retrying, instead of spamming a traceback every pass."""
+
+
 _TF = {"M1": "TIMEFRAME_M1", "M5": "TIMEFRAME_M5", "M15": "TIMEFRAME_M15",
        "H1": "TIMEFRAME_H1", "H4": "TIMEFRAME_H4", "D1": "TIMEFRAME_D1"}
 
@@ -312,9 +320,12 @@ class Broker:
         }
         res = self._send_retry(req, mt5)
         if res is None or res.retcode != mt5.TRADE_RETCODE_DONE:
+            rc = getattr(res, "retcode", None)
+            if rc == mt5.TRADE_RETCODE_MARKET_CLOSED:   # 10018 — expected daily break
+                raise MarketClosed(f"{logical} market closed")
             logger.error("LIVE order_send FAILED %s: retcode=%s %s", logical,
-                         getattr(res, "retcode", None), getattr(res, "comment", mt5.last_error()))
-            raise RuntimeError(f"order_send failed: {getattr(res,'retcode',None)}")
+                         rc, getattr(res, "comment", mt5.last_error()))
+            raise RuntimeError(f"order_send failed: {rc}")
         pos.ticket = res.order
         pos.entry_price = res.price
         logger.info("[LIVE] ENTER %s %s %.2f lots @%.5f ticket=%s SL=%.5f TP=%s",
@@ -423,8 +434,11 @@ class Broker:
         }
         res = self._send_retry(req, mt5)
         if res is None or res.retcode != mt5.TRADE_RETCODE_DONE:
+            rc = getattr(res, "retcode", None)
+            if rc == mt5.TRADE_RETCODE_MARKET_CLOSED:   # 10018 — expected daily break
+                raise MarketClosed(f"{pos.symbol} market closed")
             logger.error("LIVE close FAILED %s: retcode=%s %s", pos.symbol,
-                         getattr(res, "retcode", None), getattr(res, "comment", mt5.last_error()))
+                         rc, getattr(res, "comment", mt5.last_error()))
             raise RuntimeError("close order_send failed")
         R = pos.direction * (res.price - pos.entry_price) / pos.sl_dist - cost_R
         logger.info("[LIVE] EXIT %s @%.5f %s R=%+.2f", pos.symbol, res.price, reason, R)
