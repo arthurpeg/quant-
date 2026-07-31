@@ -10,9 +10,12 @@ updated: 2026-07-28
 > ⚠️ **CORRECTED 2026-07-31 — this page's headline numbers are on the LITERAL backtest
 > cadence and are optimistic.** The daily engine could close and re-open a position
 > inside one bar, filling at that bar's already-past open; the live driver cannot.
-> On the honest live cadence brick 3 is **+6.9 R/yr (not +17.2), PF 1.27, t=2.43,
-> 6/9 +years**, **49% of it is 2020**, and **ex-2020 t=1.30 (sub-threshold)**, with
-> 2024 and 2025 both negative. It is the book's weak link, not its workhorse.
+> On the honest live cadence with the OLD framework-default exits (TP 3·ATR / 10 bars)
+> brick 3 was **+6.9 R/yr, t=2.43, 6/9 +years, 49% of it 2020, ex-2020 t=1.30**.
+> Those defaults were never chosen for this brick. After validation the exits were
+> **widened to TP 6·ATR / 30 bars** (`crypto_risk:` in config.yaml, 2026-07-31):
+> **+11.8 R/yr, PF 1.65, t=3.52, 9/9 +years, ex-2020 t=2.60** — and positive in 2024
+> and 2025. The signal is unchanged; only the exits and the cadence moved.
 > Re-entering intraday at the honest price is *worse* still (+5.5 R/yr), so the gap
 > was pure artefact. See [[system]] and [[log]].
 

@@ -25,7 +25,7 @@ EXIT_ACCOUNT_FAILED = 42   # supervisor uses this to STOP restarting (don't loop
 EXIT_UPDATE = 75           # a newer commit is on origin/main -> supervisor git-pulls + relaunches
 REPO_ROOT = Path(__file__).resolve().parents[2]   # the git repo root (…/edgelab/live/runner.py)
 
-from edgelab.config import load_config
+from edgelab.config import load_config, risk_for
 from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
@@ -43,7 +43,9 @@ def _load_live_cfg() -> dict:
 
 def build(cfg_live: dict):
     main_cfg = load_config()
-    risk_cfg = main_cfg.raw["risk"]
+    # brick 3 uses the widened crypto exits (config.yaml `crypto_risk:`), not the
+    # framework defaults - the backtest reads the same block, so they cannot fork.
+    risk_cfg = risk_for(main_cfg, "crypto")
     rules = PropFirmRules.from_config(cfg_live["propfirm"])
     broker = Broker(cfg_live)
     risk = LiveRiskManager(rules, float(cfg_live["risk_per_trade"]))

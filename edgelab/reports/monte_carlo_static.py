@@ -20,9 +20,10 @@ Outputs: (0) full 1-yr R distribution, (1) +15%/-10%static/-5% challenge time-to
 `build_reports.py` renders the HTML reports from it, so the two can never disagree.
 """
 import sys; sys.path.insert(0, '.')
+from dataclasses import replace
 import numpy as np, pandas as pd
 from pathlib import Path
-from edgelab.config import load_config
+from edgelab.config import load_config, risk_for
 from edgelab.backtest.engine import BacktestEngine
 from edgelab.backtest.costs import CostModel
 from edgelab.intraday.atr_breakout import run_atr_breakout, ATRBreakParams
@@ -33,7 +34,10 @@ from edgelab.edges.ibs import run_ibs, IBSParams
 CC = Path('data_cache_mt5'); cfg = load_config(); START = pd.Timestamp('2018-07-01')
 # cadence='live': the crypto engine must not close and re-open inside one bar either
 # (the live CryptoMacdStrategy returns after handling a position) - see wiki/system.md.
-eng = BacktestEngine(cfg, cost_model=CostModel(10, 3, {'BTCUSD': 5, 'ETHUSD': 8}),
+# Brick 3 runs the widened exits from config.yaml `crypto_risk:` (validated 2026-07-31),
+# NOT the framework defaults - same block the live runner reads.
+_cfg_crypto = replace(cfg, raw={**cfg.raw, 'risk': risk_for(cfg, 'crypto')})
+eng = BacktestEngine(_cfg_crypto, cost_model=CostModel(10, 3, {'BTCUSD': 5, 'ETHUSD': 8}),
                      cadence='live')
 
 BRICKS = ('NAS100 breakout', 'Gold turn-of-month', 'Crypto MACD-RSI', 'NAS100 IBS reversion')

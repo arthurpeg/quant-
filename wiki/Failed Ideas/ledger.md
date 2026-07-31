@@ -75,6 +75,14 @@ updated: 2026-07-11
 >    is ~equal to brick1 in R/yr while brick1 is tick-validated (exp-005) and US500 is not.
 >    Engine: `edgelab/intraday/atr_breakout.py`.
 >
+> **⛔ CLOSED 2026-07-31 — GER40 is settled, do not re-open it.** Re-tested twice at equal
+> risk on the live-cadence book: it loses in EVERY configuration — add −3.1 pts/yr, swap
+> gold −3.8, swap IBS −6.4, swap NAS −8.0. The reason is not correlation (|corr| ≤ 0.02)
+> but its **path**: standalone maxDD **22.6 R for +8.6 R/yr → RoMaD 0.38**, i.e. more
+> drawdown on its own than the whole 4-brick book (14.3 R), vs IBS 1.59 / crypto 0.95 /
+> NAS 0.79 / gold 0.73. It got *worse* as the book improved, because the bar rose with it.
+> `scratchpad/sleeve_swap.py`.
+>
 > Both clear the **t>2 net gate on M1** and are real edges. They are the ceiling of what OHLCV
 > direction offers here (Mesfin 2026's "gross edge ceiling < friction"). Neither is added: GER40 for
 > **marginal risk-adjusted value** (+4% at equal risk, lowest Sharpe, regime-selection model risk),

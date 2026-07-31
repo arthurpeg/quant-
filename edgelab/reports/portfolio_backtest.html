@@ -100,7 +100,7 @@ td.zero{color:var(--muted);opacity:.45}
   <div class="grid2">
     <div class="card">
       <h3>Annual R</h3>
-      <p class="cap">Positive every full year; the 2018 half-year is flat (0.0 R).</p>
+      <p class="cap">Positive every year, including the 2018 half-year (+6.9 R).</p>
       <figure><div id="years"></div></figure>
     </div>
     <div class="card">
@@ -128,8 +128,8 @@ td.zero{color:var(--muted);opacity:.45}
       <b>Read this as a candidate, not a promise.</b>
       <ul>
         <li>All figures are <b>in-sample</b> on the frozen rules — no live forward test yet.</li>
-        <li>Brick 1's edge is regime-selected; brick 2 is thin (~12 trades/yr); brick 4 (IBS) is long equity beta — size ≤1R. <b>Brick 3 is now the weak link, not the workhorse</b>: on the live cadence it earns +6.9 R/yr (t=2.43), <b>49% of it is 2020 alone</b>, and ex-2020 it is t=1.30 — sub-threshold. 2024 and 2025 are negative.</li>
-        <li>Combined maxDD 14.1 R for +27.1 R/yr. <b>Both daily-bar bricks were re-priced on the live cadence (2026-07-31)</b>: the old loop could close and re-open inside one bar, filling at that bar's already-past open. That cost brick 3 −10.3 R/yr and brick 4 −0.8, taking the book from +38.2 to +27.1. Nothing about the edges changed — the extra return was never reachable.</li>
+        <li>Brick 1's edge is regime-selected; brick 2 is thin (~12 trades/yr); brick 4 (IBS) is long equity beta — size ≤1R. Brick 3's exits were <b>widened after validation</b> (TP 3→6 ATR, time-exit 10→30 bars): +6.9→+11.8 R/yr, t 2.43→3.52, 9/9 positive years. The old 3/10 were never chosen for this brick — they were the framework defaults.</li>
+        <li>Combined maxDD 14.3 R for +32.0 R/yr. <b>Both daily-bar bricks are priced on the live cadence</b>: the old loop could close and re-open inside one bar, filling at that bar's already-past open — worth a phantom +11 R/yr that no driver can reach. What you see here is what the deployed code can actually fill.</li>
         <li>Bricks 3 &amp; 4 are both long-biased; the block-bootstrap understates a long secular bear — treat the left tail as optimistic.</li>
       </ul>
     </div>
@@ -139,7 +139,7 @@ td.zero{color:var(--muted);opacity:.45}
 </div>
 
 <script>
-const D={"window":"2018-07 \u2192 2026-07  (8.1 yr)","combined":{"r":27.1,"maxdd":14.1,"romad":1.92,"sharpe":2.15,"worst":-3.08,"best":4.22,"win":53,"pf":1.34,"ntrades":1737,"winrate":53},"equity":[2.5,-1.7,-4.1,-4.5,2.4,0.0,1.5,-2.5,3.8,-0.9,3.5,6.4,9.5,8.0,6.6,6.5,1.2,11.5,11.5,13.5,18.8,24.0,24.4,26.6,30.0,38.8,39.5,42.3,50.4,52.1,57.8,53.6,53.6,64.9,70.2,74.8,74.3,81.1,82.9,88.0,87.9,87.9,89.2,85.4,86.1,90.1,96.9,97.7,110.4,101.9,101.2,104.0,103.7,105.4,115.7,111.2,117.1,122.1,125.9,128.2,120.7,126.2,123.2,128.8,135.4,137.7,129.5,139.7,148.6,145.6,153.4,158.5,161.5,164.5,170.7,168.4,171.4,179.7,177.8,188.4,190.1,188.6,193.0,186.2,198.4,202.0,199.4,194.2,198.4,197.8,203.1,211.8,214.1,214.6,218.4,224.0,218.5],"eq_start":2018.5,"years":{"2018":0.0,"2019":11.5,"2020":40.6,"2021":35.8,"2022":17.5,"2023":32.3,"2024":42.0,"2025":18.1,"2026":20.7},"bricks":{"NAS100 breakout":[12.9,104.0,784,1.27],"Gold turn-of-month":[2.5,20.0,96,1.86],"Crypto MACD-RSI":[6.9,55.0,570,1.27],"NAS100 IBS reversion":[4.8,39.0,287,2.21]},"tr_years":["2018","2019","2020","2021","2022","2023","2024","2025","2026"],"tr_by_year":{"NAS100 breakout":[40,102,88,93,108,100,93,101,59],"Gold turn-of-month":[6,12,12,12,12,12,12,12,6],"Crypto MACD-RSI":[23,58,55,83,68,80,88,77,38],"NAS100 IBS reversion":[19,30,42,35,44,34,36,28,19]},"corr":{"NAS":{"NAS":1.0,"Gold":0.02,"Crypto":-0.01,"IBS":-0.0},"Gold":{"NAS":0.02,"Gold":1.0,"Crypto":0.0,"IBS":-0.03},"Crypto":{"NAS":-0.01,"Gold":0.0,"Crypto":1.0,"IBS":-0.0},"IBS":{"NAS":-0.0,"Gold":-0.03,"Crypto":-0.0,"IBS":1.0}}};
+const D={"window":"2018-07 \u2192 2026-07  (8.1 yr)","combined":{"r":32.0,"maxdd":14.3,"romad":2.24,"sharpe":2.57,"worst":-3.07,"best":5.97,"win":54,"pf":1.44,"ntrades":1446,"winrate":53},"equity":[3.0,-3.4,-2.3,-1.2,8.3,6.9,6.0,-0.3,7.4,3.9,16.2,19.1,20.6,21.4,19.4,18.1,10.8,20.9,18.2,23.4,31.2,33.5,36.9,41.2,41.0,48.6,48.5,50.5,61.6,64.5,74.7,75.1,74.2,85.6,92.3,98.1,100.5,109.2,113.5,114.4,113.8,116.3,119.2,116.0,113.5,117.1,123.9,125.0,135.2,129.8,130.7,136.6,134.0,139.4,147.6,147.3,147.4,156.1,159.1,161.0,150.0,155.7,154.4,154.7,162.5,163.9,157.9,166.1,176.2,177.8,184.6,189.3,194.3,195.9,198.6,193.6,203.2,209.9,211.9,217.9,222.6,221.7,226.1,224.3,231.8,238.2,236.8,233.0,234.3,235.8,237.9,247.7,253.1,250.3,253.7,261.4,258.0],"eq_start":2018.5,"years":{"2018":6.9,"2019":14.0,"2020":43.6,"2021":51.8,"2022":23.1,"2023":24.5,"2024":46.0,"2025":25.8,"2026":22.2},"bricks":{"NAS100 breakout":[12.9,104.0,784,1.27],"Gold turn-of-month":[2.5,20.0,96,1.86],"Crypto MACD-RSI":[11.8,95.0,279,1.65],"NAS100 IBS reversion":[4.8,39.0,287,2.21]},"tr_years":["2018","2019","2020","2021","2022","2023","2024","2025","2026"],"tr_by_year":{"NAS100 breakout":[40,102,88,93,108,100,93,101,59],"Gold turn-of-month":[6,12,12,12,12,12,12,12,6],"Crypto MACD-RSI":[12,28,27,40,36,36,45,36,19],"NAS100 IBS reversion":[19,30,42,35,44,34,36,28,19]},"corr":{"NAS":{"NAS":1.0,"Gold":0.02,"Crypto":-0.01,"IBS":-0.0},"Gold":{"NAS":0.02,"Gold":1.0,"Crypto":0.01,"IBS":-0.03},"Crypto":{"NAS":-0.01,"Gold":0.01,"Crypto":1.0,"IBS":0.0},"IBS":{"NAS":-0.0,"Gold":-0.03,"Crypto":0.0,"IBS":1.0}}};
 const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 document.getElementById('m-window').textContent=D.window;
 

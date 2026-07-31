@@ -65,6 +65,19 @@ risk:
   # ADVERSE one (SL) filled first. Pessimistic, avoids optimistic bias.
   pessimistic_touch: true
 
+# Per-brick overrides of the barriers above. The `risk:` block is the FRAMEWORK
+# default (it also drives the generic pipeline, and walk_forward.embargo_bars is
+# documented as "= time_exit_bars") — so a brick that needs different exits declares
+# them here instead of editing it. Read via edgelab.config.risk_for(cfg, "crypto").
+#
+# Brick 3 (crypto MACD-RSI): validated 2026-07-31 on the honest live cadence —
+# widening the exits takes it from +6.9 to +11.9 R/yr (t 2.43 -> 3.52, 9/9 +years).
+# The old 3.0/10 were never chosen for this brick, they were just these defaults.
+# See wiki/system.md and scratchpad/validate_crypto_exits.py.
+crypto_risk:
+  take_profit_atr: 6.0           # TP distance = 6.0 * ATR  (=> R:R 3.0)
+  time_exit_bars: 30             # force close after 30 bars (crypto trades 7d/7)
+
 # ---------------------------------------------------------------------------
 # Prop-firm hard constraints (FTMO / The5ers / FundingPips style). Breaching a
 # hard rule fails the account; the engine stops trading accordingly.

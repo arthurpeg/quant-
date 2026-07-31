@@ -7,6 +7,7 @@ frozen backtest functions. Runs fully offline. From repo root:
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -17,7 +18,7 @@ from edgelab.intraday.atr_breakout import run_atr_breakout, ATRBreakParams, _min
 from edgelab.edges.turn_of_month import run_turn_of_month, TurnOfMonthParams
 from edgelab.edges.ibs import run_ibs, IBSParams
 from edgelab.risk.trade_rules import TradeRules
-from edgelab.config import load_config
+from edgelab.config import load_config, risk_for
 from edgelab.live import signals as S
 
 MT5_DIR = Path(__file__).resolve().parent.parent.parent / "data_cache_mt5"
@@ -96,7 +97,8 @@ def verify_brick2() -> bool:
 
 def verify_brick3() -> bool:
     cfg = load_config()
-    rules = TradeRules.from_config(cfg.risk)
+    crisk = risk_for(cfg, "crypto")          # brick 3's own exits, as the runner reads them
+    rules = TradeRules.from_config(crisk)
     ok = True
     for s in ("BTCUSD", "ETHUSD"):
         d = pd.read_parquet(CRYPTO_DIR / f"{s}_D1.parquet")
@@ -105,13 +107,13 @@ def verify_brick3() -> bool:
         # target series identical to the frozen backtest signal?
         sig = S.macd_rsi(d)
         # spot-check the barrier math equals TradeRules on the last signalled bar
-        plan = S.crypto_entry(d, cfg.raw["risk"])
+        plan = S.crypto_entry(d, crisk)
         nz = int((sig != 0).sum())
         line = f"  BRICK 3 ({s}): macd_rsi {nz} nonzero bars"
         if plan is not None:
             # rebuild barrier via TradeRules from the same entry_atr and compare distance
             from edgelab.risk.trade_rules import atr as eatr
-            entry_atr = float(eatr(d, cfg.raw["risk"]["atr_window"]).iloc[-1])
+            entry_atr = float(eatr(d, crisk["atr_window"]).iloc[-1])
             stop, take = rules.barrier_prices(100.0, plan.direction, entry_atr)
             ref_sl = abs(100.0 - stop)
             match = abs(ref_sl - plan.sl_dist) < 1e-9
@@ -132,7 +134,8 @@ def verify_brick3() -> bool:
     W = pd.Timestamp('2018-07-01')
     out = {}
     for cad in ("literal", "live"):
-        e = BacktestEngine(cfg, cost_model=cm, cadence=cad)
+        e = BacktestEngine(replace(cfg, raw={**cfg.raw, 'risk': crisk}),
+                           cost_model=cm, cadence=cad)
         rows = []
         for s in ("BTCUSD", "ETHUSD"):
             d = load_pep(s)

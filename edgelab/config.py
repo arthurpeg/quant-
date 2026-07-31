@@ -19,6 +19,17 @@ DEFAULT_CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
 logger = logging.getLogger("edgelab.config")
 
 
+def risk_for(cfg: "Config", brick: str) -> dict:
+    """Risk barriers for one brick: the generic ``risk:`` block, overridden by ``<brick>_risk:``.
+
+    Keeps per-brick exits out of the framework defaults, which the generic pipeline and
+    ``walk_forward.embargo_bars`` depend on. Unknown brick -> the plain defaults.
+    """
+    merged = dict(cfg.raw["risk"])
+    merged.update(cfg.raw.get(f"{brick}_risk") or {})
+    return merged
+
+
 @dataclass(frozen=True)
 class Config:
     """Parsed configuration. Sub-sections stay as plain dicts for flexibility."""

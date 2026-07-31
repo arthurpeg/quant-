@@ -20,7 +20,7 @@ status: frozen (in-sample; forward-test pending)
 |---|-------|----------|-----------|------------------------|-----------|
 | 1 | **US-open ATR breakout**, low-vol regime (ATR3<ATR20 on D1) | NAS100 (real M1) | intraday breakout | [`edgelab/intraday/atr_breakout.py`](../edgelab/intraday/atr_breakout.py) — `run_atr_breakout('NAS100', regime_mode='low', direction='both')` | +11.6 R/yr, PF 1.27 |
 | 2 | **Turn-of-month**, SL = 1.5·ATR14 | XAUUSD (D1) | seasonality | [`edgelab/edges/turn_of_month.py`](../edgelab/edges/turn_of_month.py) — `run_turn_of_month('XAUUSD', sl_atr=1.5)` | +2.2 R/yr, PF 1.68 |
-| 3 | **MACD(12,26,9)+RSI** ([arXiv 2206.12282](https://arxiv.org/abs/2206.12282)) | BTC+ETH (D1) | crypto trend | daily `BacktestEngine(cadence='live')` + `macd_rsi`; data `data_cache_mt5/` (Pepperstone) | **+6.9 R/yr, PF 1.27, t=2.43** (live cadence) |
+| 3 | **MACD(12,26,9)+RSI** ([arXiv 2206.12282](https://arxiv.org/abs/2206.12282)), exits TP 6·ATR / 30 bars (`crypto_risk:`) | BTC+ETH (D1) | crypto trend | daily `BacktestEngine(cadence='live')` + `macd_rsi`; data `data_cache_mt5/` (Pepperstone) | **+11.8 R/yr, PF 1.65, t=3.52** |
 | 4 | **IBS reversion**, SL = 2.5·ATR14 (buy IBS<0.2, exit IBS>0.8 / 30-bar) | NAS100 (D1) | intraday-position reversion | [`edgelab/edges/ibs.py`](../edgelab/edges/ibs.py) — `run_ibs('NAS100', IBSParams(sl_atr=2.5))` (live cadence) | **+4.8 R/yr, PF 2.21, t=5.16** |
 
 Brick 4 (added 2026-07-31, [[exp-009-ibs-reversion-4th-brick]]) is the first brick-4
@@ -61,13 +61,13 @@ across the whole 4×4 matrix is **0.03**.
 
 | Metric | 3-brick | **4-brick (+ IBS NAS100)** |
 |--------|---------|-----------|
-| **Total (Pepperstone + live cadence, canonical)** | — | **+219 R (+27.1 R/yr)**; NAS +12.9 + gold +2.5 + crypto +6.9 + IBS +4.8 |
-| maxDD / RoMaD / Sharpe | — | **14.1 R / 1.92 / 2.15** |
-| Profit factor (pooled trades) | — | **1.34** (1737 trades, 53% win); per brick NAS 1.27 / gold 1.86 / crypto 1.27 / IBS 2.21 |
-| Activity | — | **~215 trades/yr**: NAS ~95, crypto ~70, IBS ~35, gold 12 |
-| worst day | −4.15 R | **−3.08 R** (crypto no longer books 4 same-day stops) |
-| MC median R/yr, P(profit) | — | **+26.9, 96.3%** |
-| MC 5th-pct year, median maxDD | — | **+2.1 R, 9.5 R** |
+| **Total (Pepperstone + live cadence, canonical)** | — | **+258 R (+32.0 R/yr)**; NAS +12.9 + gold +2.5 + crypto +11.8 + IBS +4.8 |
+| maxDD / RoMaD / Sharpe | — | **14.3 R / 2.24 / 2.57** |
+| Profit factor (pooled trades) | — | **1.44** (1446 trades, 53% win); per brick NAS 1.27 / gold 1.86 / crypto 1.65 / IBS 2.21 |
+| Activity | — | **~180 trades/yr**: NAS ~95, crypto ~35, IBS ~35, gold 12 |
+| worst day | −4.15 R | **−3.07 R** (crypto no longer books 4 same-day stops) |
+| MC median R/yr, P(profit) | — | **+31.6, 97.2%** |
+| MC 5th-pct year, median maxDD | — | **+4.3 R, 9.5 R** |
 
 Adding brick 4 **raises return AND Sharpe AND lowers maxDD** — the first candidate to do
 all three (the ⭐ [[ledger]] candidates lowered Sharpe or correlated to brick 1). Combined
@@ -93,34 +93,34 @@ trade-R on a **calendar** index. The MC median matches the historical backtest t
 — the correctness check for a block-bootstrap. Reproducible:
 [`edgelab/reports/monte_carlo_static.py`](../edgelab/reports/monte_carlo_static.py).
 
-**4-brick, 1-year distribution (40k sims, blocks of 14 d):** P(profitable year) = **96.3%**,
-mean **+27.1 R** (historical +27.1).
+**4-brick, 1-year distribution (40k sims, blocks of 14 d):** P(profitable year) = **97.2%**,
+mean **+31.8 R** (historical +32.0).
 
 | Pct | annual R | maxDD R |
 |-----|---------:|--------:|
-| 5th | +2.1 | 5.6 |
-| 25th | +16.5 | 7.5 |
-| **50th** | **+26.9** | **9.5** |
-| 75th | +37.5 | 12.2 |
-| 95th | +52.6 | 17.8 |
+| 5th | +4.3 | 5.4 |
+| 25th | +20.4 | 7.4 |
+| **50th** | **+31.6** | **9.5** |
+| 75th | +43.2 | 12.2 |
+| 95th | +59.7 | 18.0 |
 
-maxDD tail: 99th pct 23.1 R, worst 44.4 R.
+maxDD tail: 99th pct 23.6 R, worst 41.6 R.
 
 ## Prop sizing — firm with STATIC drawdown (target +15% / total −10% / daily −5%)
 
-**No daily-rule ceiling any more:** the worst historical day is **−3.08 R** (the crypto
+**No daily-rule ceiling any more:** the worst historical day is **−3.07 R** (the crypto
 brick no longer books four same-day stops), so the −5% daily rule is not breached at any
 sizing tested up to 1.5%. The binding limit is now the **−10% static floor**.
 
 **Challenge (time-to-pass, 4-brick):**
-- **0.75%/trade = best pass rate** — **94.4%** in ~7.3 months; 1.00% = **91.6%** in **~5.1 months**.
+- **0.75%/trade = best pass rate** — **95.8%** in ~6.4 months; 1.00% = **92.3%** in **~4.5 months**.
 - **0%** daily-rule breaches at every sizing; failures are now all total-DD.
-- 1.25-1.5% still passes 83-87% but fails DD 13-17% — the trade-off is speed vs ruin.
+- 1.25-1.5% still passes 84-88% but fails DD 12-16% — the trade-off is speed vs ruin.
 
 **Funded (static −10% floor, monthly payout resets balance to initial):**
-- **0.50%/trade** → ~**14.4%/yr** withdrawn, **1.6%** ruin/yr (keep-the-account choice).
-- 0.75% → ~21.3%/yr, ~11% ruin/yr.
-- **Never above 1%** — E[withdrawn] plateaus at 31–34% while ruin explodes past 45%.
+- **0.50%/trade** → ~**16.7%/yr** withdrawn, **1.8%** ruin/yr (keep-the-account choice).
+- 0.75% → ~24.6%/yr, ~12% ruin/yr.
+- **Never above 1%** — E[withdrawn] plateaus at 35–38% while ruin explodes past 47%.
 - **Asymmetric plan:** pass the challenge at 1.0% (speed), drop to 0.5% once funded (protection).
 
 **Payout cadence:** biweekly is **not** better. Annual income is ~flat across cadence,
@@ -162,12 +162,11 @@ See [[exp-009-ibs-reversion-4th-brick]].)
 
 **(c) Robustness stress** (`scratchpad/robustness.py`) — ⚠️ **the confidence order is
 REVERSED by the cadence correction: brick 4 > brick 1 > brick 2 > brick 3.**
-- ⚠️ **Brick 3 IS mostly 2020, on the honest cadence.** The old claim ("not just 2020,
-  ex-2020 still +12.7 R/yr t=3.63, the strongest most robust brick") was measured on the
-  literal cadence and is **WITHDRAWN**. Live cadence: 2020 alone = +27.4 R = **49% of the
-  total**, and **ex-2020 it is +3.5 R/yr, t=1.30 — sub-threshold**. Worse, **2024 (−1.0 R)
-  and 2025 (−6.9 R) are both negative**. Brick 3 is now the book's weakest link, not its
-  workhorse.
+- **Brick 3, after the exit fix, is healthy again** (but the old "strongest brick" claim
+  stays withdrawn). With the framework-default exits it was 49% 2020 and **ex-2020
+  t=1.30**, negative in 2024 and 2025. With the **validated** exits (TP 6·ATR / 30 bars)
+  it is **+11.8 R/yr, t=3.52, 9/9 positive years**, ex-2020 t=2.60, and positive in 2024
+  (+3.0) and 2025 (+0.8). The fragility was in the arbitrary defaults, not the signal.
 - **Brick 1's vol-regime filter carries the edge:** regime=low t=2.80 → **regime=off
   t=1.66 (sub-threshold)** → high t=−0.46. Real, but conditional on a fitted (though
   mechanism-motivated) filter. Cost-robust to 8pt slippage on the bar model — **but**
@@ -189,29 +188,50 @@ the driver was already right; it was the backtest that was optimistic.
 ## Admission test for a 5th brick (measured 2026-07-31, `scratchpad/sleeve_swap.py`)
 
 **Decorrelation is necessary but NOT sufficient.** Compared at *equal risk* (each config
-sized to its own binding prop ceiling — which is the **−10% static floor**, not the daily
-rule): adding the ⭐ [[ledger]] GER40 candidate *costs* 1.4 pts/yr and deepens maxDD
-13.8→17.9 R **despite |corr| ≤ 0.045 to all four bricks**, because its standalone Sharpe
-(1.63) is the lowest of the set. A sleeve with brick 4's efficiency, independent, instead
-gives RoMaD 2.71→**3.12**, Sharpe 2.59→2.74, maxDD **13.8→13.6** and **+4.1 pts/yr**.
-(Measured before the brick-3 cadence fix, so the *levels* moved; the *ordering* — which is
-the finding — is unchanged, and crypto has since dropped to the bottom of the table.)
+sized to its own binding prop ceiling — the **−10% static floor**, since after the cadence
+fix the daily rule never binds). Re-run 2026-07-31 on the final book:
+
+| Config | R/yr | maxDD | RoMaD | **%/yr at equal risk** |
+|---|---|---|---|---|
+| **A — the book (4 bricks)** | +32.0 | 14.3 R | 2.24 | **22.4%** |
+| B — A − gold | +29.5 | 13.6 | 2.17 | 21.7 (−0.6) |
+| C — A − gold **+ GER40** | +38.1 | 20.5 | 1.86 | 18.6 (**−3.8**) |
+| D — A **+ GER40** (add) | +40.5 | 21.1 | 1.93 | 19.3 (**−3.1**) |
+| G — A − NAS **+ GER40** | +27.6 | 19.2 | 1.43 | 14.3 (**−8.0**) |
+| H — A − IBS **+ GER40** | +35.8 | 22.4 | 1.60 | 16.0 (**−6.4**) |
+| **E — A + IBS US500** | +34.9 | 14.2 | 2.46 | **24.6 (+2.3)** |
+| F — A + an IBS-calibre independent sleeve | +36.8 | 13.5 | 2.75 | **27.5 (+5.1)** |
+
+**Every GER40 configuration loses at equal risk**, and swapping is worse than adding. The
+cause is not correlation (|corr| ≤ 0.02 to all four) but its **path**: GER40's standalone
+maxDD is **22.6 R for +8.6 R/yr → RoMaD 0.38**, i.e. it carries more drawdown on its own
+than the entire book (14.3 R). Note config G has the *highest* Sharpe of the lot (2.68)
+yet the worst %/yr — Sharpe measures daily vol, RoMaD measures the path, and GER40's
+losses cluster. **On a static-DD prop account the path is what you are paid on.**
+
+Standalone RoMaD is the cleanest admission test: IBS **1.59**, crypto 0.95, NAS 0.79,
+gold 0.73, **GER40 0.38**.
 
 | Sleeve | R/yr | daily vol | **standalone Sharpe** |
 |---|---|---|---|
 | IBS (b4) | +4.8 | 0.442 | **4.84** |
 | gold ToM (b2) | +2.5 | 0.868 | **3.83** |
-| crypto (b3) | +6.9 | 1.320 | 1.14 |
+| crypto (b3) | +11.8 | 1.774 | 3.36 |
 | NAS ORB (b1) | +12.9 | 1.238 | 1.71 |
 | *GER40 (candidate)* | *+8.6* | *1.368* | *1.63* |
 
-Two consequences. **Never drop brick 2 to make room**: its small R/yr is a *frequency*
-artefact (12 trades/yr), it is the 2nd most efficient sleeve, and removing it costs
-−1.2 pts/yr at equal risk. And **there is no slot scarcity** — adding beats swapping,
-because the daily ceiling was set by one sleeve's own tail, not by the number of sleeves
-(and after the cadence fix there is no daily-rule ceiling at all). So: admit a 5th brick
-only if its **standalone Sharpe is at the top of this table**, and then *add* it rather
-than swap.
+Three consequences. **Never drop brick 2 to make room** — its small R/yr is a *frequency*
+artefact (12 trades/yr) and removing it costs −0.6 pts/yr at equal risk. **There is no
+slot scarcity**: adding always beats swapping, and after the cadence fix there is no
+daily-rule ceiling at all. And **GER40 is closed** — it lost on the old book (−1.4 pts)
+and loses by more on the better one (−3.1), because the bar rose with it.
+
+**The open candidate is [[exp-009-ibs-reversion-4th-brick|IBS on US500]]** (config E,
+**+2.3 pts/yr at equal risk**, RoMaD +0.23, Sharpe +0.11, maxDD flat) — the only real
+strategy tested that improves the book. It is already coded (`run_ibs('US500')`). It has
+NOT had the validation battery (exp-009 flags it as weaker: split-half early t=1.45,
+cost-fragile past 4pt) and it is correlated to brick 4 by construction. Validate before
+adding. Admission test: **standalone RoMaD near the top of the table**, then *add*.
 
 ## Caveats (why this is "frozen candidate", not "deployed")
 
