@@ -20,7 +20,7 @@ from edgelab.intraday.atr_breakout import ATRBreakParams
 from edgelab.edges.turn_of_month import TurnOfMonthParams
 from edgelab.edges.ibs import IBSParams
 from edgelab.live import signals as S
-from edgelab.live.broker import Broker
+from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 
 logger = logging.getLogger("edgelab.live.strategies")
@@ -30,6 +30,62 @@ MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas
 
 def _mins(hhmm: str) -> int:
     return int(hhmm[:2]) * 60 + int(hhmm[3:])
+
+
+class _EntryRetryGuard:
+    """Bounds how long a rollover brick keeps retrying an entry that fails **on an open
+    market**, without ever bounding the wait for a *closed* one.
+
+    That distinction is the whole point. A signal validated at Friday's close must be
+    taken at the Sunday-night reopen — ~48 h after its rollover — because that reopen IS
+    the next bar's open, which is where the backtest fills. So the clock must never run
+    while the market is shut: ``MarketClosed`` (retcode 10018) and "today's bar has not
+    printed yet" do not touch it, and a weekend therefore costs nothing.
+
+    What it does bound is a *tradable* market that keeps rejecting us — invalid stops
+    (10016), AutoTrading switched off (10027), a mis-mapped symbol. There the retry can
+    run all day and land a fill hours after the rollover, which is no longer the trade the
+    backtest measured. Past ``max_hours`` of such failures the brick skips the day instead.
+
+    Only ENTRIES are bounded. An exit is never abandoned.
+    """
+
+    def __init__(self, max_hours: float):
+        self.max_hours = float(max_hours)
+        self._day = None
+        self._since: pd.Timestamp | None = None
+
+    def failed(self, day, now_utc: pd.Timestamp) -> bool:
+        """Record one open-market failure. True once they have run past ``max_hours``.
+
+        The first failure of a broker day starts the clock, so on a Monday reopen the
+        allowance is counted from the reopen, not from the 00:00 rollover.
+        """
+        if self._day != day:
+            self._day, self._since = day, now_utc
+            return False
+        return (now_utc - self._since) >= pd.Timedelta(hours=self.max_hours)
+
+
+class _RolloverBrick:
+    """Shared entry plumbing for the bricks that decide at the daily-bar rollover (2, 3, 4).
+
+    Subclasses set ``self._retry`` and ``self._acted_day``.
+    """
+
+    def _place_entry(self, place, bday, now_utc: pd.Timestamp, label: str) -> None:
+        """Send an entry, bailing out of the day if an OPEN market keeps refusing it."""
+        try:
+            place()
+        except MarketClosed:
+            raise                      # market shut -> runner's quiet retry, clock untouched
+        except Exception as exc:
+            if not self._retry.failed(bday, now_utc):
+                raise                  # transient -> let the runner log it and retry
+            logger.error("%s: entry ABANDONED for %s after %.1f h of failures on an OPEN market "
+                         "(last: %s) -> skipping the day. A fill this far from the rollover is "
+                         "no longer the backtest's trade.", label, bday, self._retry.max_hours, exc)
+            self._acted_day = bday
 
 
 class NasOrbStrategy:
@@ -106,7 +162,7 @@ class NasOrbStrategy:
         self._entered_on = et_date
 
 
-class GoldTomStrategy:
+class GoldTomStrategy(_RolloverBrick):
     """Brick 2 — XAUUSD turn-of-month. Daily; ~1 trade/month."""
 
     def __init__(self, cfg_live: dict):
@@ -114,6 +170,7 @@ class GoldTomStrategy:
         self.logical = cfg_live.get("gold_symbol", "XAUUSD")
         self.magic = MAGIC["gold_tom"]
         self._acted_day = None
+        self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
         # Act ONCE per broker (server) day, triggered right at the daily-bar rollover
@@ -149,12 +206,14 @@ class GoldTomStrategy:
             ref = float(d1.iloc[-1]["close"])
             sl = ref - st.sl_dist               # long only
             lots = broker.lots_for_risk(self.logical, +1, ref, sl, risk.risk_budget())
-            broker.place_market(self.logical, +1, lots, sl, None, self.magic,
-                                "brick2_turn_of_month", st.sl_dist, ref, now_utc)
+            self._place_entry(
+                lambda: broker.place_market(self.logical, +1, lots, sl, None, self.magic,
+                                            "brick2_turn_of_month", st.sl_dist, ref, now_utc),
+                bday, now_utc, "brick2")
         self._acted_day = bday
 
 
-class CryptoMacdStrategy:
+class CryptoMacdStrategy(_RolloverBrick):
     """Brick 3 — MACD(12,26,9)+RSI on one coin (BTCUSD or ETHUSD). Daily; holds multi-day."""
 
     def __init__(self, cfg_live: dict, logical: str, risk_cfg: dict):
@@ -163,6 +222,7 @@ class CryptoMacdStrategy:
         self.risk_cfg = risk_cfg
         self.time_exit_bars = int(risk_cfg["time_exit_bars"])
         self._acted_day = None
+        self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
         # Act ONCE per broker (server) day, at the daily-bar rollover (00:00 server time),
@@ -202,13 +262,15 @@ class CryptoMacdStrategy:
             sl = ref - plan.direction * plan.sl_dist
             tp = ref + plan.direction * plan.tp_dist if plan.tp_dist else None
             lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, risk.risk_budget())
-            broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
-                                f"brick3_{plan.reason}", plan.sl_dist, ref, now_utc,
-                                bars_held_limit=self.time_exit_bars)
+            self._place_entry(
+                lambda: broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
+                                            f"brick3_{plan.reason}", plan.sl_dist, ref, now_utc,
+                                            bars_held_limit=self.time_exit_bars),
+                bday, now_utc, f"brick3 {self.logical}")
         self._acted_day = bday
 
 
-class NasIbsStrategy:
+class NasIbsStrategy(_RolloverBrick):
     """Brick 4 — NAS100 IBS reversion. Daily, long-only; holds up to `max_hold` bars.
 
     Same cadence as bricks 2 & 3: decide ONCE per broker day at the daily-bar rollover
@@ -222,7 +284,9 @@ class NasIbsStrategy:
 
     Over a weekend / market break the entry order is rejected with retcode 10018; the
     runner retries quietly and the fill lands at the reopen — which IS the next bar's open,
-    i.e. exactly where the backtest enters.
+    i.e. exactly where the backtest enters. That wait is deliberately UNBOUNDED (a Friday
+    signal is taken ~48 h later at the Sunday-night reopen); only failures on an *open*
+    market are time-boxed — see _EntryRetryGuard.
     """
 
     def __init__(self, cfg_live: dict):
@@ -231,6 +295,7 @@ class NasIbsStrategy:
         self.magic = MAGIC["nas_ibs"]
         self._acted_day = None
         self._wait_logged = None
+        self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
     @staticmethod
     def _bars_held(raw: pd.DataFrame, open_time: pd.Timestamp, last_closed_i: int) -> int | None:
@@ -292,7 +357,9 @@ class NasIbsStrategy:
             ref = float(daily_all.iloc[-1]["close"])       # fresh bar -> ~ this bar's open
             sl = ref - st.sl_dist                          # long only, no TP
             lots = broker.lots_for_risk(self.logical, +1, ref, sl, risk.risk_budget())
-            broker.place_market(self.logical, +1, lots, sl, None, self.magic,
-                                "brick4_ibs_reversion", st.sl_dist, ref, now_utc,
-                                bars_held_limit=self.p.max_hold)
+            self._place_entry(
+                lambda: broker.place_market(self.logical, +1, lots, sl, None, self.magic,
+                                            "brick4_ibs_reversion", st.sl_dist, ref, now_utc,
+                                            bars_held_limit=self.p.max_hold),
+                bday, now_utc, "brick4")
         self._acted_day = bday

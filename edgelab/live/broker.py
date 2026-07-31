@@ -304,8 +304,7 @@ class Broker:
         # LIVE
         import MetaTrader5 as mt5
         spec = self.symbol_spec(logical)
-        tick = mt5.symbol_info_tick(sym)
-        price = tick.ask if direction > 0 else tick.bid
+        price = self._tick_price(sym, direction > 0, mt5)   # MarketClosed if no quote
         # respect the broker's minimum stop distance (else the order is rejected)
         sl, tp = self._enforce_stops(price, direction, sl, tp, spec)
         lots = self._clamp_lots(lots, spec)
@@ -338,6 +337,23 @@ class Broker:
         return pos
 
     # ---- live order helpers ----------------------------------------------
+    @staticmethod
+    def _tick_price(sym: str, want_ask: bool, mt5) -> float:
+        """Current ask/bid, or raise MarketClosed if the terminal serves no usable quote.
+
+        A symbol in its break does not always reject the order with 10018: MT5 may
+        return None here (or a tick with 0.0 bid/ask) and the order is never sent.
+        Typing that as MarketClosed keeps it on the runner's quiet log-once-and-retry
+        path — otherwise it surfaces as an AttributeError and logs a full traceback
+        every poll (every 20 s, i.e. thousands over a weekend) until the market reopens,
+        rotating the useful history out of runner.log.
+        """
+        tick = mt5.symbol_info_tick(sym)
+        price = (tick.ask if want_ask else tick.bid) if tick is not None else 0.0
+        if not price or not math.isfinite(price):
+            raise MarketClosed(f"{sym} has no quote (market closed)")
+        return float(price)
+
     @staticmethod
     def _filling(spec: "SymbolSpec", mt5) -> int:
         """Pick a filling mode the symbol actually supports (bitmask 1=FOK, 2=IOC)."""
@@ -378,9 +394,8 @@ class Broker:
             if res is not None and res.retcode in (mt5.TRADE_RETCODE_REQUOTE,
                                                    mt5.TRADE_RETCODE_PRICE_OFF,
                                                    mt5.TRADE_RETCODE_PRICE_CHANGED):
-                tick = mt5.symbol_info_tick(req["symbol"])
-                is_buy = req["type"] == mt5.ORDER_TYPE_BUY
-                req["price"] = tick.ask if is_buy else tick.bid
+                req["price"] = self._tick_price(req["symbol"],
+                                                req["type"] == mt5.ORDER_TYPE_BUY, mt5)
                 res = mt5.order_send(req)
             else:
                 break
@@ -423,8 +438,7 @@ class Broker:
         import MetaTrader5 as mt5
         sym = self.broker_symbol(pos.symbol)
         spec = self.symbol_spec(pos.symbol)
-        tick = mt5.symbol_info_tick(sym)
-        price = tick.bid if pos.direction > 0 else tick.ask
+        price = self._tick_price(sym, pos.direction < 0, mt5)   # MarketClosed if no quote
         req = {
             "action": mt5.TRADE_ACTION_DEAL, "symbol": sym, "volume": float(pos.lots),
             "type": mt5.ORDER_TYPE_SELL if pos.direction > 0 else mt5.ORDER_TYPE_BUY,

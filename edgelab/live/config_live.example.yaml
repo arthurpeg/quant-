@@ -64,6 +64,13 @@ poll_seconds: 20               # loop period; brick 1 needs sub-minute polling n
 # enters at the bar open / exits at the bar close = matches the backtest (no intraday lag).
 # daily_decision_et is no longer used (kept only for backward compatibility).
 daily_decision_et: "09:45"
+# How long a rollover brick (2, 3, 4) may keep retrying an entry that fails ON AN OPEN
+# MARKET before it gives up and skips the day. Past this, a fill would land hours away
+# from the rollover and would no longer be the trade the backtest measured.
+# It does NOT bound waiting for a CLOSED market: retcode 10018 and "today's bar has not
+# printed yet" never start the clock, so a signal validated at Friday's close is still
+# taken at the Sunday-night reopen (~48 h later) — that reopen IS the backtest's fill.
+entry_retry_max_hours: 2
 
 # ---- auto-update from GitHub (no more manual file copies on the VPS) --------
 # Needs the folder to be a git clone of the repo + git installed. Every
