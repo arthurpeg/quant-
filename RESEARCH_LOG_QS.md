@@ -76,15 +76,50 @@ Run blind against 338 outside articles, the screen re-derives the project's own 
 * **Seasonality is thin**: expiration week best asset t=2.29, turn-of-month pooled t=1.50
   (our gold turn-of-month brick 2 is the one member of that family that survives).
 
+## London Breakout — tested on M1, FAILS (added 2026-07-31)
+
+Pulled Pepperstone **M1 for all 7 majors** (2019-2026, ~2.8M bars each) and ran the rule to
+the letter: Asian range 00:00-08:00 London, breakout entry 07:00-12:00 (the article notes
+the Frankfurt hour), fill at the next M1 open, stop at the opposite side of the range,
+exit swept over the article's own 12:00-17:00 London window. Timezone via
+`to_true_utc` (broker EET -> true UTC -> Europe/London).
+
+| Exit hour (7 pairs pooled) | n | R/yr per pair | t | PF |
+|---|---|---|---|---|
+| 12:00 | 11242 | -18.6 | **-14.63** | 0.69 |
+| 13:00 | 11242 | -18.7 | -13.01 | 0.72 |
+| 15:00 | 11242 | -18.1 | -8.56 | 0.80 |
+| 17:00 | 11242 | -17.8 | -6.97 | 0.84 |
+
+Every pair loses (0-3 positive years out of 8), both range definitions (high-low and the
+article's "open-close" body range) lose, and long-only loses. This **confirms the article's
+own verdict**.
+
+**Why it loses - the diagnosis matters more than the verdict.** Gross of cost the strategy
+has **no edge in either direction**: gross t runs from -1.74 to **+1.81** across the seven
+pairs, i.e. insignificant everywhere. Net t runs -0.95 to -5.91. **The whole loss is
+friction** (~0.08 R per trade, ~230 trades/yr/pair). And the mirror strategy - *fading* the
+Asian-range breakout - is negative too (t -1.92 to -4.56), for the same reason: it pays the
+same spread.
+
+So the Asian-range breakout is neither a trend edge nor a reversion edge; it is a coin flip
+with a toll. That is this project's recurring FX wall, and Mesfin (2026)'s "gross edge
+ceiling < friction" ([[ledger]]), measured once more on native M1.
+
+## Data provenance (verified, not assumed)
+Every backtest here reads `data_cache_mt5/` - the **Pepperstone** cache. Checked against
+the live MT5 terminal (PepperstoneUK-Demo) on 400 daily bars per instrument:
+**397-399 of 400 identical, median deviation 0.0000%**. The single divergent bar is
+always the last one, still forming when the cache was built.
+
 ## Not testable on our data
 * **"5-day low overnight"** (open at a 5-day low & close > open): **0 trades** on CFD daily
-  bars — the article uses SPY, where the cash open can gap below a 5-day low. On 24h CFD
-  bars the open ≈ the previous close, so the condition never fires. Untestable, not failed.
-* **London breakout** (Asian-session range) needs intraday; we have M1 only for
-  EURUSD/USDJPY/EURJPY — left for a later pass.
+  bars - the article uses SPY, where the cash open can gap below a 5-day low. On 24h CFD
+  bars the open is approximately the previous close, so the condition never fires.
 * Anything gated (174 articles).
 
 ## Files
 `scratchpad/qs_fetch.py` (fetch + pass-1 triage), `qs_triage2.py` (rule extraction +
 the 3 user filters), `qs_backtest.py` (generic R runner), `qs_run.py` (the 22 strategies),
-`qs_pages/` (338 article texts), `qs_shortlist.csv`, `qs_results.csv`, `qs_out_*.csv`.
+`qs_pages/` (338 article texts), `qs_shortlist.csv`, `qs_results.csv`, `qs_out_*.csv`,
+`london_breakout.py` (M1 test), `pull_m1_london.py`.
