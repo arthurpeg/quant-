@@ -37,7 +37,13 @@ PAGES = {                       # source page -> (root convenience copy, JS cons
 CORR_KEYS = ('NAS', 'Gold', 'Crypto', 'IBS')
 
 
-def portfolio_data(R, parts, start, end, counts):
+def _pf(r: np.ndarray) -> float:
+    """Profit factor = gross wins / gross losses, on trade R."""
+    loss = -r[r < 0].sum()
+    return float(r[r > 0].sum() / loss) if loss > 0 else float('inf')
+
+
+def portfolio_data(R, parts, start, end, trades):
     """The `const D={...}` blob of portfolio_backtest.html."""
     idx = pd.date_range(start, end, freq='D')
     years = (end - start).days / 365.25
@@ -50,6 +56,11 @@ def portfolio_data(R, parts, start, end, counts):
     df = pd.DataFrame({k: v.values for k, v in zip(CORR_KEYS, parts)}, index=idx)
     corr = df.corr()
 
+    # trade-level stats. The portfolio PF pools every brick's trades: they are all sized
+    # at 1R, so they are directly comparable and the pool IS the account's trade stream.
+    all_trades = np.concatenate([t.to_numpy() for t in trades.values()])
+    yrs = sorted({int(y) for t in trades.values() for y in t.index.year})
+
     return {
         'window': f'{start:%Y-%m} → {end:%Y-%m}  ({years:.1f} yr)',
         'combined': {
@@ -58,12 +69,19 @@ def portfolio_data(R, parts, start, end, counts):
             'sharpe': round(float(active.mean() / active.std() * np.sqrt(252)), 2),
             'worst': round(float(R.min()), 2), 'best': round(float(R.max()), 2),
             'win': int(round((active > 0).mean() * 100)),
+            'pf': round(_pf(all_trades), 2), 'ntrades': int(len(all_trades)),
+            'winrate': int(round(float((all_trades > 0).mean()) * 100)),
         },
         'equity': [round(float(v), 1) for v in eq.values],
         'eq_start': round(start.year + (start.month - 1) / 12, 2),
         'years': {str(y): round(float(v), 1) for y, v in s.groupby(s.index.year).sum().items()},
-        'bricks': {name: [round(float(p.sum()) / years, 1), round(float(p.sum()), 0), counts[name]]
+        'bricks': {name: [round(float(p.sum()) / years, 1), round(float(p.sum()), 0),
+                          int(len(trades[name])), round(_pf(trades[name].to_numpy()), 2)]
                    for name, p in zip(BRICKS, parts)},
+        # trades per brick per year -> {brick: {year: n}} (+ the year axis, shared)
+        'tr_years': [str(y) for y in yrs],
+        'tr_by_year': {name: [int((t.index.year == y).sum()) for y in yrs]
+                       for name, t in trades.items()},
         'corr': {a: {b: round(float(corr.loc[a, b]), 2) for b in CORR_KEYS} for a in CORR_KEYS},
     }
 
@@ -112,12 +130,17 @@ def inject(page: str, var: str, obj) -> str:
 
 
 def main():
-    R, parts, (start, end), counts = build_daily_R()
-    D = portfolio_data(R, parts, start, end, counts)
-    print(f'  book {D["window"]} | {D["combined"]["r"]:+.1f} R/yr | maxDD {D["combined"]["maxdd"]}R'
-          f' | Sharpe {D["combined"]["sharpe"]} | RoMaD {D["combined"]["romad"]}')
-    for name, (ry, tot, n) in D['bricks'].items():
-        print(f'    {name:<24} {ry:+6.1f} R/yr  {tot:+7.0f} R  {n:>5} trades')
+    R, parts, (start, end), trades = build_daily_R()
+    D = portfolio_data(R, parts, start, end, trades)
+    c = D['combined']
+    print(f'  book {D["window"]} | {c["r"]:+.1f} R/yr | maxDD {c["maxdd"]}R'
+          f' | Sharpe {c["sharpe"]} | RoMaD {c["romad"]} | PF {c["pf"]}'
+          f' ({c["ntrades"]} trades, {c["winrate"]}% win)')
+    hdr = ' '.join(f'{y[2:]:>4}' for y in D['tr_years'])
+    print(f'    {"brick":<24} {"R/yr":>6} {"tot":>6} {"n":>5} {"PF":>5}   trades/yr {hdr}')
+    for name, (ry, tot, n, pf) in D['bricks'].items():
+        yr = ' '.join(f'{v:>4d}' for v in D['tr_by_year'][name])
+        print(f'    {name:<24} {ry:+6.1f} {tot:+6.0f} {n:>5} {pf:>5.2f}             {yr}')
 
     mc = simulate(R)
     M = mc_data(mc)

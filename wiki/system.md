@@ -63,6 +63,8 @@ across the whole 4×4 matrix is **0.03**.
 |--------|---------|-----------|
 | **Total (Pepperstone + live cadence, canonical)** | +263 R (+32.5 R/yr) | **+301 R (+37.3 R/yr)**; NAS +12.9 + gold +2.5 + crypto +17.1 + IBS +4.8 |
 | maxDD / RoMaD / Sharpe | 15.8 R / 2.06 / 2.42 | **13.8 R / 2.71 / 2.59** |
+| Profit factor (pooled trades) | — | **1.44** (1888 trades, 54% win); per brick NAS 1.27 / gold 1.86 / crypto 1.57 / IBS 2.21 |
+| Activity | — | **~230 trades/yr**: NAS ~95, crypto ~90, IBS ~35, gold 12 |
 | worst day | −4.15 R | **−4.43 R** (IBS shifts which day is worst) |
 | MC median R/yr, P(profit) | +32.1, 96.5% | **+36.8, 98.1%** |
 | MC 5th-pct year, median maxDD | +2.6 R, 10.5 R | **+7.1 R, 9.9 R** |

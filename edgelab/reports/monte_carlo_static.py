@@ -55,38 +55,41 @@ def macd_rsi(d):
     return base.where(((base > 0) & (r > 50)) | ((base < 0) & (r < 50)), 0).fillna(0).astype(int)
 
 
+def _naive(x):
+    """tz-naive DatetimeIndex from a Series or Index (the bricks mix UTC-aware and naive)."""
+    ix = pd.DatetimeIndex(pd.to_datetime(x))
+    return ix.tz_localize(None) if ix.tz is not None else ix
+
+
 def build_daily_R():
     """Fixed-fractional trade-R on exit dates, all 4 bricks, on a CALENDAR-day index.
 
-    Returns (R, per-brick daily series, (start, end), trade counts in-window).
+    Returns (R, per-brick daily series, (start, end), per-brick TRADE-R series). The trade
+    series (one row per closed trade, indexed by exit datetime, in-window) is what the
+    report derives trade counts, per-year activity and profit factor from — daily sums
+    would merge same-day trades and understate both.
     """
     t1 = run_atr_breakout('NAS100', ATRBreakParams(regime_mode='low', direction='both'), 'M1').trades
-    nas = pd.Series(t1['R'].values, index=pd.to_datetime(t1['exit_time'])).groupby(lambda x: x.normalize()).sum()
-    n_nas = int((pd.to_datetime(t1['exit_time']).dt.tz_localize(None) >= START).sum())
+    tr_nas = pd.Series(t1['R'].values, index=_naive(t1['exit_time']))
     g0 = run_turn_of_month('XAUUSD', TurnOfMonthParams(sl_atr=1.5))
-    gold = pd.Series(g0['R'].values, index=pd.to_datetime(g0['date'])).groupby(level=0).sum()
-    n_gold = int((pd.to_datetime(g0['date']) >= START).sum())
-    cr = []; n_crypto = 0
+    tr_gold = pd.Series(g0['R'].values, index=_naive(g0['date']))
+    cr = []
     for s in ('BTCUSD', 'ETHUSD'):
         tr = eng.run(load(s), macd_rsi(load(s)), s, 'x').trades
-        ex = pd.to_datetime(tr['exit_time'])
-        cr.append(pd.Series(tr['ret'].values, index=ex))
-        n_crypto += int((ex.dt.tz_localize(None) >= START).sum())
-    crypto = pd.concat(cr).groupby(lambda x: pd.Timestamp(x).tz_localize(None).normalize()).sum()
+        cr.append(pd.Series(tr['ret'].values, index=_naive(tr['exit_time'])))
+    tr_crypto = pd.concat(cr).sort_index()
     # brick 4: IBS reversion, on the cadence the deployed driver actually runs
     # (cadence='live'; the exploratory 'literal' loop reads ~0.8 R/yr richer).
     i0 = run_ibs('NAS100', IBSParams(sl_atr=2.5), cadence='live')
-    ibs = pd.Series(i0['R'].values, index=pd.to_datetime(i0['exit_dt'])).groupby(lambda x: x.normalize()).sum()
-    n_ibs = int((pd.to_datetime(i0['exit_dt']) >= START).sum())
-    for x in (nas, gold, crypto, ibs):
-        x.index = pd.to_datetime(x.index).tz_localize(None) if getattr(x.index, 'tz', None) else pd.to_datetime(x.index)
-    nas, gold, crypto, ibs = [x[x.index >= START] for x in (nas, gold, crypto, ibs)]
-    end = max(nas.index.max(), gold.index.max(), crypto.index.max(), ibs.index.max())
+    tr_ibs = pd.Series(i0['R'].values, index=_naive(i0['exit_dt']))
+
+    tr = [x[x.index >= START] for x in (tr_nas, tr_gold, tr_crypto, tr_ibs)]
+    dly = [x.groupby(x.index.normalize()).sum() for x in tr]
+    end = max(x.index.max() for x in dly)
     idx = pd.date_range(START, end, freq='D')  # calendar -> keep crypto weekends
-    parts = [x.reindex(idx).fillna(0) for x in (nas, gold, crypto, ibs)]
+    parts = [x.reindex(idx).fillna(0) for x in dly]
     R = sum(parts).values
-    counts = dict(zip(BRICKS, (n_nas, n_gold, n_crypto, n_ibs)))
-    return R, tuple(parts), (START, end), counts
+    return R, tuple(parts), (START, end), dict(zip(BRICKS, tr))
 
 
 def simulate(R, N=40000, seed=7, B=14):
@@ -141,7 +144,7 @@ def simulate(R, N=40000, seed=7, B=14):
 
 
 def main():
-    R, (nas, gold, crypto, ibs), (start, end), counts = build_daily_R()
+    R, (nas, gold, crypto, ibs), (start, end), _trades = build_daily_R()
     years = (end - start).days / 365.25; active = R[R != 0]
 
     print('=' * 74)

@@ -58,6 +58,8 @@ tbody td:first-child{font-family:var(--sans)}
 tbody tr:last-child td{border-bottom:none}
 tfoot td{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;border-top:2px solid var(--line)}
 tfoot td:first-child{font-family:var(--sans)}
+.scroll{overflow-x:auto}
+td.zero{color:var(--muted);opacity:.45}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:720px){.grid2{grid-template-columns:1fr}}
 .corr{display:grid;grid-template-columns:auto repeat(4,1fr);gap:4px;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
@@ -104,8 +106,15 @@ tfoot td:first-child{font-family:var(--sans)}
     <div class="card">
       <h3>Brick contributions</h3>
       <p class="cap">Return spread across independent edges.</p>
-      <table id="bricks"><thead><tr><th>Brick</th><th>R / yr</th><th>Total R</th><th>Trades</th></tr></thead><tbody></tbody><tfoot></tfoot></table>
+      <table id="bricks"><thead><tr><th>Brick</th><th>R / yr</th><th>Total R</th><th>Trades</th><th>PF</th></tr></thead><tbody></tbody><tfoot></tfoot></table>
     </div>
+  </div>
+
+  <h2>Activity</h2>
+  <div class="card">
+    <h3>Trades per brick, per year</h3>
+    <p class="cap">How often each edge actually fires. The book is <b>low-frequency</b>: brick 2 trades ~12×/yr, and the whole portfolio averages ~230 trades/yr across four bricks. 2018 is a half-year (from July) and 2026 is partial.</p>
+    <div class="scroll"><table id="tryear"></table></div>
   </div>
 
   <h2>Why it holds together</h2>
@@ -130,7 +139,7 @@ tfoot td:first-child{font-family:var(--sans)}
 </div>
 
 <script>
-const D={"window":"2018-07 \u2192 2026-07  (8.1 yr)","combined":{"r":37.3,"maxdd":13.8,"romad":2.71,"sharpe":2.59,"worst":-4.43,"best":5.96,"win":54},"equity":[3.0,-1.8,-4.1,-5.8,5.0,2.1,2.4,-1.2,6.8,5.7,11.6,14.9,19.2,17.4,17.0,17.9,12.2,21.3,23.2,30.5,40.2,47.0,48.8,51.2,56.4,65.5,66.2,71.2,80.9,83.2,89.8,84.9,83.4,91.9,99.3,103.8,105.4,114.2,115.4,119.7,118.2,118.9,119.7,116.7,116.8,121.5,130.5,132.7,145.6,140.1,137.5,141.1,139.1,142.1,154.8,149.6,153.3,159.8,163.5,165.6,158.2,164.4,161.4,169.3,176.1,176.8,166.8,182.5,191.5,188.6,199.2,205.1,209.7,215.0,220.8,216.9,227.3,238.0,238.1,250.1,251.2,249.7,257.5,251.3,265.1,267.7,268.5,263.7,268.5,268.0,278.1,289.2,291.6,290.1,294.3,305.6,301.3],"eq_start":2018.5,"years":{"2018":2.1,"2019":19.2,"2020":61.9,"2021":35.8,"2022":23.2,"2023":34.7,"2024":61.2,"2025":30.1,"2026":33.3},"bricks":{"NAS100 breakout":[12.9,104.0,784],"Gold turn-of-month":[2.5,20.0,96],"Crypto MACD-RSI":[17.1,138.0,721],"NAS100 IBS reversion":[4.8,39.0,287]},"corr":{"NAS":{"NAS":1.0,"Gold":0.02,"Crypto":-0.01,"IBS":-0.0},"Gold":{"NAS":0.02,"Gold":1.0,"Crypto":-0.01,"IBS":-0.03},"Crypto":{"NAS":-0.01,"Gold":-0.01,"Crypto":1.0,"IBS":-0.01},"IBS":{"NAS":-0.0,"Gold":-0.03,"Crypto":-0.01,"IBS":1.0}}};
+const D={"window":"2018-07 \u2192 2026-07  (8.1 yr)","combined":{"r":37.3,"maxdd":13.8,"romad":2.71,"sharpe":2.59,"worst":-4.43,"best":5.96,"win":54,"pf":1.44,"ntrades":1888,"winrate":54},"equity":[3.0,-1.8,-4.1,-5.8,5.0,2.1,2.4,-1.2,6.8,5.7,11.6,14.9,19.2,17.4,17.0,17.9,12.2,21.3,23.2,30.5,40.2,47.0,48.8,51.2,56.4,65.5,66.2,71.2,80.9,83.2,89.8,84.9,83.4,91.9,99.3,103.8,105.4,114.2,115.4,119.7,118.2,118.9,119.7,116.7,116.8,121.5,130.5,132.7,145.6,140.1,137.5,141.1,139.1,142.1,154.8,149.6,153.3,159.8,163.5,165.6,158.2,164.4,161.4,169.3,176.1,176.8,166.8,182.5,191.5,188.6,199.2,205.1,209.7,215.0,220.8,216.9,227.3,238.0,238.1,250.1,251.2,249.7,257.5,251.3,265.1,267.7,268.5,263.7,268.5,268.0,278.1,289.2,291.6,290.1,294.3,305.6,301.3],"eq_start":2018.5,"years":{"2018":2.1,"2019":19.2,"2020":61.9,"2021":35.8,"2022":23.2,"2023":34.7,"2024":61.2,"2025":30.1,"2026":33.3},"bricks":{"NAS100 breakout":[12.9,104.0,784,1.27],"Gold turn-of-month":[2.5,20.0,96,1.86],"Crypto MACD-RSI":[17.1,138.0,721,1.57],"NAS100 IBS reversion":[4.8,39.0,287,2.21]},"tr_years":["2018","2019","2020","2021","2022","2023","2024","2025","2026"],"tr_by_year":{"NAS100 breakout":[40,102,88,93,108,100,93,101,59],"Gold turn-of-month":[6,12,12,12,12,12,12,12,6],"Crypto MACD-RSI":[29,75,78,104,83,106,102,91,53],"NAS100 IBS reversion":[19,30,42,35,44,34,36,28,19]},"corr":{"NAS":{"NAS":1.0,"Gold":0.02,"Crypto":-0.01,"IBS":-0.0},"Gold":{"NAS":0.02,"Gold":1.0,"Crypto":-0.01,"IBS":-0.03},"Crypto":{"NAS":-0.01,"Gold":-0.01,"Crypto":1.0,"IBS":-0.01},"IBS":{"NAS":-0.0,"Gold":-0.03,"Crypto":-0.01,"IBS":1.0}}};
 const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 document.getElementById('m-window').textContent=D.window;
 
@@ -142,7 +151,8 @@ document.getElementById('tiles').innerHTML=[
  ['RoMaD','×'+c.romad,'acc'],
  ['Sharpe (ann.)',c.sharpe,''],
  ['Best / worst day','+'+c.best+' / '+c.worst,''],
- ['Winning days',c.win+'%','']
+ ['Winning days',c.win+'%',''],
+ ['Profit factor','×'+c.pf,'acc']
 ].map(([k,v,cl])=>`<div class="tile"><div class="k">${k}</div><div class="v ${cl}">${v}</div></div>`).join('');
 
 /* generic axis helpers */
@@ -189,8 +199,20 @@ function frame(W,H,pad){return {W,H,pad,x:(t,a,b)=>pad.l+(t-a)/(b-a||1)*(W-pad.l
 (function(){
  const tb=document.querySelector('#bricks tbody');let tot=[0,0,0];
  for(const[k,v]of Object.entries(D.bricks)){tot[0]+=v[0];tot[1]+=v[1];tot[2]+=v[2];
-   tb.innerHTML+=`<tr><td>${k}</td><td class="pos">+${v[0]}</td><td>+${v[1]}</td><td>${v[2]}</td></tr>`;}
- document.querySelector('#bricks tfoot').innerHTML=`<tr><td>Combined</td><td class="pos">+${tot[0].toFixed(1)}</td><td>+${tot[1]}</td><td>${tot[2]}</td></tr>`;
+   tb.innerHTML+=`<tr><td>${k}</td><td class="pos">+${v[0]}</td><td>+${v[1]}</td><td>${v[2]}</td><td>×${v[3].toFixed(2)}</td></tr>`;}
+ document.querySelector('#bricks tfoot').innerHTML=`<tr><td>Combined</td><td class="pos">+${tot[0].toFixed(1)}</td><td>+${tot[1]}</td><td>${tot[2]}</td><td>×${D.combined.pf.toFixed(2)}</td></tr>`;
+})();
+
+/* trades per brick per year */
+(function(){
+ const yrs=D.tr_years, names=Object.keys(D.tr_by_year);
+ let h=`<thead><tr><th>Brick</th>${yrs.map(y=>`<th>'${y.slice(2)}</th>`).join('')}<th>Total</th></tr></thead><tbody>`;
+ const colTot=yrs.map(()=>0);let grand=0;
+ names.forEach(nm=>{const row=D.tr_by_year[nm];const s=row.reduce((a,b)=>a+b,0);grand+=s;
+   row.forEach((v,i)=>colTot[i]+=v);
+   h+=`<tr><td>${nm}</td>${row.map(v=>`<td${v?'':' class="zero"'}>${v||'·'}</td>`).join('')}<td>${s}</td></tr>`;});
+ h+=`</tbody><tfoot><tr><td>All bricks</td>${colTot.map(v=>`<td>${v}</td>`).join('')}<td>${grand}</td></tr></tfoot>`;
+ document.getElementById('tryear').innerHTML=h;
 })();
 
 /* correlation matrix */
