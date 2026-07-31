@@ -173,6 +173,30 @@ forward test holds **2 trades so far** (both brick 3), and the backtest is mildl
 optimistic on all three (bar stops b1, ETH spread b3, holiday-calendar drift b2). The
 only remaining judge is forward-test time; nothing in the code needs changing.
 
+## Admission test for a 5th brick (measured 2026-07-31, `scratchpad/sleeve_swap.py`)
+
+**Decorrelation is necessary but NOT sufficient.** Compared at *equal risk* (each config
+sized to its own binding prop ceiling — which is the **−10% static floor**, not the daily
+rule): adding the ⭐ [[ledger]] GER40 candidate *costs* 1.4 pts/yr and deepens maxDD
+13.8→17.9 R **despite |corr| ≤ 0.045 to all four bricks**, because its standalone Sharpe
+(1.63) is the lowest of the set. A sleeve with brick 4's efficiency, independent, instead
+gives RoMaD 2.71→**3.12**, Sharpe 2.59→2.74, maxDD **13.8→13.6** and **+4.1 pts/yr**.
+
+| Sleeve | R/yr | daily vol | **standalone Sharpe** |
+|---|---|---|---|
+| IBS (b4) | +4.8 | 0.442 | **4.84** |
+| gold ToM (b2) | +2.5 | 0.868 | **3.83** |
+| crypto (b3) | +17.1 | 1.437 | 2.73 |
+| NAS ORB (b1) | +12.9 | 1.238 | 1.71 |
+| *GER40 (candidate)* | *+8.6* | *1.368* | *1.63* |
+
+Two consequences. **Never drop brick 2 to make room**: its small R/yr is a *frequency*
+artefact (12 trades/yr), it is the 2nd most efficient sleeve, and removing it costs
+−1.2 pts/yr at equal risk. And **there is no slot scarcity** — adding beats swapping,
+because the daily ceiling is set by one sleeve's own tail (crypto −4.15 R alone), not by
+the number of sleeves. So: admit a 5th brick only if its **standalone Sharpe is at the
+top of this table**, and then *add* it rather than swap.
+
 ## Caveats (why this is "frozen candidate", not "deployed")
 
 1. **All in-sample** on candidate bricks — no genuine forward test yet.
@@ -193,6 +217,15 @@ only remaining judge is forward-test time; nothing in the code needs changing.
    the edge. Bricks 1–3 were already live-cadence.
 3. Block-bootstrap **understates long crypto bear regimes** → real funded ruin likely
    a bit above the numbers above → argues for the conservative sizing end.
+4. ⚠️ **Brick 3 probably has brick 4's cadence gap, unmeasured.** The daily engine closes
+   and re-opens inside the same bar: **444 of 721** in-window crypto trades start on a day
+   a previous trade exited, which `CryptoMacdStrategy` cannot do (it returns after handling
+   a position, and `_acted_day` blocks a second action that day). The net R effect is *not*
+   those trades' +110.8 R — they are shifted one bar, not lost — and the sign may even be
+   favourable on the tail (live takes 2 of the 4 stops on 2022-11-08, so −2.05 R not −4.10,
+   which would *loosen* the sizing ceiling). `verify_brick3` checks the signal series and
+   last-bar barriers only, never trade-level cadence. **Next:** give the crypto path the
+   same `cadence=` treatment as `run_ibs` and re-cut.
 
 ## Going live / forward-test (`edgelab/live/`)
 
