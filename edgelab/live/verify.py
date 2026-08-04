@@ -70,13 +70,24 @@ def verify_brick1() -> bool:
 
 
 def verify_brick2() -> bool:
+    """Brick 2 parity, in two parts.
+
+    (a) ENTRY days — the original check: does the live calendar flag the same month-ends
+        the backtest enters on, with the same 1R distance?
+    (b) TRADE replay — the part that was MISSING, and its absence let a real bug ship:
+        ``is_exit_day`` was structurally always False (0 exit days over 2018-2026), so
+        the live gold position could never time-exit and rode to its stop instead. A
+        harness that only checks entries certifies half a brick. This replays
+        ``GoldTomStrategy``'s real once-per-rollover cadence — the only price it can get
+        is the OPEN of the day it wakes on — and compares whole trades to the backtest.
+    """
     p = TurnOfMonthParams(sl_atr=1.5)
     d1 = pd.read_parquet(MT5_DIR / "XAUUSD_D1.parquet")
     bt = run_turn_of_month("XAUUSD", p)
     bt_days = {pd.Timestamp(r["date"]).normalize(): round(float(r["r_dist"]), 3)
                for _, r in bt.iterrows()}
 
-    # walk each calendar day the backtest could enter on, ask the live state
+    # ---- (a) walk each calendar day the backtest could enter on, ask the live state ----
     ok = 0
     checked = 0
     diffs = []
@@ -87,12 +98,62 @@ def verify_brick2() -> bool:
             ok += 1
         else:
             diffs.append((day.date(), st.is_entry_day, round(st.sl_dist, 3), r_dist))
-    print(f"  BRICK 2 (turn-of-month): {ok}/{checked} backtest entry-days matched by live "
-          f"(business-day calendar approximation)")
+    print(f"  BRICK 2 (turn-of-month) entry days: {ok}/{checked} backtest entry-days matched "
+          f"by live (business-day calendar approximation)")
     for d in diffs[:5]:
         print(f"    DIFF {d[0]}: live is_entry={d[1]} sl={d[2]} vs backtest r_dist={d[3]}")
-    # tolerance: calendar approximation may miss a few holiday-shifted month-ends
-    return ok / max(checked, 1) >= 0.80
+
+    # ---- (b) replay the driver's rollover cadence over the same D1 bars ----------------
+    d = d1.copy()
+    d.columns = [c.lower() for c in d.columns]
+    d["t"] = pd.to_datetime(d["time"], utc=True)
+    d = d.set_index("t")[["open", "high", "low", "close"]].astype(float).sort_index()
+    o, lo = d["open"].to_numpy(), d["low"].to_numpy()
+    days = d.index.tz_convert("UTC").tz_localize(None).normalize()
+    cost_frac = 2 * p.cost_bps / 1e4
+
+    live_trades, in_pos, entry_px, risk, stop = [], False, 0.0, 0.0, 0.0
+    unexited = 0
+    for i in range(len(d)):
+        st = S.tom_state(d, days[i], p)          # what the driver sees at this rollover
+        if in_pos and st.is_exit_day:            # close at the price the rollover offers
+            live_trades.append((entry_px, o[i], "time_exit",
+                                (o[i] - entry_px - cost_frac * entry_px) / risk))
+            in_pos = False
+        if (not in_pos) and st.is_entry_day and st.sl_dist > 0:
+            entry_px, risk = o[i], st.sl_dist
+            stop, in_pos = entry_px - risk, True
+        if in_pos and lo[i] <= stop:             # broker-side stop, intrabar (pessimistic)
+            px = stop if o[i] >= stop else o[i]
+            live_trades.append((entry_px, px, "stop",
+                                (px - entry_px - cost_frac * entry_px) / risk))
+            in_pos = False
+    if in_pos:
+        unexited = 1                             # still holding at the end of the sample
+
+    # Compare LIKE FOR LIKE: the months whose entry day the live calendar cannot flag are
+    # months the market is shut on (Good Friday month-ends) — live skips them by design,
+    # so charging their P&L to the exit logic would hide what this check is for.
+    skipped = [d for d, _ in ((k, v) for k, v in bt_days.items()) if not S.tom_state(d1, d, p).is_entry_day]
+    lv_R = sum(t[3] for t in live_trades)
+    bt_R = float(bt["R"].sum())
+    cmp_R = float(bt[~bt["date"].isin({s.date() for s in skipped})]["R"].sum())
+    n_exit = sum(1 for t in live_trades if t[2] == "time_exit")
+    print(f"  BRICK 2 (turn-of-month) trade replay: live {len(live_trades)} trades "
+          f"({n_exit} time-exit, {len(live_trades)-n_exit} stopped) vs backtest {len(bt)} "
+          f"| total R {lv_R:+.2f} vs {bt_R:+.2f}, and {cmp_R:+.2f} on the {len(bt)-len(skipped)} "
+          f"comparable months -> exit tracking error {lv_R - cmp_R:+.2f} R "
+          f"({len(skipped)} months skipped live, worth {bt_R - cmp_R:+.2f} R: market shut at that month-end)")
+    if n_exit == 0:
+        print("    FAIL: the live calendar never produces a time-exit -> the position can "
+              "only leave on its stop (this was the 2026-08-04 bug).")
+
+    # entry tolerance: the business-day calendar may miss a few holiday-shifted month-ends.
+    # exit gate: every trade must be able to leave on time, and the replay must track the
+    # comparable backtest months to within 1 R over the whole sample (measured: -0.33 R).
+    entries_ok = ok / max(checked, 1) >= 0.80
+    exits_ok = n_exit > 0 and unexited == 0 and abs(lv_R - cmp_R) <= 1.0
+    return entries_ok and exits_ok
 
 
 def verify_brick3() -> bool:

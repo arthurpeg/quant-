@@ -124,31 +124,47 @@ def nas_orb_scan(session: pd.DataFrame, atr14: float, atr3: float, atr20: float,
 class TomState:
     in_window: bool          # is `day` inside the turn-of-month trade window?
     is_entry_day: bool       # is `day` the entry day (last trading day of month)?
-    is_exit_day: bool        # is `day` the window-end (first_days-th day of next month)?
+    is_exit_day: bool        # should `day`'s rollover CLOSE the position? (see below)
     sl_dist: float = 0.0     # 1R stop distance in price (= sl_atr * prevATR14)
 
 
 def _business_tom_flags(day: pd.Timestamp, last_days: int, first_days: int) -> tuple:
     """(in_window, is_entry_day, is_exit_day) using a business-day calendar.
 
-    LIVE approximation of the backtest's trading-day-of-month window: the backtest uses
-    actual bars; here we use business days (Mon-Fri). Exchange HOLIDAYS can shift the
-    true last/first trading day by ~1 day a few times a year -> re-check against the
-    D1 bars in production. Gold trades every weekday so this is a close match.
+    Both legs are anchored on ``day``'s OWN month, which is the whole subtlety: the
+    last ``last_days`` business days of this month are the ENTRY leg, and the first
+    ``first_days`` business days of this month are the tail of the PREVIOUS month's
+    turn — the leg we are still holding. (The earlier version anchored the "first days"
+    leg on the month AFTER ``day``, so ``day`` could never equal it and ``is_exit_day``
+    was structurally always False: 108 entry days and 0 exit days over 2018-2026.)
+
+    The ``is_exit_day`` returned here is a CALENDAR-ONLY fallback. ``tom_state`` replaces
+    it with a count of the actual D1 bars, which is exact — see there. The two disagree
+    on 11 of 126 trades (New Year / Easter months, where a market holiday lands on a
+    business day so the "3rd business day" is really only the 2nd *trading* day) and
+    that costs -5.6 R over 10.6 years, so the bar-based one is what the driver uses.
+
+    ENTRY, unlike the exit, is unavoidably forward-looking — knowing that today is the
+    last trading day of the month means knowing the remaining days are not — so it stays
+    on the business calendar. Its failure mode is benign: when the last business day of a
+    month is a holiday (Good Friday 2018-03-30, 2024-03-29) the market is shut, the entry
+    raises ``MarketClosed``, and the month is simply skipped rather than entered late.
+    That is the known 124/126.
     """
     day = pd.Timestamp(day).normalize()
-    bmonth_end = (day + pd.offsets.BMonthEnd(0))            # last business day of THIS month
-    # last `last_days` business days of the month:
-    last_window_start = bmonth_end - pd.offsets.BDay(last_days - 1)
-    # first `first_days` business days of the NEXT month:
-    next_first = (day + pd.offsets.BMonthBegin(1)) if day > bmonth_end else \
-        ((bmonth_end + pd.offsets.BDay(1)))
-    first_window_end = next_first + pd.offsets.BDay(first_days - 1)
+    bmonth_end = (day + pd.offsets.BMonthEnd(0)).normalize()   # last business day of THIS month
+    # last `last_days` business days of THIS month = the entry leg:
+    last_window_start = (bmonth_end - pd.offsets.BDay(last_days - 1)).normalize()
+    # first `first_days` business days of THIS month = the previous turn's tail:
+    first_bday = (pd.Timestamp(year=day.year, month=day.month, day=1)
+                  + pd.offsets.BDay(0)).normalize()            # BDay(0) rolls onto a weekday
+    first_window_end = (first_bday + pd.offsets.BDay(first_days - 1)).normalize()
+    exit_start = (first_window_end + pd.offsets.BDay(1)).normalize()
 
-    in_last = last_window_start.normalize() <= day <= bmonth_end.normalize()
-    in_first = next_first.normalize() <= day <= first_window_end.normalize()
-    is_entry = day == bmonth_end.normalize()
-    is_exit = day == first_window_end.normalize()
+    in_last = last_window_start <= day <= bmonth_end
+    in_first = first_bday <= day <= first_window_end
+    is_entry = day == bmonth_end
+    is_exit = exit_start <= day <= bmonth_end
     return (in_last or in_first), is_entry, is_exit
 
 
@@ -156,7 +172,21 @@ def tom_state(d1: pd.DataFrame, day: pd.Timestamp,
               p: TurnOfMonthParams | None = None) -> TomState:
     """Turn-of-month state for ``day``, with the 1R stop distance from prev-day ATR14.
 
-    ``d1`` = XAUUSD daily bars (TRUE-UTC index or 'time' col) up to at least yesterday.
+    ``d1`` = XAUUSD daily bars with a broker-time 'time' column (``Broker.get_bars_raw``),
+    so a bar's date IS its trading date — the same keying ``run_turn_of_month`` uses.
+
+    **The exit is counted off the bars, not off the calendar.** ``run_turn_of_month``
+    exits at the CLOSE of the ``first_days``-th trading day of the month; the driver runs
+    at the daily ROLLOVER, where the only price available is the open of the day it wakes
+    on — and on a ~24h instrument the rollover of day X+1 *is* the close of day X. So the
+    rule is simply: **close once ``first_days`` bars of this month have completed.**
+    Measured over 126 monthly trades (`scratchpad/brick2_exitday.py`, `brick2_diag.py`):
+    closing on the exit day itself instead tracks the backtest at -6.4 R total (a quarter
+    of the edge), the business-day calendar at -5.6 R (it fires a day early in New Year /
+    Easter months), and this bar count at **-0.33 R** over 10.6 years.
+
+    The condition is ``>=``, not ``==``, so a runner that was down for a whole day still
+    closes the position on its next pass instead of riding it to the stop.
     """
     p = p or TurnOfMonthParams()
     d = d1.copy()
@@ -167,7 +197,15 @@ def tom_state(d1: pd.DataFrame, day: pd.Timestamp,
     d = d[["open", "high", "low", "close"]].astype(float).sort_index()
     atr_prev = _wilder_atr(d, p.atr_p).shift(1)             # prev-day ATR (causal)
 
-    in_win, is_entry, is_exit = _business_tom_flags(day, p.last_days, p.first_days)
+    in_win, is_entry, _cal_exit = _business_tom_flags(day, p.last_days, p.first_days)
+
+    # EXIT: how many bars of `day`'s own month have already COMPLETED? (`< day`, so the
+    # still-forming bar of `day` itself never counts.)
+    day_n = pd.Timestamp(day).normalize()
+    bar_days = d.index.tz_convert("UTC").tz_localize(None).normalize()
+    done = int(((bar_days.year == day_n.year) & (bar_days.month == day_n.month)
+                & (bar_days < day_n)).sum())
+    is_exit = done >= p.first_days
     sl_dist = 0.0
     if is_entry:
         # ATR as known the day BEFORE entry = last available value strictly before `day`

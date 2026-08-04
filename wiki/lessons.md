@@ -55,6 +55,45 @@ once realistic costs (0.03–0.05 R/trade) are applied. See
   yourself a story. Thin edges (E[R] +0.02…+0.05) do not survive round-trip cost.
 - **Single-asset "wins" are usually artifacts.** The short-gold @1R win-rate of 62%
   was mono-asset overfitting, not an edge.
+- **Measure the null before reading the number — the bracket alone pays.** `t > 0` is
+  the wrong hypothesis for any stop/target system: a **long-only 1×ATR/2×ATR bracket
+  entered at RANDOM on XAUUSD D1 returns t = +2.07**, so the nominal significance bar is
+  cleared by no rule at all (NAS100 +1.45, US500 +1.58; USDCHF ≈+0.25 — and the
+  both-directions null is ≈0 everywhere, so the premium is pure directional drift
+  collected by a long bias). Across 38 (asset × tf) pairs this geometry baseline
+  correlates **r = +0.485** with where a 5656-cell corpus sweep's t>2 hits actually land.
+  **Always calibrate against random entries with the same bracket and holding
+  distribution, per asset.** Corollary, same measurement: the H1 null is **negative on
+  all 19 assets** while D1's is positive, which is why the same rules score 1.84× chance
+  on D1 and 0.74× on H1 — friction, quantified. `scratchpad/tv_geometry.py`,
+  [[Failed Ideas/ledger]], `RESEARCH_LOG_TV2.md`.
+- **Calibrate the whole FUNNEL, not just the cell — run a placebo pipeline.** A matched
+  null per cell is necessary and **not sufficient**: a screen that measures thousands of
+  rules across a bracket grid and keeps each rule's best point has a false-positive rate
+  no closed-form correction covers (the brackets are heavily correlated, so Bonferroni and
+  a binomial test on "share of grid beating the null" are both invalid). **Measure it
+  instead**: replace every rule with a RANDOM rule matched on signal count and direction
+  mix, push it through the identical code path, and divide the candidate count through. On
+  the 2026-08-03 gold sweep the funnel produced **68 candidates from the real corpus and
+  54 from pure noise (1.25×)** — and the placebo *beat* the corpus at every statistical
+  stage. A leak-free walk-forward (rule **and** bracket chosen out of sample) gave real
+  median OOS excess **+0.05** vs placebo **+0.41**. Two corollaries: **(a)** any
+  sub-period test must draw its null from **that sub-period's bars** — a whole-sample null
+  against a half-sample t is biased toward the strategy; **(b)** re-picking a *parameter*
+  out of sample is not a walk-forward if the *rule* was chosen on the full sample, and the
+  difference is large (noise passes at 38%, not 5%). `scratchpad/gold_placebo.py`,
+  `gold_truewf.py`, `RESEARCH_LOG_GOLD2.md`.
+- **A rejected strategy may be a rejected BRACKET.** Testing a published rule at its
+  published SL/TP falsifies it *as published*, which is correct — but it conflates "is the
+  entry informative" with "did the author pick a workable stop". Point-denominated stops
+  ($0.30 on BTC), mid-line trailing exits, targets on a moving average and fixed-dollar
+  brackets are bracket failures that never measure the entry at all; requiring a published
+  hard SL+TP was discarding **1150 of 5759** Pine scripts outright. Compiling the entry
+  alone and supplying a swept ATR bracket took distinct testable rules from **375 → 1405**.
+  Worth doing — but on gold it changed no conclusion: median excess over the matched null
+  was **+0.01** across 300k cells. Keep the tooling
+  (`tv_transpile.compile_script(require_bracket=False)`); don't expect the space to be
+  where the edge is hiding.
 - **Data source dictates what's even possible — and whether a backtest is real.**
   Three data walls hit so far: (1) Yahoo indices = cash-session hours only; (2) MT5
   CFD ticks are bid/ask quotes (`last=0`) → no order flow; (3) **MetaQuotes-Demo tick

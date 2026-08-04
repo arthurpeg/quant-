@@ -180,7 +180,11 @@ class GoldTomStrategy(_RolloverBrick):
         if bday == self._acted_day:
             return
 
-        d1 = broker.get_bars(self.logical, "D1", 90)
+        # RAW broker-time D1: a bar's date IS its trading date, which is what both the
+        # backtest and tom_state's bar-count exit key on. (get_bars' true-UTC index
+        # stamps a session at the *previous* calendar day, which would miscount the
+        # month's completed bars whenever the 1st of the month is a trading day.)
+        d1 = broker.get_bars_raw(self.logical, "D1", 90)
         day = pd.Timestamp(bday)
         st = S.tom_state(d1, day, self.p)
         pos = broker.open_position(self.magic)

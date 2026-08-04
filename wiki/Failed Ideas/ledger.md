@@ -49,10 +49,192 @@ updated: 2026-07-11
 | **LOOK-AHEAD TRAP: daily conditions on intraday entries (caught, not shipped)** | 2026-07-31 | Recorded because it nearly shipped. Q4 above first read **+11.8 R/yr, t=17.43, PF 10.51, 9/9 +years** - caught by the profit factor (an overnight crypto trade does not have PF 10). Cause: after `to_true_utc` a **D1 bar stamped day D covers D 21:00 UTC -> D+1 21:00 UTC**, so its CLOSE is known 24h after the timestamp; the on-a-local-X-day-high filter used that close while entering at 21:00 UTC on day D - it was selecting nights that ENDED at a high, reading the very move it claimed to trade. Fixed by giving each daily value an explicit `known_at = timestamp + 1 day` and requiring `known_at <= entry time`: **t 17.43 -> 2.23**. Calibration: the same window with NO filter is -1.81 R/yr, t=-1.33. LESSON: on a broker feed a daily bar's timestamp is the START of its session, not a date - any rule mixing a daily condition with an intraday entry needs an explicit known-at time or it reads the future. Third variant of this lesson this month (cf. the tz bug and the two cadence corrections) | `RESEARCH_LOG_QUANTOCRACY.md` |
 | **CODE corpora as a brick source (TradingView Pine + Freqtrade + MQL5)** | 2026-07-31 | User's hypothesis, and a good one: a paper describes, code executes, so every strategy FILE is 100% mechanical by construction — rule completeness goes from ~0.4% (76 eligible of ~19800 screened papers/posts) to 100%. TESTED. **Access reality**: mql5.com does not serve the source without a logged-in account (404, no account created); tradingview's pine-facade serves only its 145 BUILT-IN indicators, community Pine needs the site's internal API. **GitHub is the only door** and serves all three languages -> 836 strategy files from 25 curated repos (freqtrade 648, MQL 137, Pine 51). Filters: 131 use external data (VIX, funding rate, open interest, on-chain, sentiment), 9 use ML -> **469 eligible**. **THE FINDING: 469 files collapse to 139 distinct family combinations (x3.4 duplication), and those 139 are recombinations of ~20 classical primitives — precisely the canon system.md already reports as exhausted.** Family counts: bbands ~119 files, psar 82, ichimoku 71, adx ~60, rsi 52, williams 49, sma 41, fib 36, pivot 26, supertrend 22... and **IBS: 1 file out of 836** — the corpus is dense in exactly the indicators that fail here and empty of the one signal that ever produced a brick. Tested the 6 families NOT already in this ledger (PSAR, Ichimoku, classic pivots, Heikin-Ashi, Supertrend, Williams %R) on 19 assets each: **114 tests, 9 at t>2 vs 2.6 expected by chance, max t=2.63** (bar for 114 tests ~3.3), per-family median t 0.24-1.01 -> noise. LIMITS: 77% of the harvest is freqtrade = crypto-only (1 of the 4 asset classes), and 293 of its 353 timeframe-declaring strategies are 5m/1m/15m while we hold H1/D1; MFI/OBV are data-blocked (MT5 CFD volume is tick count). VERDICT: rule completeness was never the binding constraint — **the idea space is**. 0 new brick | `RESEARCH_LOG_CODE.md`, scratchpad/code_harvest.py, code_parse.py |
 
+| **QuanAlpha "BreakoutStrategy" MQL5 EAs (Donchian-20 H1 channel breakout) as a brick replacement** | 2026-08-01 | User sent 2 EAs, asked to verify SLs + compute t/Sharpe + backtest on Pepperstone connected live to MT5. Done via the MetaTrader5 py bridge on the live PepperstoneUK-Demo terminal → fresh H1 pull, 19 assets 2018-2026, exact specs. **SLs present & correct** (hard stop on every trade, sized to 1% equity; no TP, exit = 100% trailing stop). Both = Donchian-20 breakout differing only in stop/trail: **script1 band** (SL/trail = opposite full band, 1R=full channel), **script2 middle** (SL/trail = mid-line, 1R=half channel; the default). Fill-faithful H1 sim (EA trails only on bar-open). **RESULT net of real cost: script2 = t=-49.6, negative on ALL 19 assets/9 years (mid-line trail whipsaws, 24% win, E[R] -0.29R); script1 = pooled t=-3.58, -102 R/yr, negative on 14/19.** Only winner = BTCUSD (net t=2.92) = **crypto-trend = brick 3 in a worse wrapper** (ETH gross t=3.69→net -0.70, edge dies on crypto spread). Gross confirms non-cost: only BTC/ETH strong, every prop-safe index/FX/gold ~0 or negative. Reproduces this ledger exactly (Donchian/channel = crypto-trend in disguise, loses per-asset off crypto). 0 new brick. (BTC-alone follow-up: net t=2.77/+28.4 R/yr/Sharpe 0.84/RoMaD~1.0 PASSES the nominal gate but = crypto-long duplicate of brick 3, cost-fragile at 269 trades/yr; not added.) | [[log]], scratchpad/quanalpha_breakout.py |
+| **RITZ "ImpulseContinuationEngine [ICE_Pro]" MQL5 EA (single-asset momentum continuation) as a brick replacement** | 2026-08-01 | User's 3rd EA. Fresh Pepperstone H1 (MT5-live), 19 assets. Decoded core: strong expansion candle (body>=0.5, close near extreme>=0.6, tick-vol>=1.3x avg20, range/prev>=1.05) aligned to MA50 slope → market entry in the impulse direction, **SL=1.2*ATR20 / TP=1.8*ATR20 (R:R 1.5), 0.1% risk**, ATR trailing, gated by ATR-regime + session + ATR-in-points[50,1500]. SLs/TP correct. **Clearest reject of the 3 EAs: net fixed t=-13.3 / trailing t=-18.6, 0/9 +years, negative on ALL 19 assets.** GROSS is the tell — **pooled t=+0.42, E[R]=+0.003R = a coin flip with NO edge**; friction turns it into the loss. Only gross t>2 = NAS100 2.72 / XAU 2.48 = bricks 1 & 2's own mechanisms (sub-bar net). Structurally cannot trade crypto (ATR-pts cap → BTC n=10). 30+ 'adaptive' filters create no signal. Single-asset directional momentum/breakout = no edge net of cost, gross ceiling ~0. 0 new brick | [[log]], scratchpad/ice_pro.py |
+| **src.zip = MQL5.com Code Base (2201 .mq5) as a brick-4 source** | 2026-08-01 | User: filter every script (clear entry+SL+TP, tradable gold/US+EU indices/crypto/FX), backtest survivors to the letter on Pepperstone, re-test known families too. Funnel: 2201 → 1308 EAs → 588 with explicit SL/TP (no external/ML/grid) → **only 13 self-contained** (575 wrap a **custom iCustom indicator** → un-reproducible to the letter). 8 of 13 dropped (already-tested Donchian, SL=0, TP=0, stub, EURUSD-hardcoded, MathRand non-deterministic, 2 trailing-only utilities). **5 eligible ported & backtested to the letter, 19 assets each:** EMA_Cross, EMA_RSI, MeanReverse, Silvios(RSI-extreme reversion), DailyPriceAction(candlestick+MA). **RESULT: 0/95 (strat×asset) tests reach t>2 positive** (chance ~2-3); best = MeanReverse NZDUSD t=+1.28. Even FX-only all 5 negative (pooled t −1.6 to −25.8). Fixed pip stops unusable on crypto (30-pip = $0.30 on BTC). Families = EMA-cross trend / MA-ATR & RSI reversion / candlestick — all already dead, re-confirmed on a fresh 2201-file corpus. Same wall as the GitHub CODE row: rule completeness ≠ the constraint, the idea space is. 0 new brick | [[log]], scratchpad/mql5_triage.py, mql5_backtest.py |
+| **V1N1_LONNY.mq5 Asian-Range-Breakout EA (PSAR+MACD+Stochastic, structural ADR stops) as a brick** | 2026-08-01 | User EA, fully ported to Python (H1 leg) + Pepperstone backtest. Sophisticated London-session day-trader: stop orders beyond the recent PSAR swing outside the pre-London Asian range on PSAR-flip+MACD+Stoch confluence; **structural SL = opposite PSAR swing clamped to [0.618,1.382]*ADR, TP=1.618*SL**, MACD-reversal exit + 0.618R trail, NY-close flat, 0.5% risk, per-symbol table params. **Best-engineered EA of the whole session but ~BREAK-EVEN: pooled t=-1.03, E[R]=-0.015R, PF 0.93, 4/9 +yrs, n=1428** across 19 assets. Volatility-scaled structural stops make it break-even (not bleeding like the fixed-pip EAs) but that's not an edge. Only t>2 = BTCUSD 2.13 (+1.4 R/yr, thin, sub-bar, = crypto-trend brick 3 yet again). FX-only t=-1.29; EURJPY/NAS/XAG genuinely negative. Not a candidate. M15/M30 legs untested (expected worse, cost). 0 new brick | [[log]], scratchpad/lonny_backtest.py |
+
+| **strategies_mt4.zip = MQL4 Code Base (1256 .mq4) as a brick replacement** | 2026-08-03 | User: filter every script (clear entry+SL+TP, pure OHLCV, gold/FX/crypto/US+EU indices), port survivors to Python, backtest to the letter on Pepperstone via MT5, re-test known families too. Sibling corpus of the `src.zip` MQL5 row. Funnel: 1256 → 950 EAs → **205 eligible** (hard non-zero sl AND tp *in the OrderSend call*, real signal, no external/ML/iCustom/lot-progression/panel/random) → **88 distinct family signatures**. Rejections are themselves the finding: **240 lot-progression** (martingale/grid/Labouchere/recovery) + **187 manual panels** = 45% of the "strategy" corpus contains no strategy; 100 wrap an `iCustom`; 327 name an SL they never attach. **21 strategies ported to the letter** spanning all 88 signatures, on fresh Pepperstone bars (19 assets, 2018-2026, H1/D1 + M30/M15/M5 for TF-hardcoded EAs), run in BOTH `Point` conventions (literal 5-digit vs the author's 4-digit pip intent). Built `mt4_indicators.py` to reproduce MQL4's quirks (iMACD signal = **SMA** not EMA; iStochastic's slowing-**summed** %K; population stdev in iBands; mean-**absolute** deviation in iCCI). Pre-declared applicability gate: a point-denominated stop is $1 on BTC → cells outside [0.2,50]×ATR are N/A, not scored. **RESULT: 398 runnable (strategy×tf×asset) tests, chance gives 9.2 at t>2 — OBSERVED 4; at t>2.9 expected 0.8 — OBSERVED 0. Median t = −0.85, only 27% of cells have positive E[R]. All 21 strategies have a negative median t** (best = OzFx +0.08 ≈ 0). Literal mode is worse (median −1.56, 2 hits of 390). The 4 nominal t>2 cells all die in the battery: **ADX_2MA/NAS100/D1 t=2.44 but 2020 = 57% of total R, ex-2020 t=1.17, cross-asset OOS 0/6**; ADX_Expert/XAGUSD 2025 = 67%, ex-2025 t=0.82, OOS 0/16; CCI_Expert/NZDUSD +0.6 R/yr on a 1:0.25 payoff, OOS 0/15; BigDog/GBPUSD t=1.79 on the standard start. All four are cost-robust and decorrelated — they have no edge, not a cost problem: one lucky year on one asset. **NEW measurement: the corpus produces FEWER winners than chance.** Earlier rows measured "no edge survives cost"; this measures the friction tax directly as a **leftward shift of the whole t-distribution**, not just a dead right tail. Re-confirms rule completeness ≠ the constraint (205/1256 are fully mechanical); the idea space is. 0 new brick | [[log]], `RESEARCH_LOG_MT4.md`, scratchpad/mt4_triage.py, mt4_triage2.py, mt4_indicators.py, mt4_backtest.py, mt4_validate_best.py |
+
+| **strategies_tradingview.zip = 2380 published Pine strategies as a brick replacement** | 2026-08-03 | Same user filter as the MQL4 row. Pine forces explicitness (`strategy.exit(stop=,limit=)`), so extraction is clean. Funnel: 2380 → 2358 with an entry → 966 hard SL → 754 hard SL+TP → **731 after removing external data** (`request.economic/financial` 3, foreign ticker literals VIX/DXY/TVC/FRED/DOMINANCE/SPX 12, `request.security` on another symbol 9; same-symbol MTF kept) → **333 after dropping 253 grid/DCA/pyramiding, 183 traded-volume-dependent, 20 frameworks/webhook relays, 18 `lookahead_on` repainters, 5 strategy-selector switches** → **153 distinct family signatures**. **12 ported to the letter** (13.7k…0.7k likes) on Pepperstone H1/D1/M30; `tv_indicators.py` reproduces Pine conventions (ta.macd signal = **EMA**, ta.stoch = **raw** %K, ta.stdev = population); no Point ambiguity (TV quotes FX at 5dp like the feed). **RESULT: 283 runnable tests, chance gives 6.5 at t>2 — observed 7; at t>2.9 expected 0.5 — observed 1. Median t −1.53, 20.5% positive E[R] → AT chance overall** (vs *below* chance for MQL4). Specimen worth naming: `HighWinFX` (961 likes, "extremely high win rate") = TP 0.03% against a stop of **100% of price**, i.e. no stop — a martingale payoff dressed as an edge. **BUT one real candidate emerged — see the ⭐ note below: RobBooker_ADX (Donchian-20 breakout gated on ADX<18) on NAS100 H1.** It also **narrows a standing ledger generalisation**: "Donchian/channel breakout = crypto-trend in disguise, loses off crypto" was derived from the *ungated* QuanAlpha Donchian-20 H1 EA (trailing exit, no regime gate); adding **ADX<18 (breakout only out of compression) + a fixed 0.5×/1.0× box bracket** flips it positive on NAS100. Read the old row as "**ungated** Donchian fails". 0 confirmed brick; 1 forward-test candidate | [[log]], `RESEARCH_LOG_TV.md`, scratchpad/tv_triage.py, tv_triage2.py, tv_indicators.py, tv_backtest.py, tv_validate_best.py, tv_sleeve_test.py |
+
+| **TradingView SCRAPED at scale (5759 Pine strategies) + a Pine→Python transpiler** | 2026-08-03 | Same user filter as the two rows above, but the corpus is scraped first-hand and the porting is **mechanical**, because hand-porting (12 of 333 last time) was the real constraint, not corpus size. **Scrape**: `pubscripts-suggest-json` enumerates published scripts 50/page with `extra.kind`/likes/access (~49% of hits are strategies, offset ceiling 1000/term → coverage comes from term breadth); source for the ~92% that don't inline it comes from `pine-facade/get/<id>/last`, which returned **5759/5759 (100%)**. Round 2 (crawl-expansion on every word in a harvested title) added only **+453 (+8.5%) → saturation at ~5.8k**. Total scrape **9 min**. **Transpiler** (`tv_pine.py` + `tv_transpile.py`): tokenizer + precedence-climbing parser for the Pine grammar, vectorised `ta.*` runtime keeping Pine's conventions, `if`/`else` blocks, `var` persistence, single- and multi-line `=>` functions. The user's filters are enforced **structurally**: a compiled rule necessarily has entry + hard SL + hard TP; `request.*`/`security()` cannot compile (the no-external-data gate); grid/DCA/`pyramiding≥2`, `lookahead_on` and traded-volume dependence (decided on the GENERATED code, so a cosmetic `plot(volume)` no longer disqualifies) are refused. **Validated against the 12 hand ports: 3 reproduce at 100.000% bar-by-bar agreement with identical t and SL diff 0.000.** The 4th divergence is **the hand port's error, not the transpiler's** — the published Pine uses `ta.cross` (both directions) with both sides enabled, while the hand port coded RobBooker_ADX long-only with `crossover`; that was the previous row's headline candidate. **Funnel: 5759 → 375 distinct compiled rules** (1150 lack a hard SL+TP, 584 grid/pyramiding, 427 external data, 158 repainting, 61 volume; ~1300 lost to transpiler limits — recursive `var`, `for` loops, pending entries). **RESULT: 6948 cells, 5656 at n≥30 — expected 130.1 at t>2, OBSERVED 148 (1.14×); expected 10.7 at t>2.9, observed 13. Median t −0.66, 33% positive E[R] → at chance.** **Battery on the top 20 cells: 0 survive.** Best is `Manadi EMA+MACD+RSI`/US30/D1 (p≤0.003 vs its own null, p_recent 0.005, cost-robust t=2.85, honest RoMaD 0.86) — **not promotable**: at p≈0.003 over 5656 cells chance gives ~19 such cells, n=57 (~7 trades/yr) for +4.3 R/yr, OOS +0.38. **⚠️ THE FIRST BATTERY PASS WAS WRONG AND WAS REDONE — see the ⭐ candidate note below.** It shortlisted the top 20 cells **by raw t** and gated on RoMaD>0.9 calling that "the weakest sleeve" (the weakest live sleeve is **gold at 0.73**). Both errors compound: ranking by t selects the cells with the highest geometry baseline, i.e. the ones least likely to beat their own null, and 128 of the 148 hits were never tested. Redone over **all 148** cells ranked on p vs their OWN null (`tv_battery2.py`): **2 clear the gate**, and one of them ranked ~140th of 148 by t. Two measured findings survive the pass regardless — see the two notes below. 0 new brick, 1 candidate | [[log]], `RESEARCH_LOG_TV2.md`, scratchpad/tv_harvest.py, tv_pine.py, tv_transpile.py, tv_verify.py, tv_run.py, tv_battery.py, tv_geometry.py |
+
+| **DECOUPLING THE ENTRY FROM THE BRACKET — every corpus re-tested with a swept ATR SL/TP grid on gold** | 2026-08-03 | User: *"la plupart ne sont jamais retenus car ils ne passent pas les critères SL/TP … re-analyse littéralement tout … différentes variantes de combinaisons SL/TP (SL ATR de la timeframe d'entrée) … beaucoup de candidats pour remplacer ma brique 2"*. **The premise is CORRECT and it is a real unlock**: every earlier pass tested strategies *at their published bracket*, and many rejections were bracket failures, not entry failures (point-denominated stops = $0.30 on BTC, mid-line trails, MA targets, and **1150 of 5759 Pine scripts discarded solely for lacking a hard SL+TP**). `tv_transpile.compile_script(require_bracket=False)` compiles the ENTRY ONLY, keeping every other filter structural (no `request.*`, no grid/DCA, no `pyramiding>=2`, no `lookahead_on`, no traded volume) → **distinct rules 375 → 1405**. Unified signal library (PINE 5759 scripts + 21 MQL4 ports + MQL5 ports + the ~210-rule classical canon) = **988 rules on XAUUSD D1**, deduped on the **signal array** (Donchian appears 8× under different titles). Swept **161 ATR brackets** (SL 0.5–3×ATR of the entry TF, TP 0.5–6×SL, 3 time caps) × 3 direction variants = **350,018 cells**. Engine verified **32/32 exact** vs `mt4_backtest.simulate`. **RESULT — three nested negatives.** (1) **Raw arithmetic is a mirage**: 9.4× more t>2 than chance, but long-only cells have **median t +1.72** and short-only **−1.75** *before any rule is consulted* — gold drift. Against a **matched random-entry null** (same bracket, direction mix, signal count, sequencing) the **median t excess over 300k cells is +0.01**; long-only rules are on average **worse** than random long entries (−0.16). (2) **The funnel is a candidate generator**: plateau-ranked screening yields **68 candidates**, 56 of which clear a full battery (recent-half null, neighbourhood, cost +10pts, outliers, decorrelation |corr|≤0.06, RoMaD, book improvement) — but the **PLACEBO pipeline** (every rule replaced by a random rule matched on signal count and long fraction, identical code path, 3 reps) yields **54.3 candidates (47–62)**, ratio **1.25×**, and the placebo *beats* the real corpus at every statistical stage (0.77–0.86×). (3) **The discriminating tests don't discriminate**: walk-forward + fill-delay pass REAL 36%/21% vs PLACEBO **38%/26%**. A **leak-free TRUE walk-forward** (rule AND bracket selected on first-half bars only, null drawn from second-half bars) gives **REAL median OOS excess +0.05 vs PLACEBO +0.41**, and 2 of 20 real cells at p<0.05 where chance gives 1.0 — and those 2 are the same rule twice (`donchian55 long`). **0 validated candidates.** Best case study of the premise: **SilverStream v2** (EMA30>EMA50 + close>high[1]) ships a fixed **$2 TP / $1 SL** = **0.03×ATR** on gold — the earlier TV pass marked it *N/A: out of scale* and never scored it; re-bracketed it was the top cell in the sweep and still dies in the placebo. **NEW STANDING METHOD: run every screening funnel on matched random signals and divide the candidate count through** — 68 vs 54 is the difference between "68 candidates" and "nothing" | [[log]], `RESEARCH_LOG_GOLD2.md`, scratchpad/gold_lib.py, gold_verify.py, gold_signals.py, gold_bsweep.py, gold_null.py, gold_cand.py, gold_battery.py, gold_finalists.py, gold_placebo.py, gold_truewf.py |
+
+| **ALL 19 ASSETS × ALL CORPORA with the bracket decoupled — and the PLACEBO divisor** | 2026-08-04 | User: *"ca peut etre sur les indices US et EU, cryptos, forex … refais tout avec toutes les données … backtest même les familles déjà testées … pas de données externes"*. Part I redone across the **whole prop universe**: **5,950,544 cells** (~1700 rules × 161 brackets × 3 directions × 19 assets), each asset with its own matched-null grid — necessary, because the signal-free null ranges from **t=+1.80 on XAUUSD to −0.03 on EURUSD**. Rule library extended: **freqtrade's 1103 published strategies were already Python and had never been executed** — `fq_shim.py` substitutes TA-Lib/freqtrade/qtpylib/technical/pandas_ta in `sys.modules` so files import unmodified (indicators faithful to TA-Lib: Wilder smoothing, mean-absolute deviation in CCI, summed slowing in STOCH; anything needing data we lack sets a flag rather than returning a fake) → 1101 files → 244 pass the text filters → **45 usable strategies**, entries only (their `minimal_roi`/`stoploss`/trailing discarded, published parameter defaults kept). **NO FAMILY IS EXCLUDED** (user instruction): every ledger-killed family is present and swept — ma_cross 28 rules, rsi 14, calendar 13, zscore 8, bb_break 8, donchian 6, macd 6, supertrend 6, ibs 4, ichimoku 4, psar 4… plus 122 RSI / 41 MACD / 41 Bollinger / 13 Donchian Pine scripts; dedup is on the **byte-identical signal array**, never on family. **RESULT — the placebo decides it.** Running the identical funnel on matched random signals (same signal counts, long fractions, bars, brackets, nulls, thresholds): **REAL 1077 candidates vs PLACEBO 884 = 1.22× overall**, and **13 of 19 assets at or below the noise rate**. Per asset: **ETHUSD 5.43×, BTCUSD 3.97×, US30 2.05×**, GER40 1.29×, NAS100 1.13×, **XAUUSD 0.93× (BELOW noise, median excess +0.000 over 307k cells)**, XAGUSD 0.58×, the 7 FX names 0.18×–0.72×. **The only decisive excess is crypto — which independently re-derives brick 3** ("the trend edge exists only in crypto"), blind, from 1700 rules. **But crypto's headline was a denominator artefact**: every survivor converged on SL 0.5×ATR, putting **1R at 1–6× the spread**; re-run with floors (≥1×ATR and ≥25× spread, null rebuilt from the same floored table) **median R/yr collapses +31.1 → +10.2 and median p 0.002 → 0.078, only 2/6 surviving** — and it duplicates brick 3's mechanism. **The one index candidate, US30 `EMA 34 Crossover`** (floored: n=58, +6.3 R/yr, t=2.71 vs null +0.67, p=0.0013, neighbourhood 100% positive/78% above 2, cost-robust, 7/8 +yrs, **\|corr\| ≤ 0.026 to all four bricks**, book +5.7 pts/yr) **is killed by two tests**: 4 placebo replicates give 1.92× (range 1.49–2.73×, sd 11.3 — the single-draw 2.05× was unreliable), and the **leak-free walk-forward** (rule AND bracket chosen on first-half bars, null from second-half bars) gives **REAL 1/20 at p<0.05 = exactly chance, PLACEBO 5/40 = 12%** — the placebo wins, and the EMA-34 rule never appears in the out-of-sample selection. **0 promotable candidates across 19 assets and every corpus.** Kept as a cheap forward-test (~7 trades/yr, decorrelated) | [[log]], `RESEARCH_LOG_GOLD2.md` Part II, scratchpad/gold_allassets.py, fq_shim.py, fq_run.py, gold_crossasset.py, gold_floored.py, gold_us30.py |
+
+| **MQL4/MQL5 mechanical transpilation (4073 files) — expression-level porting is the WRONG TOOL** | 2026-08-04 | Built `mql_transpile.py` to do for MQL what `tv_transpile` did for Pine: rejects iCustom/lot-progression/MathRand/external-data/ML, extracts each `OrderSend(...OP_BUY...)`'s governing `if` chain (braced **and** MQL's very common brace-less nested form), maps iMA/iRSI/iMACD/iStochastic/iCCI/iADX/iBands/iSAR/iEnvelopes/iMomentum/iWPR/iATR/iAO/iAC/iBears-BullsPower onto `mt4_indicators`, inlines single-expression user helpers, treats broker/account guards as satisfied (the engine enforces one position at a time), and supports **multi-timeframe** indicator calls with a causal alignment. Four real bugs found and fixed — `OP_BUY` was matching order-**management** code (`if (OrderType()==OP_BUY)` in a trailing-stop loop) not order-opening; brace-less `if` chains stopped after one level; and **the final validation regex was rejecting the compiler's own generated code** (`X.shift(...)`), which alone killed ~1000 correctly-translated conditions. **RESULT on 500 .mq4: 2 usable rules.** The breakdown shows it is not the parser: 118 pre-filtered, **163 never call `OrderSend(...OP_BUY...)` at all** (the order is built inside a helper), 31 trade inside a loop/else, 15 have no enclosing `if`, **173 successfully locate their entry condition — and 2 translate.** The 171 that fail do so on **per-bar stateful program logic**: bar-change detection (`dtBarCurrent != dtBarPrevious`), order counters, globals, signal flags assigned inside branches. **Pine is declarative and vectorises; MQL is imperative and its entry condition is a VARIABLE, not an expression — porting it mechanically needs a bar-by-bar interpreter, a materially larger build.** ⚠️ Self-correction recorded: I first attributed 1000 failures to multi-timeframe calls; that count came from **ONE pathological file with 999 indicator calls** — across 500 files, 204 use only the chart timeframe, so multi-TF was never the blocker | [[log]], `RESEARCH_LOG_GOLD2.md` §13, scratchpad/mql_transpile.py |
+
+> **📄 PAPERS: COVERAGE, NOT TRANSCRIPTION (2026-08-04).** Instruction: *"si un papier parle
+> d'une famille déjà testée, backtest-le quand même"*. Scanned all **382 extracted texts**
+> (378 PDFs + web articles) for mechanical-rule markers plus an in-universe asset →
+> **23 rule-bearing, in-universe papers**. **Every mechanical family they describe is
+> already in the primitive library** and swept over a parameter grid × 161 brackets × 19
+> assets — strictly more than any single paper specifies (a paper proposing "MACD(12,26,9)
+> with a 2×ATR stop" is one cell of a sweep running MACD at three parameter sets × 161
+> brackets × 19 assets). The families *not* covered are excluded by the user's own filters
+> or already dead here: **options/vol-surface (15 papers — external data), ML/RL (11),
+> cross-section of individual stocks (6), pairs/cointegration stat-arb (4 — already
+> negative in this ledger)**. Transcribing them would re-derive a subset of what is already
+> running. `RESEARCH_LOG_GOLD2.md` §13b.
+
+> **🧱 BRICK 2's OWN BRACKET WAS NEVER THE CONSTRAINT (2026-08-03, 1728 brackets measured).**
+> `scratchpad/gold_brick2.py` reproduces brick 2's exact entry (open of the last trading day
+> of the month) and runs **1728 brackets** over it (SL × TP × holding × entry-window 1–3
+> days), each against its **own** random-entry null at 1500 draws. `tp_atr` had sat in
+> `TurnOfMonthParams` defaulted to `None`, never swept.
+> **As deployed** (SL 1.5×ATR, no TP, ~3-bar hold): n=92, **+2.40 R/yr, t=2.17**, matched
+> null **+1.47** → **p_null = 0.217**. The turn-of-month signal contributes ~+0.70 of t,
+> which is not significant — its headline t is mostly the long-drift premium.
+> **And no bracket rescues it**: 44% of the grid clears t>2, but only **12 of 1728 (1%)
+> beat their own null — *below* the 5% chance rate**; median grid excess **+0.22**; the best
+> null-beating point is **+5.98 R/yr at p=0.050**, best-of-1728. Max R/yr anywhere is +19.2
+> but at p=0.057 (it is drift, held for 30 bars).
+> **Brick 2 stands unchanged** on the grounds the ledger already gave — **pre-registered**,
+> live-verified 124/126, kept for decorrelation not return. What is removed is the hope that
+> a different SL/TP turns it into a 7–8 R/yr sleeve. `RESEARCH_LOG_GOLD2.md` §3.
+
+> **📏 THE GEOMETRY BASELINE — how much a bracket pays with NO signal (2026-08-03, measured).**
+> `scratchpad/tv_geometry.py`: entries drawn **uniformly at random**, a 1×ATR(14) stop and
+> 2×ATR(14) target, same engine, same real Pepperstone cost, 400 draws × 120 trades, per asset
+> and timeframe. **A long-only random bracket on XAUUSD D1 returns t = +2.07 — the nominal
+> "t>2" bar is cleared by nothing at all.** NAS100 D1 +1.45, US500 D1 +1.58, USDJPY D1 +1.28;
+> USDCHF/EURUSD D1 ≈ +0.25. The **both-directions** null is ≈0 everywhere on D1 (−0.5…+0.16),
+> so the premium is **purely directional** — drift collected by a long-biased bracket, and
+> published retail strategies are overwhelmingly long-biased. Across the 38 (asset × tf) pairs
+> the long-only baseline correlates **r = +0.485** with where the corpus's t>2 cells actually
+> land (both-sided: +0.271) — a large confound, not a complete explanation (R²≈0.24). **Standing
+> rule made concrete: before reading ANY cell, look up its asset's geometry baseline. On gold and
+> the US indices a cell must beat ≈+1.5 to +2.1, not 0.** This generalises the RobBooker
+> post-mortem from one cell to a whole asset class, by measurement rather than argument.
+
+> **⏱️ H1 IS BELOW CHANCE, D1 IS NOT (2026-08-03, 5656 cells).** Same 375 rules, same 19 assets,
+> same engine — only the bar size changes: **D1 = 2037 cells, 86 hits vs 46.9 expected (1.84×),
+> median t −0.04, 48.4% positive E[R]; H1 = 3619 cells, 62 hits vs 83.2 expected (0.74×), median
+> t −1.12, 24.3% positive E[R]**. The geometry table gives the mechanism: on H1 the signal-free
+> null is **negative on all 19 assets** (cost charged against a smaller ATR). This is the
+> project's "gross edge ceiling < friction" result reproduced as a distributional shift over
+> thousands of independent cells rather than argued from a handful.
+
+> **⭐ NEW CANDIDATE 2026-08-03 — `Manadi EMA+MACD+RSI` on US30 D1** (TradingView, 49 likes,
+> author Manadi1983, `tradingview.com/script/Z1hPmH0q`). EMA(9)×EMA(21) cross confirmed by
+> MACD(12,26,9) on the same side and RSI(14) in 40–70 long / 30–60 short; stop = close×0.985,
+> target = close×1.03 — a fixed **2:1 bracket, both directions**, ~7 trades/yr. Found only after
+> the first battery pass was redone (it was inside the 128 cells that pass never tested).
+> **Clears everything a sleeve can be asked**: beats its own random-entry null (null +0.57 vs
+> t 2.87, p≤0.004), **recent half p=0.006**, cost-robust (t=2.85 at +10 pts/side), **not
+> outlier-driven** (best trade 6% of total P&L, top-3 18%, ex-best-3 t=2.40, trimmed t=2.75,
+> ex-best-year t=2.38), 7/8 positive years, |corr| ≤ 0.079 to all four bricks, 53% win on a
+> bounded payoff, and its **1R is never below 176× the spread** (median 1.10×ATR). Standalone
+> **RoMaD 1.04, Sharpe 6.39** — better path quality than gold 0.73, NAS 0.79, crypto 0.95.
+> **WHY NOT ADDED:** at equal prop risk it **costs −1.2 pts/yr** (add) / −2.1 (swap gold),
+> because +2.8 R of book maxDD. And **not through tail co-movement** — it contributes exactly
+> **0.00 R on the book's 20 worst days**; its own losing streak simply *extends an existing
+> trough*. The single path and the resampled paths disagree honestly: block-bootstrap
+> **ΔRoMaD median +0.339, 95% CI [−1.625,+2.552], P(gain>0) 63%** — the realised ordering is
+> one of the ~37% unlucky ones, and 57 trades over 8 years cannot resolve which reading is
+> right. Standing rule (ΔRoMaD CI contains 0 → not added) applies. **Cheap to forward-test:
+> 7 mechanical trades/yr on US30 D1.** `RESEARCH_LOG_TV2.md` §7b, scratchpad/tv_battery2.py,
+> tv_outlier.py, tv_candidates.py, tv_manadi_swap.py.
+>
+> **☠️ AND THE ONE IT REPLACED — `HITESH SOMANI 1:3 RR` on GER40 D1 — is a WARNING, not a
+> candidate.** It looked better on every headline number (+8.6 R/yr, RoMaD 1.06, p_recent
+> **0.000**, 7/8 years, and **+7.9 pts/yr** added to the book with LOWER maxDD — the largest
+> single-sleeve gain this project has ever measured). Rejected — but **NOT for the reason first
+> given**, and the correction matters (user: *"pourquoi ne pas garder GER40 ?"*).
+>
+> **The first reason was nearly a double standard.** It was rejected on concentration (best
+> trade = 39% of P&L, top-3 58%, t 2.07→1.53 ex-best-3). But measured like-for-like on daily R,
+> **brick 2 (gold ToM), which is LIVE, is 14% / 38% — against GER40's 15% / 45%.** Top-heaviness
+> alone cannot disqualify a sleeve here. Two further claims were overstated: its 1R is **not**
+> "inside the noise" (minimum **12.8× the spread**, 5th pct 61.6×), and stripping the top of an
+> asymmetric payoff removes the mechanism — as this ledger already noted for RobBooker.
+>
+> **The decisive test is different and independent** (`scratchpad/tv_ger40_probe.py`): the edge
+> lives in the **bracket's anchor, not the entry**. The script sets `entryPrice := high` and
+> targets `high + 3×(high − min(low[1],low[2]))` while the fill is the next open, so the risk
+> actually taken and the "3R" target are anchored differently — the advertised 1:3 is not what
+> the code does, and when the close sits on the recent low the realised R explodes (one
+> **+24.7 R** trade; 1R spans ~20×, min 0.05× ATR). **Re-run with the SAME published entry and a
+> self-consistent bracket** (risk measured from the fill, target = 3× that risk): published-as-is
+> **t=1.37**; floored at 0.25 / 0.5 / 1.0× ATR **t=1.70 / 1.86 / 1.65**; pure 1.0× ATR 3:1
+> **t=1.49** — **it never reaches t=2 in any specification.** And the entry confirms nowhere:
+> the same stable bracket across 19 assets gives **median t +0.63, 0 above t=2**. The signal is
+> ordinary; the headline was risk-unit instability. **NEW STANDING CHECK: the applicability gate
+> tests the MEDIAN stop against ATR and cannot catch per-trade degeneracy — any candidate whose
+> stop is a recent extreme anchored differently from the fill must be re-run with a
+> self-consistent bracket before its R-based numbers are believed.**
+
 > **⭐ STRONGEST VALIDATED-BUT-NOT-ADDED CANDIDATES (best of everything tested for brick #4).**
 > Across the entire hunt (arXiv FX/gold/index + 2337-paper SSRN mass file + 105 user PDFs + the
-> falsification corpus), **two** strategies are the best performers found. Both are **genuine,
-> decorrelated, positive edges** — but neither is worth adding to the book:
+> falsification corpus + the MQL4/Pine code corpora), **three** strategies are the best performers
+> found. All are **genuine, decorrelated, positive edges**:
+>
+> 0. **RobBooker_ADX — Donchian-20 breakout gated on ADX(14,14)<18, NAS100 H1, long only**
+>    (TP = 1.0× box width, stop = 0.5× box width; Pine corpus, 2026-08-03).
+>    **⛔ FULL BATTERY RUN 2026-08-03 → REJECTED. The initial read (t=2.93, RoMaD 1.10, "+29 %/yr
+>    swapping gold out") was OVER-CLAIMED and is WITHDRAWN.** What broke it:
+>    **(a) THE NULL IS NOT ZERO — the single most important correction.** A long-only 1.0×/0.5×
+>    box bracket on a drifting index is worth **t ≈ +0.94 with RANDOM entries** (400 draws, 95%
+>    reach +2.84). So `bootstrap P(E[R]≤0)=0.0002` tested the wrong hypothesis. Against the
+>    right null (same geometry, random entry bars) the honest figure is **p = 0.017** whole-sample
+>    — and with **283 tests in the sweep, ~4.8 cells are expected at p≤0.017 by chance**. The best
+>    cell of 283 having p=0.017 is exactly what noise produces.
+>    **(b) The recent half is NOT significant**: second-half **p = 0.115** vs the null (first half
+>    0.025). **(c) Walk-forward fails**: best params on the first half (lookback 25, ADX<18,
+>    t=3.23) → **second half t = 1.04**. **(d) Honest RoMaD is 0.79, not 1.10** — the realised
+>    maxDD 9.2R was a lucky ordering; the shuffled median is **13.6R**, which makes it a *middling*
+>    sleeve (IBS 1.59 > crypto 0.95 > **cand 0.79 = NAS 0.79** > gold 0.73), not the 2nd-best.
+>    **(e) The bear-year evidence is thin**: 2022 = +1.4R over 37 trades, E[R]=+0.038 ≈ flat, not
+>    the "positive through the drawdown" it first looked like.
+>    Block-bootstrapped portfolio uplift is only **+4.8 pts/yr (add) / +3.2 (swap gold)** with
+>    **P(beats current book) = 73% / 67%** — and that already ASSUMES the edge is real and
+>    stationary, which (b) and (c) say it is not.
+>    **What genuinely PASSED, and is worth keeping on record:** the parameter neighbourhood is
+>    excellent — **150 points, 100% positive, median t +1.88, 45% above 2, published point ranks
+>    6/150** (far better than GER40's 11%-above-2 / median 1.43), so this is *not* a fitted peak;
+>    fills are **essentially exact on H1** (1 of 364 bars straddles both barriers; pessimistic 3.18
+>    vs optimistic 3.28); no look-ahead (one-bar-later fill → t=2.77, graceful); no outlier
+>    dependence (payoff capped at +2R; trim both tails 5% → t=2.71); the **short side is also
+>    positive** (t=1.17) so it is not pure long beta; decorrelated from all four bricks.
+>    **Conclusion: probably a real but very weak edge, indistinguishable from the best of 283
+>    noise draws, with an insignificant recent half. Not a brick, not a replacement.**
+>    **LESSON (new, generalisable): for a long-only capped-bracket system on a drifting index,
+>    `bootstrap P(E[R]≤0)` is the WRONG null — always calibrate against random entries with the
+>    same bracket geometry and holding distribution.** Every future single-asset long-only
+>    candidate must clear that null, not zero.
+>    `scratchpad/tv_nas_battery.py`, `tv_nas_battery2.py`, `tv_nas_portfolio_mc.py`, `RESEARCH_LOG_TV.md`.
+>
+>    **⛔ ALL SEVEN t>2 Pine cells re-tested against the random-entry null (2026-08-03,
+>    `scratchpad/tv_null_all7.py`) — 0 of 7 clear the bar.** Criteria: p<0.05 vs the geometry
+>    null on the whole sample AND on the recent half, t>2 at +10 pts/side, honest (shuffled-maxDD)
+>    RoMaD > 0.9, and some cross-asset support.
+>
+>    | cell | t | n | p whole | p recent | t@+10pts | RoMaD | OOS med |
+>    |---|---|---|---|---|---|---|---|
+>    | RobBooker_ADX / NAS100 / H1 | 3.18 | 375 | 0.005 | **0.124** | 2.77 | 0.78 | −0.25 |
+>    | ForexMaster_v4 / FRA40 / H1 | 2.60 | 755 | 0.005 | **0.000** | **1.56** | 0.54 | **−2.02** |
+>    | ForexMaster_RSI / US2000 / D1 | 2.38 | **42** | 0.015 | 0.004 | 2.11 | 0.67 | −0.28 |
+>    | Crypto3EMA / US500 / H1 | 2.11 | 328 | 0.022 | 0.132 | **0.81** | 0.49 | −0.22 |
+>    | Crypto3EMA / NAS100 / H1 | 2.06 | 404 | 0.035 | 0.052 | 1.62 | 0.40 | −0.22 |
+>    | RobBooker_ADX / USDJPY / H1 | 2.68 | 388 | **0.057** | 0.304 | 1.46 | 0.59 | −0.25 |
+>    | ZeroLagMA / EURUSD / H1 | 2.07 | 397 | **0.085** | 0.448 | 1.11 | 0.41 | −0.37 |
+>
+>    Two are *more* interesting than the one first chased, and both still fail:
+>    **ForexMaster_v4 on FRA40** (BB(20,1.5) fade + ADX filter) is the only cell with a strongly
+>    significant RECENT half — split-half **improves** 0.61 → 3.16, p_recent=0.000 — but it
+>    **dies on cost** (t 2.60 → 1.56 at +10 pts/side, and FRA40 is a wide-spread name, cf. the
+>    intraday-cross-section row) and is **actively negative on 17 other assets** (median −2.02,
+>    the worst OOS of the seven). **ForexMaster_RSI on US2000 D1** clears three of four —
+>    p_whole 0.015, p_recent 0.004, cost-robust t=2.11 — and fails only on size: **n=42 over
+>    7.5 years (5.6 trades/yr), +2.1 R/yr, RoMaD 0.67**, i.e. thinner AND worse-pathed than
+>    gold (2.5 R/yr, 0.73), the book's weakest sleeve. Nothing to add.
+>    **The decisive frame is multiple testing: across 283 tests, chance alone delivers ~14 cells
+>    at p<0.05 vs the null; only 5 of the 7 hits reach it. The Pine corpus yields FEWER
+>    geometry-beating cells than chance.** Same conclusion as MQL4, reached through a stricter null.
+>
+> The two older ones, neither worth adding:
 >
 > 1. **GER40 (DAX) EU-open ATR-breakout, high-vol regime, both dirs, M1** — the strongest
 >    *decorrelated* candidate, and a **VALIDATED edge**. PASSES: **t=2.28 net** (cost-robust to 4pt
