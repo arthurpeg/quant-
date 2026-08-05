@@ -267,8 +267,16 @@ class Broker:
 
     @staticmethod
     def _snap_lots(raw: float, spec: SymbolSpec) -> float:
+        """Snap a raw lot count to the symbol's volume grid, rounding to the NEAREST step.
+
+        Nearest (not floor): on a coarse grid — Pepperstone NAS100 steps by 0.1 lot — flooring
+        gave a persistent ~half-step DOWNWARD bias (ideal 0.375 -> 0.3 = 0.80R), which
+        systematically under-sized against the backtest's 1R. Rounding to nearest centres the
+        quantisation error (0.375 -> 0.4 = 1.07R), so the bias averages out. Any resulting
+        over-risk is bounded by ``lots_for_risk``'s ``max_risk_R`` cap. Never below
+        ``volume_min`` / above ``volume_max``."""
         step = spec.volume_step or 0.01
-        lots = math.floor(max(raw, 0.0) / step) * step
+        lots = math.floor(max(raw, 0.0) / step + 0.5) * step   # round half up to the grid
         if lots < spec.volume_min:
             return spec.volume_min
         return round(min(lots, spec.volume_max), 2)
@@ -296,30 +304,29 @@ class Broker:
 
     def lots_for_risk(self, logical: str, direction: int, entry_price: float,
                       sl_price: float, risk_budget: float) -> float:
-        """Lots such that the loss entry->SL equals ``risk_budget`` in the ACCOUNT currency.
+        """Lots such that the loss entry->SL equals ``risk_budget`` in the ACCOUNT currency,
+        snapped to the NEAREST point of the symbol's lot grid (see ``_snap_lots``).
 
-        When the ideal size is below the broker's minimum lot, ``_snap_lots`` is forced UP to
-        ``volume_min`` and the trade then risks MORE than 1R. That over-risk used to pass
-        silently; now it always logs a WARNING, and if it exceeds ``max_risk_R`` (config, 1.25R
-        default) the entry is SKIPPED by returning 0.0 — the account is too small to size this
-        stop to 1R, and a 1.6R NAS100 trade breaks the uniform-1R assumption of the MC/prop model.
-        Callers treat lots<=0 as "skip this entry, mark the day done"."""
+        On a coarse grid (Pepperstone NAS100 steps by 0.1 lot) the snap can land above 1R.
+        Past ``max_risk_R`` (config, 1.25R default) the entry is SKIPPED (returns 0.0); a
+        materially-hot but sub-cap size (>1.10R) is logged. This keeps the uniform-1R assumption
+        of the MC/prop model honest. Callers treat lots<=0 as "skip this entry, mark the day done"."""
         spec = self.symbol_spec(logical)
         loss_per_lot = self._loss_per_lot(logical, direction, entry_price, sl_price, spec)
         if loss_per_lot <= 0:
             return spec.volume_min                      # sizing info unavailable -> legacy fallback
         lots = self._snap_lots(risk_budget / loss_per_lot, spec)
         realized = lots * loss_per_lot
-        if realized > risk_budget * 1.005:              # min lot forced the risk above 1R
-            mult = realized / risk_budget
-            cap = float(self.cfg.get("max_risk_R", 1.25))
-            if mult > cap:
-                logger.warning("%s sizing: smallest lot %.2f risks %.2f (%.2fR) > %.2fR cap -> SKIP "
-                               "entry (account too small to size this stop to 1R)",
-                               logical, lots, realized, mult, cap)
-                return 0.0
-            logger.warning("%s sizing: smallest lot %.2f risks %.2f (%.2fR > 1R); account too small "
-                           "to size down -> taking it (within %.2fR cap)", logical, lots, realized, mult, cap)
+        mult = realized / risk_budget
+        cap = float(self.cfg.get("max_risk_R", 1.25))
+        if mult > cap:                                  # coarsest lot still overshoots the cap
+            logger.warning("%s sizing: smallest lot %.2f risks %.2f (%.2fR) > %.2fR cap -> SKIP "
+                           "entry (cannot size this stop to 1R on the lot grid)",
+                           logical, lots, realized, mult, cap)
+            return 0.0
+        if mult > 1.10:                                 # nearest lot lands materially above 1R
+            logger.warning("%s sizing: nearest lot %.2f risks %.2f (%.2fR > 1R) on a coarse lot grid "
+                           "-> taking it (within %.2fR cap)", logical, lots, realized, mult, cap)
         return lots
 
     # ---- orders -----------------------------------------------------------
