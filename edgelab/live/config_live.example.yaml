@@ -41,9 +41,18 @@ ibs_symbol: NAS100             # brick 4 (IBS reversion) — same instrument as 
 enable_ibs: true               # set false to run the old 3-brick book
 
 # ---- risk / prop rules (static-DD firm) ------------------------------------
-# 1R = risk_per_trade * initial_balance (fixed-fractional, NO compounding).
+# risk_per_trade is a FRACTION of the account, NOT an amount in euros:
+#     1R (in €) = risk_per_trade * balance      (fixed-fractional, NO compounding)
+# With size_from_account:true the balance is the REAL account read at startup, so on a
+# 60 000 € account 0.01 = 1R of 600 €. To change the euro risk, change this fraction (or
+# the account size) — NEVER put an absolute euro value here (0.01 = 1%, but 600 = 60000%).
 # Recommended: 1.00% to PASS the challenge, drop to 0.50% once funded (see wiki/system.md).
 risk_per_trade: 0.01
+# When the ideal size is below the broker's MINIMUM lot, the position is forced up to that
+# minimum and then risks MORE than 1R (e.g. NAS100 on a small account: 0.1 lot ~= 1.6R).
+# max_risk_R caps this: the over-risk is always logged; past this many R the entry is SKIPPED
+# (the account is too small to size that stop to 1R). 1.25 = take up to 1.25R, skip beyond.
+max_risk_R: 1.25
 # size_from_account:true (default) bases 1R and the prop floors on the ACTUAL connected
 # balance at startup -> avoids the dangerous mismatch where initial_balance below is 10x
 # the real demo balance. Set false to use propfirm.initial_balance verbatim (a real

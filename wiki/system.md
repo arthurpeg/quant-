@@ -289,6 +289,13 @@ path attaches SL/TP to the position, picks a supported filling mode, clears the 
 min-stop distance, clamps lots, retries on requotes, and journals every fill to
 `edgelab/live/_out/trades.csv`. See `edgelab/live/README.md`.
 
+**Min-lot over-risk cap (`max_risk_R`, default 1.25).** On a small account the ideal size
+for a wide stop can fall below the broker's `volume_min` (e.g. NAS100 0.1 lot ≈ 1.6R of a
+100 € 1R on a 10 k€ demo). `broker.lots_for_risk` used to snap up to the minimum *silently*;
+it now always logs the realised R and **skips the entry past `max_risk_R`** (returns 0 lots →
+the brick marks the day done and does not trade). This keeps the uniform-1R assumption of the
+MC/prop model honest — a 1.6R NAS100 trade breaks it. Tune the cap in `config_live.yaml`.
+
 **Brick 3 re-validated on Pepperstone (2026-07-29): ✅ holds.** Same signal/engine on
 Pepperstone BTC+ETH D1 (2018-07+): **+16.7 R/yr, PF 1.55, maxDD 9.1R, t=3.93, corr −0.02,
 9/9 years positive, gate PASS** (realistic cost BTC 6 / ETH 16 bps; cost-robust — even

@@ -273,14 +273,13 @@ class Broker:
             return spec.volume_min
         return round(min(lots, spec.volume_max), 2)
 
-    def lots_for_risk(self, logical: str, direction: int, entry_price: float,
-                      sl_price: float, risk_budget: float) -> float:
-        """Lots such that the loss entry->SL equals ``risk_budget`` in the ACCOUNT currency.
+    def _loss_per_lot(self, logical: str, direction: int, entry_price: float,
+                      sl_price: float, spec: SymbolSpec) -> float:
+        """Account-currency loss of a full entry->SL move for 1.0 lot (>0), or 0.0 if unknown.
 
         Uses MT5 ``order_calc_profit`` (handles the instrument->deposit currency conversion
         natively) so USD-denominated symbols size correctly on a EUR account. Falls back to
         the tick-value formula only when MT5 is unavailable (offline/dry-run)."""
-        spec = self.symbol_spec(logical)
         if self._connected or self.live:
             import MetaTrader5 as mt5
             sym = self.broker_symbol(logical)
@@ -290,11 +289,38 @@ class Broker:
             except Exception:
                 loss = None
             if loss is not None and loss < 0:
-                return self._snap_lots(risk_budget / abs(loss), spec)
+                return abs(loss)
             logger.warning("order_calc_profit unavailable for %s -> tick-value sizing (may be off on cross-ccy)", logical)
         sl_dist = abs(entry_price - sl_price)
-        lpl = (sl_dist / spec.tick_size) * spec.tick_value if spec.tick_size > 0 else 0.0
-        return self._snap_lots(risk_budget / lpl, spec) if lpl > 0 else spec.volume_min
+        return (sl_dist / spec.tick_size) * spec.tick_value if spec.tick_size > 0 else 0.0
+
+    def lots_for_risk(self, logical: str, direction: int, entry_price: float,
+                      sl_price: float, risk_budget: float) -> float:
+        """Lots such that the loss entry->SL equals ``risk_budget`` in the ACCOUNT currency.
+
+        When the ideal size is below the broker's minimum lot, ``_snap_lots`` is forced UP to
+        ``volume_min`` and the trade then risks MORE than 1R. That over-risk used to pass
+        silently; now it always logs a WARNING, and if it exceeds ``max_risk_R`` (config, 1.25R
+        default) the entry is SKIPPED by returning 0.0 — the account is too small to size this
+        stop to 1R, and a 1.6R NAS100 trade breaks the uniform-1R assumption of the MC/prop model.
+        Callers treat lots<=0 as "skip this entry, mark the day done"."""
+        spec = self.symbol_spec(logical)
+        loss_per_lot = self._loss_per_lot(logical, direction, entry_price, sl_price, spec)
+        if loss_per_lot <= 0:
+            return spec.volume_min                      # sizing info unavailable -> legacy fallback
+        lots = self._snap_lots(risk_budget / loss_per_lot, spec)
+        realized = lots * loss_per_lot
+        if realized > risk_budget * 1.005:              # min lot forced the risk above 1R
+            mult = realized / risk_budget
+            cap = float(self.cfg.get("max_risk_R", 1.25))
+            if mult > cap:
+                logger.warning("%s sizing: smallest lot %.2f risks %.2f (%.2fR) > %.2fR cap -> SKIP "
+                               "entry (account too small to size this stop to 1R)",
+                               logical, lots, realized, mult, cap)
+                return 0.0
+            logger.warning("%s sizing: smallest lot %.2f risks %.2f (%.2fR > 1R); account too small "
+                           "to size down -> taking it (within %.2fR cap)", logical, lots, realized, mult, cap)
+        return lots
 
     # ---- orders -----------------------------------------------------------
     def place_market(self, logical: str, direction: int, lots: float, sl: float,

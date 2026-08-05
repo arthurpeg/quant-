@@ -156,6 +156,10 @@ class NasOrbStrategy:
         sl = ref - plan.direction * plan.sl_dist
         tp = ref + plan.direction * plan.tp_dist if plan.tp_dist else None
         lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, risk.risk_budget())
+        if lots <= 0:
+            logger.warning("brick1 skip entry on %s: cannot size to 1R (min lot exceeds risk cap)", et_date)
+            self._entered_on = et_date
+            return
         close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
         broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                             f"brick1_{plan.reason}", plan.sl_dist, ref, now_utc, time_exit_at=close_dt)
@@ -210,10 +214,13 @@ class GoldTomStrategy(_RolloverBrick):
             ref = float(d1.iloc[-1]["close"])
             sl = ref - st.sl_dist               # long only
             lots = broker.lots_for_risk(self.logical, +1, ref, sl, risk.risk_budget())
-            self._place_entry(
-                lambda: broker.place_market(self.logical, +1, lots, sl, None, self.magic,
-                                            "brick2_turn_of_month", st.sl_dist, ref, now_utc),
-                bday, now_utc, "brick2")
+            if lots <= 0:
+                logger.warning("brick2 skip entry on %s: cannot size to 1R (min lot exceeds risk cap)", bday)
+            else:
+                self._place_entry(
+                    lambda: broker.place_market(self.logical, +1, lots, sl, None, self.magic,
+                                                "brick2_turn_of_month", st.sl_dist, ref, now_utc),
+                    bday, now_utc, "brick2")
         self._acted_day = bday
 
 
@@ -266,11 +273,15 @@ class CryptoMacdStrategy(_RolloverBrick):
             sl = ref - plan.direction * plan.sl_dist
             tp = ref + plan.direction * plan.tp_dist if plan.tp_dist else None
             lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, risk.risk_budget())
-            self._place_entry(
-                lambda: broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
-                                            f"brick3_{plan.reason}", plan.sl_dist, ref, now_utc,
-                                            bars_held_limit=self.time_exit_bars),
-                bday, now_utc, f"brick3 {self.logical}")
+            if lots <= 0:
+                logger.warning("brick3 %s skip entry on %s: cannot size to 1R (min lot exceeds risk cap)",
+                               self.logical, bday)
+            else:
+                self._place_entry(
+                    lambda: broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
+                                                f"brick3_{plan.reason}", plan.sl_dist, ref, now_utc,
+                                                bars_held_limit=self.time_exit_bars),
+                    bday, now_utc, f"brick3 {self.logical}")
         self._acted_day = bday
 
 
@@ -361,9 +372,12 @@ class NasIbsStrategy(_RolloverBrick):
             ref = float(daily_all.iloc[-1]["close"])       # fresh bar -> ~ this bar's open
             sl = ref - st.sl_dist                          # long only, no TP
             lots = broker.lots_for_risk(self.logical, +1, ref, sl, risk.risk_budget())
-            self._place_entry(
-                lambda: broker.place_market(self.logical, +1, lots, sl, None, self.magic,
-                                            "brick4_ibs_reversion", st.sl_dist, ref, now_utc,
-                                            bars_held_limit=self.p.max_hold),
-                bday, now_utc, "brick4")
+            if lots <= 0:
+                logger.warning("brick4 skip entry on %s: cannot size to 1R (min lot exceeds risk cap)", bday)
+            else:
+                self._place_entry(
+                    lambda: broker.place_market(self.logical, +1, lots, sl, None, self.magic,
+                                                "brick4_ibs_reversion", st.sl_dist, ref, now_utc,
+                                                bars_held_limit=self.p.max_hold),
+                    bday, now_utc, "brick4")
         self._acted_day = bday
