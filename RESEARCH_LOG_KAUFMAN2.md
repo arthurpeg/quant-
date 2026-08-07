@@ -245,6 +245,48 @@ TP 2R, 96-bar cap: n=1477, +27.1 R/yr, PF 1.28, t=4.26, RoMaD 1.54) and **XAUUSD
 on gold H1 (n=1972, +23.8 R/yr, t=3.91, but its null is already +2.72, so the excess is
 only +1.19).
 
-⚠️ Neither has had the exact two-null battery, the split-half, or a monthly-correlation
-check against brick 3. The 16.8× is a **class-level** statement, exactly as on D1; no
-individual H1 cell is a candidate yet.
+### 7b. Both were then batteried — one dies, one is the best candidate of the session
+
+**XAUUSD `Meyers_6` — REJECTED, and the reason is legible in one number: it is 93 % long.**
+Kaufman's own adaptive intraday breakout, transferred to gold H1, spends 93 % of its
+signals on the long side of a market that rose through the whole sample. Its own nulls say
+so: **Null A median +2.63, Null B median +2.91** — a random 93 %-long gold bracket already
+scores t ≈ +2.9, so its t = 3.91 is worth about **+1.0**, not +3.9. And:
+* **the recent half does not beat its own null** (late t=2.94 vs null 2.75, **p = 0.316**);
+* RoMaD **0.73** — equal to gold ToM, the book's weakest sleeve — on a maxDD of **32.7 R**,
+  twice the entire book's;
+* cost-sensitive at 262 trades/yr (t 3.91 → 2.73 at +20 pts/side);
+* **adding it makes the book worse**: 10.3 %/yr → **7.4 %** at 1R.
+It is the documented gold-drift / long-bias artefact, in a new wrapper.
+
+**BTCUSD `Keltner_break_1.5` — a genuine candidate, and it clears every gate this project
+has**, including the two that kill everything else:
+
+| gate | result |
+|---|---|
+| Null A (random entry, median −0.22) | **p = 0.000** |
+| **Null B (sign permutation, median −0.07)** | **p = 0.000** — no drift to hide behind |
+| positive years | **9 / 9** |
+| split half, each vs its own sign-null | early t=3.88 **p=0.000** · late t=2.09 **p=0.012** |
+| cost stress | **immune** — +20 broker pts/side moves t from 4.25 to **4.23** |
+| **1R ≥ 25× spread floor** (the crypto post-mortem's own test) | **survives**: t 4.25 → **3.13**, pB still **0.000** |
+
+At the honest floored configuration (SL 3×ATR14 with a 25×-spread floor, TP 2R, 96-bar cap):
+**n=1266, +17.2 R/yr, PF 1.216, t=3.13, RoMaD 0.94**; monthly correlation brick 3 **+0.231**,
+brick 1 +0.115, brick 2 −0.035. Book impact at equal risk: **10.3 %/yr → 12.6 %**,
+RoMaD 2.06 → **2.51**, at either 1R or 0.5R.
+
+Why the H1 friction wall does not bite here, when it has killed every other H1 result in
+this project: **3×ATR(H1) on BTCUSD is a very large 1R relative to a crypto spread** (median
+44× after flooring), so the toll is a rounding error. That is also the honest limit of the
+result — it is a property of the instrument, not of the rule.
+
+**Three caveats, all real.** (1) **Selection**: this is 1 cell of 722 crypto H1 survivors;
+the 16.8× class ratio says the *class* is real, not that the maximum of a large screen is
+unbiased. (2) **Decaying**: +35.8 R/yr in the early half against +18.2 in the late one,
+even though both clear their null. (3) **Not a diversifier** — monthly corr +0.231 to brick 3
+makes it a *second crypto trend sleeve* (a faster, H1 cousin of the daily MACD), not a new
+mechanism.
+
+**Recommendation: forward-test it on the demo at 0.5R alongside brick 3, with the 25×-spread
+floor built into the sizing — the same treatment KAER got.** It is not a promoted brick.
