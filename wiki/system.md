@@ -33,6 +33,25 @@ adding SOL/ADA — alts add correlated crash risk, not diversification).
 Breakout-20 (`VolatilityBreakoutEdge(channel=20)`) is the lower-tail **conservative
 alternative** to MACD-RSI. Single-MA-50 is the fallback if crypto is not prop-tradable.
 
+## Forward-test sleeve (NOT a brick) — KAER, added 2026-08-07
+
+| Sleeve | Asset | Mechanism | Code | Standalone | Live |
+|---|---|---|---|---|---|
+| **KAER** — Kaufman efficiency-ratio intraday breakout | NAS100 (M15) | follow a 10-bar range break when ER(10)'s trailing percentile is in the top tercile; SL 2.0·ATR14, no TP, flat 15:55 ET | [`edgelab/intraday/kaer.py`](../edgelab/intraday/kaer.py) — `run_kaer('NAS100')` | +28.8 R/yr, PF 1.19, t=3.20, **RoMaD 1.13**, 8/9 +yrs | magic **106**, `enable_kaer`, **0.5R** |
+
+**It is deliberately NOT counted as a 5th brick.** corr **+0.370** to brick 1 with **40 % of
+its trading days closing a brick-1 trade too** — every brick-brick pair above is ≤ 0.03 — and
+it replicates on **no other index** (US500 t=1.64, GER40 1.30, US30 0.00, FRA40/US2000/UK100
+negative). It is brick 1's family, so the live question is "**is this a better brick 1?**",
+not "is this a 5th sleeve". Sized at **half R** because at equal risk +KAER@0.5R improves the
+book on every axis (R/yr 32.0→47.4, maxDD 14.3→17.1, RoMaD 2.24→**2.78**, Sharpe 1.95→2.03,
+%/yr 11.2→**13.9**) while +KAER@1R makes it worse (funded ruin at 0.50 % 1.7 %→26.3 %). A
+straight **swap** at 1R is a bad trade (worst day −3.07→−5.07 R so the −5 % daily rule bites
+again, challenge pass 92.3 %→80.2 % at 1 %, funded ruin →14.6 %); the swap at 0.5R
+*strictly dominates* the current book (ruin 1.7 %→1.0 %) — which is exactly what the forward
+test is meant to confirm or kill. In-sample and parameter-selected; brick 1 is
+forward-committed and tick-validated, KAER is not. See [[ledger]] and `RESEARCH_LOG_KAUFMAN.md`.
+
 ## Why these edges (the finding — corrected 2026-07-31: three → four)
 
 Across **9000 arXiv papers** and the full technical canon (MA/MACD/Bollinger/CCI/ADX/
