@@ -35,8 +35,10 @@ BRICK_LABEL = {
     "brick2": "brick 2 - gold ToM",
     "brick3": "brick 3 - crypto",
     "brick4": "brick 4 - NAS IBS",
+    "kaer": "KAER - NAS M15 ER breakout (fwd-test, 0.5R)",
 }
-MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "brick4"}
+MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "brick4",
+             106: "kaer"}
 
 
 def _brick(symbol: str, reason: str = "") -> str:

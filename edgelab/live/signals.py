@@ -12,6 +12,9 @@ Bricks:
   2) XAUUSD turn-of-month, SL=1.5*ATR              -> tom_state()
   3) MACD(12,26,9)+RSI on BTC+ETH                   -> macd_rsi() / crypto_entry()
   4) NAS100 IBS reversion, SL=2.5*ATR               -> ibs_state()
+
+Forward-test sleeve (NOT a frozen brick):
+  K) NAS100 M15 Kaufman efficiency-ratio breakout   -> kaer_scan()
 """
 from __future__ import annotations
 
@@ -22,6 +25,7 @@ import pandas as pd
 
 # Reuse the SAME primitives the backtest uses (do not re-implement them here).
 from edgelab.intraday.atr_breakout import ATRBreakParams, _wilder_atr
+from edgelab.intraday.kaer import KaerParams, kaer_atr, kaer_signals
 from edgelab.edges.turn_of_month import TurnOfMonthParams
 from edgelab.edges.ibs import IBSParams, _wilder_atr as _ibs_wilder_atr
 from edgelab.risk.trade_rules import atr as engine_atr  # Wilder ATR, min_periods=window
@@ -312,3 +316,34 @@ def ibs_state(daily: pd.DataFrame, p: IBSParams | None = None) -> IbsState:
                     entry_ok=ok and last_ibs < p.ibs_low and sl_dist > 0,
                     exit_signal=ok and last_ibs > p.ibs_high,
                     sl_dist=sl_dist)
+
+
+# ===========================================================================
+# FORWARD-TEST SLEEVE — NAS100 M15 Kaufman efficiency-ratio breakout
+# ===========================================================================
+def kaer_scan(m15: pd.DataFrame, p: KaerParams | None = None) -> tuple[int, EntryPlan] | None:
+    """Decide on the LAST bar of ``m15``, which must already EXCLUDE the forming bar.
+
+    The whole rule lives in :func:`edgelab.intraday.kaer.kaer_signals` — the same function
+    the backtest calls — so the live decision cannot fork from the backtest. All this adds
+    is "look at the most recent completed bar and turn a +1/-1 into a placeable order".
+
+    Returns ``(idx, EntryPlan)`` with ``idx`` the signal bar (the fill is the next bar's
+    open, i.e. a market order placed now), or None.
+    """
+    p = p or KaerParams()
+    if len(m15) < p.rank_bars // 4 + p.atr_p + p.nbrk + 2:
+        return None            # not enough history for a causal ER percentile
+    sig = kaer_signals(m15, p)
+    atr = kaer_atr(m15, p)
+    i = len(m15) - 1
+    if sig[i] == 0:
+        return None
+    a = float(atr[i])
+    if not np.isfinite(a) or a <= 0:
+        return None
+    direction = int(sig[i])
+    return i, EntryPlan(direction, p.k_stop * a,
+                        p.tp_R * p.k_stop * a if p.tp_R else None,
+                        "kaer_break_up" if direction > 0 else "kaer_break_dn",
+                        float(m15["close"].iloc[i]))

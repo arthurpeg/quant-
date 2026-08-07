@@ -299,6 +299,85 @@ def verify_brick4() -> bool:
     return same
 
 
+def verify_kaer(window: int = 2600, sample: int = 4000) -> bool:
+    """FORWARD-TEST SLEEVE — NAS100 M15 Kaufman ER breakout.
+
+    Two things can make this sleeve diverge live, and neither is the rule itself (the
+    driver calls ``kaer_signals``, the same function the backtest calls):
+
+    (1) THE TRUNCATED WINDOW. The driver hands ``kaer_scan`` only the last
+        ``kaer_bars`` bars, while the backtest sees the whole history. The ER gate is a
+        *rolling percentile over 1820 bars*, so a window shorter than that would silently
+        change every decision — and it would do so quietly, not by crashing. We therefore
+        replay a large sample of bars through a trailing window of exactly the size the
+        config uses and require the decision to be identical to the full-history one.
+
+    (2) SEQUENCING. The driver only scans while FLAT, so a signal firing mid-trade must be
+        skipped exactly as the backtest skips it. Replayed here on the precomputed signal
+        array against the backtest's own entry bars.
+    """
+    from edgelab.intraday.kaer import KaerParams, run_kaer, load_m15, kaer_signals, kaer_atr
+
+    p = KaerParams()
+    bars = load_m15("NAS100")
+    bt = run_kaer("NAS100", p, bars=bars).trades
+    if not len(bt):
+        print("  KAER: no backtest trades — cannot verify")
+        return False
+
+    full_sig = kaer_signals(bars, p)
+    full_atr = kaer_atr(bars, p)
+    n = len(bars)
+
+    # ---- (1) truncated window vs full history --------------------------------------
+    rng = np.random.default_rng(0)
+    sig_bars = np.flatnonzero(full_sig != 0)
+    sig_bars = sig_bars[sig_bars >= window]
+    others = np.arange(window, n)
+    others = others[full_sig[others] == 0]
+    take = np.concatenate([
+        sig_bars,
+        rng.choice(others, min(sample, len(others)), replace=False)])
+    bad_sig = bad_sl = 0
+    for i in take:
+        res = S.kaer_scan(bars.iloc[i - window + 1: i + 1], p)
+        live_dir = 0 if res is None else res[1].direction
+        if live_dir != int(full_sig[i]):
+            bad_sig += 1
+            continue
+        if res is not None:
+            if abs(res[1].sl_dist - p.k_stop * full_atr[i]) > 1e-9:
+                bad_sl += 1
+    print(f"  KAER window fidelity: {len(take)} bars replayed through a {window}-bar "
+          f"trailing window ({len(sig_bars)} of them signal bars) — "
+          f"{len(take) - bad_sig} direction matches, {bad_sig} mismatches, "
+          f"{bad_sl} stop-distance mismatches")
+
+    # ---- (2) one-position-at-a-time sequencing --------------------------------------
+    exits = dict(zip(bt["signal_bar"].astype(int), bt["exit_bar"].astype(int)))
+    live, i, warm = [], 250, 250
+    while i < n - 1:
+        if full_sig[i] == 0 or not np.isfinite(full_atr[i]) or full_atr[i] <= 0:
+            i += 1
+            continue
+        live.append((i, int(full_sig[i])))
+        nxt = exits.get(i)
+        if nxt is None:
+            break
+        i = nxt
+    bt_entries = [(int(r["signal_bar"]), int(r["direction"])) for _, r in bt.iterrows()]
+    seq_ok = live == bt_entries
+    print(f"  KAER sequencing: backtest {len(bt_entries)} entries, driver replay "
+          f"{len(live)} entries, identical: {seq_ok}")
+    if not seq_ok:
+        for a, b in [(a, b) for a, b in zip(live, bt_entries) if a != b][:5]:
+            print(f"    MISMATCH live={a} backtest={b}")
+    ok = (bad_sig == 0) and (bad_sl == 0) and seq_ok
+    print(f"  KAER (fwd-test sleeve, {len(bt_entries)} entries, sized "
+          f"{p.size_R:.2f}R live): {'PASS' if ok else 'FAIL'}")
+    return ok
+
+
 def main():
     print("=" * 70)
     print("  LIVE-vs-BACKTEST signal verification")
@@ -307,9 +386,11 @@ def main():
     r2 = verify_brick2()
     r3 = verify_brick3()
     r4 = verify_brick4()
+    rk = verify_kaer()
     print("-" * 70)
     print(f"  brick1={'PASS' if r1 else 'FAIL'}  brick2={'PASS' if r2 else 'FAIL'}  "
-          f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}")
+          f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}  "
+          f"KAER={'PASS' if rk else 'FAIL'}")
     print("=" * 70)
 
 

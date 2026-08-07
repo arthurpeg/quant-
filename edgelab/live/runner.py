@@ -30,7 +30,7 @@ from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 from edgelab.live.strategies import (NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy,
-                                     NasIbsStrategy)
+                                     NasIbsStrategy, KaerStrategy)
 
 LOG = logging.getLogger("edgelab.live.runner")
 CFG_LIVE = Path(__file__).resolve().parent / "config_live.yaml"
@@ -54,6 +54,11 @@ def build(cfg_live: dict):
         strategies.append(CryptoMacdStrategy(cfg_live, coin, risk_cfg))
     if cfg_live.get("enable_ibs", True):          # brick 4 (exp-009); set false to disable
         strategies.append(NasIbsStrategy(cfg_live))
+    # FORWARD-TEST SLEEVE, not a brick: NAS100 M15 Kaufman ER breakout, half size.
+    # Defaults to OFF so a plain checkout keeps trading the frozen 4-brick book; the demo
+    # runner enables it in config_live.yaml. See edgelab/intraday/kaer.py.
+    if cfg_live.get("enable_kaer", False):
+        strategies.append(KaerStrategy(cfg_live))
     return broker, risk, strategies
 
 
