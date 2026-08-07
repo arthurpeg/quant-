@@ -33,13 +33,45 @@ adding SOL/ADA — alts add correlated crash risk, not diversification).
 Breakout-20 (`VolatilityBreakoutEdge(channel=20)`) is the lower-tail **conservative
 alternative** to MACD-RSI. Single-MA-50 is the fallback if crypto is not prop-tradable.
 
-## Forward-test sleeve (NOT a brick) — KAER, added 2026-08-07
+## THE TWO NAMED BOOKS (user's naming, 2026-08-08) — use these names everywhere
+
+| Name | Composition | Where it is used | Live |
+|---|---|---|---|
+| **book AGRESSIF** | b1 @1R + b2 @1R + b3 @1R + b4 @1R + **KAER @0.5R** + **KELT @0.5R** | the **CHALLENGE** phase, at 1.00 %/trade (speed: median 2.4 months to pass) | **this is what is deployed on the demo right now** — magics 101-107 |
+| **book FUNDED** | b1 @1R + b2 @1R + **b3 @0.5R** + b4 @1R + **KELT @0.5R** (no KAER) | the **FUNDED** phase, at 0.50 %/trade (protection) | not deployed; a config change at funding time |
+
+The two-phase plan is measured in [[log]] (2026-08-08): AGRESSIF@1.00 % → FUNDED@0.50 %
+withdraws **30.2 %** over two years at **1.6 % ruin**, against 27.2 % / 1.4 % for the best
+single-book plan and 24.5 % / 3.2 % for the 4-brick book. The gain is *time* — the
+challenge clears in 2.6 months instead of 4.5, buying ~2 extra funded months — and the
+switch is what keeps ruin at 1.6 % instead of AGRESSIF's own **12.3 %**. Staying aggressive
+after funding is the trap: the aggressive book earns its risk only while a failure costs a
+fee rather than the account.
+
+**Monthly profile of AGRESSIF** (96 complete months, 2018-07→2026-06 / recent half):
+mean **+4.81 / +4.49 R per month**, median +4.12 / +4.41 R, σ 6.9 / 7.2 R,
+**80.2 % / 72.9 % positive months**, best +21.7 R, worst −14.9 R. At 1.00 %/trade that is
+**+4.81 % per month on average**, worst month −14.9 %. FUNDED: +2.99 / +3.10 R per month,
+**76.0 % / 77.1 % positive months**, worst −11.4 R.
+
+⚠️ Both books contain **two sleeves that have never been forward-tested** (KAER, KELT), so
+every number above is in-sample for those parts. AGRESSIF without them degenerates to the
+frozen 4-brick book — slower, not broken.
+
+## Forward-test sleeves (NOT bricks) — KAER and KELT, added 2026-08-07/08
 
 | Sleeve | Asset | Mechanism | Code | Standalone | Live |
 |---|---|---|---|---|---|
 | **KAER** — Kaufman efficiency-ratio intraday breakout | NAS100 (M15) | follow a 10-bar range break when ER(10)'s trailing percentile is in the top tercile; SL 2.0·ATR14, no TP, flat 15:55 ET | [`edgelab/intraday/kaer.py`](../edgelab/intraday/kaer.py) — `run_kaer('NAS100')` | +28.8 R/yr, PF 1.19, t=3.20, **RoMaD 1.13**, 8/9 +yrs | magic **106**, `enable_kaer`, **0.5R** |
+| **KELT** — Keltner-band breakout | BTCUSD (H1) | EMA(20) ± 1.5·ATR(20) band break; **SL = max(3·ATR14, 25×spread)**, TP 2R, 96-bar exit | [`edgelab/intraday/keltner_btc.py`](../edgelab/intraday/keltner_btc.py) — `run_keltner()` | +17.2 R/yr, PF 1.22, t=3.13, RoMaD 0.94, **9/9 +yrs** | magic **107**, `enable_keltner`, **0.5R** |
 
-**It is deliberately NOT counted as a 5th brick.** corr **+0.370** to brick 1 with **40 % of
+KELT shares BTCUSD with brick 3 under its own magic — **this requires a HEDGING account**
+(verified: `margin_mode == 2`); on a netting account the two would offset. Its monthly
+correlation to brick 3 is +0.07…+0.23, so it is a *second crypto-trend sleeve*, not a new
+mechanism. The 25×-spread floor is **part of the rule**: without it R/yr reads +27.1
+instead of +17.2.
+
+**KAER is deliberately NOT counted as a 5th brick.** corr **+0.370** to brick 1 with **40 % of
 its trading days closing a brick-1 trade too** — every brick-brick pair above is ≤ 0.03 — and
 it replicates on **no other index** (US500 t=1.64, GER40 1.30, US30 0.00, FRA40/US2000/UK100
 negative). It is brick 1's family, so the live question is "**is this a better brick 1?**",
