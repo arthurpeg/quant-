@@ -13,8 +13,9 @@ Bricks:
   3) MACD(12,26,9)+RSI on BTC+ETH                   -> macd_rsi() / crypto_entry()
   4) NAS100 IBS reversion, SL=2.5*ATR               -> ibs_state()
 
-Forward-test sleeve (NOT a frozen brick):
+Forward-test sleeves (NOT frozen bricks):
   K) NAS100 M15 Kaufman efficiency-ratio breakout   -> kaer_scan()
+  L) BTCUSD H1 Keltner-band breakout                -> keltner_scan()
 """
 from __future__ import annotations
 
@@ -26,6 +27,7 @@ import pandas as pd
 # Reuse the SAME primitives the backtest uses (do not re-implement them here).
 from edgelab.intraday.atr_breakout import ATRBreakParams, _wilder_atr
 from edgelab.intraday.kaer import KaerParams, kaer_atr, kaer_signals
+from edgelab.intraday.keltner_btc import KeltParams, keltner_signals, stop_distance
 from edgelab.edges.turn_of_month import TurnOfMonthParams
 from edgelab.edges.ibs import IBSParams, _wilder_atr as _ibs_wilder_atr
 from edgelab.risk.trade_rules import atr as engine_atr  # Wilder ATR, min_periods=window
@@ -347,3 +349,30 @@ def kaer_scan(m15: pd.DataFrame, p: KaerParams | None = None) -> tuple[int, Entr
                         p.tp_R * p.k_stop * a if p.tp_R else None,
                         "kaer_break_up" if direction > 0 else "kaer_break_dn",
                         float(m15["close"].iloc[i]))
+
+
+# ===========================================================================
+# FORWARD-TEST SLEEVE — BTCUSD H1 Keltner-band breakout
+# ===========================================================================
+def keltner_scan(h1: pd.DataFrame, p: KeltParams | None = None) -> tuple[int, EntryPlan] | None:
+    """Decide on the LAST bar of ``h1``, which must already EXCLUDE the forming bar.
+
+    The rule and the FLOORED stop both come from
+    :mod:`edgelab.intraday.keltner_btc` — the same functions the backtest calls — so the
+    live decision cannot fork. The floor is not optional: 1R is
+    ``max(3*ATR14, 25*spread)``, and without it the sleeve's R/yr is inflated by 57%.
+    """
+    p = p or KeltParams()
+    if len(h1) < 260:
+        return None                       # not enough history for ATR(20)/ATR(14) + warmup
+    sig = keltner_signals(h1, p)
+    i = len(h1) - 1
+    if sig[i] == 0:
+        return None
+    dist = stop_distance(h1, i, p)
+    if dist <= 0:
+        return None
+    direction = int(sig[i])
+    return i, EntryPlan(direction, dist, p.tp_R * dist,
+                        "kelt_break_up" if direction > 0 else "kelt_break_dn",
+                        float(h1["close"].iloc[i]))

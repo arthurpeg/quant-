@@ -378,6 +378,79 @@ def verify_kaer(window: int = 2600, sample: int = 4000) -> bool:
     return ok
 
 
+def verify_keltner(window: int = 600, sample: int = 4000) -> bool:
+    """FORWARD-TEST SLEEVE — BTCUSD H1 Keltner-band breakout.
+
+    Same two failure modes as KAER, and neither is the rule itself (the driver calls
+    `keltner_signals`, the function the backtest calls):
+
+    (1) THE TRUNCATED WINDOW. The driver hands `keltner_scan` only the last `kelt_bars`
+        (600) bars while the backtest sees 66k. EMA(20) is an infinite-memory filter, so a
+        short window changes it — quietly, never by crashing. Replayed here through a
+        window of exactly the configured size.
+    (2) THE FLOORED STOP. 1R = max(3*ATR14, 25*spread) and the floor is part of the RULE.
+        A live driver computing the unfloored stop would risk 57% more R/yr on paper and
+        place stops inside the spread on the thin tail. Checked to the last decimal.
+
+    Plus the one-position-at-a-time sequencing, replayed against the backtest's own entries.
+    """
+    from edgelab.intraday.keltner_btc import (KeltParams, run_keltner, load_h1,
+                                              keltner_signals, stop_distance)
+
+    p = KeltParams()
+    bars = load_h1("BTCUSD")
+    bt = run_keltner("BTCUSD", p, bars=bars).trades
+    if not len(bt):
+        print("  KELT: no backtest trades — cannot verify")
+        return False
+
+    full = keltner_signals(bars, p)
+    n = len(bars)
+
+    rng = np.random.default_rng(0)
+    sig_bars = np.flatnonzero(full != 0)
+    sig_bars = sig_bars[sig_bars >= window]
+    others = np.arange(window, n)
+    others = others[full[others] == 0]
+    take = np.concatenate([rng.choice(sig_bars, min(sample, len(sig_bars)), replace=False),
+                           rng.choice(others, min(sample, len(others)), replace=False)])
+    bad_sig = bad_sl = 0
+    for i in take:
+        w = bars.iloc[i - window + 1: i + 1]
+        res = S.keltner_scan(w, p)
+        live_dir = 0 if res is None else res[1].direction
+        if live_dir != int(full[i]):
+            bad_sig += 1
+            continue
+        if res is not None:
+            ref = stop_distance(bars, i, p)
+            if abs(res[1].sl_dist - ref) > 1e-9:
+                bad_sl += 1
+    print(f"  KELT window fidelity: {len(take)} bars replayed through a {window}-bar "
+          f"trailing window — {bad_sig} direction mismatches, {bad_sl} floored-stop "
+          f"mismatches")
+
+    exits = dict(zip(bt["signal_bar"].astype(int), bt["exit_bar"].astype(int)))
+    live, i = [], 250
+    while i < n - 1:
+        if full[i] == 0 or stop_distance(bars, i, p) <= 0:
+            i += 1
+            continue
+        live.append((i, int(full[i])))
+        nxt = exits.get(i)
+        if nxt is None:
+            break
+        i = nxt
+    bt_entries = [(int(r["signal_bar"]), int(r["direction"])) for _, r in bt.iterrows()]
+    seq_ok = live == bt_entries
+    print(f"  KELT sequencing: backtest {len(bt_entries)} entries, driver replay "
+          f"{len(live)} entries, identical: {seq_ok}")
+    ok = (bad_sig == 0) and (bad_sl == 0) and seq_ok
+    print(f"  KELT (fwd-test sleeve, {len(bt_entries)} entries, sized {p.size_R:.2f}R "
+          f"live): {'PASS' if ok else 'FAIL'}")
+    return ok
+
+
 def main():
     print("=" * 70)
     print("  LIVE-vs-BACKTEST signal verification")
@@ -387,10 +460,11 @@ def main():
     r3 = verify_brick3()
     r4 = verify_brick4()
     rk = verify_kaer()
+    rl = verify_keltner()
     print("-" * 70)
     print(f"  brick1={'PASS' if r1 else 'FAIL'}  brick2={'PASS' if r2 else 'FAIL'}  "
           f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}  "
-          f"KAER={'PASS' if rk else 'FAIL'}")
+          f"KAER={'PASS' if rk else 'FAIL'}  KELT={'PASS' if rl else 'FAIL'}")
     print("=" * 70)
 
 

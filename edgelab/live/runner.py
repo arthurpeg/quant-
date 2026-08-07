@@ -30,7 +30,8 @@ from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 from edgelab.live.strategies import (NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy,
-                                     NasIbsStrategy, KaerStrategy)
+                                     NasIbsStrategy, KaerStrategy,
+                                     KeltnerStrategy)
 
 LOG = logging.getLogger("edgelab.live.runner")
 CFG_LIVE = Path(__file__).resolve().parent / "config_live.yaml"
@@ -59,6 +60,10 @@ def build(cfg_live: dict):
     # runner enables it in config_live.yaml. See edgelab/intraday/kaer.py.
     if cfg_live.get("enable_kaer", False):
         strategies.append(KaerStrategy(cfg_live))
+    # FORWARD-TEST SLEEVE, not a brick: BTCUSD H1 Keltner breakout, half size.
+    # Same default-OFF discipline as KAER. See edgelab/intraday/keltner_btc.py.
+    if cfg_live.get("enable_keltner", False):
+        strategies.append(KeltnerStrategy(cfg_live))
     return broker, risk, strategies
 
 

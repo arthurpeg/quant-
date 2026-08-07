@@ -55,6 +55,22 @@ kaer_size_R: 0.5               # fraction of 1R risked per KAER trade
 kaer_bars: 2600                # M15 bars pulled (needs ~1820 for the ER percentile window)
 kaer_max_bar_age_min: 5        # skip (do not chase) a signal bar older than this
 
+# ---- KELT forward-test sleeve (NOT a brick) --------------------------------
+# BTCUSD H1 Keltner-band breakout (edgelab/intraday/keltner_btc.py, added 2026-08-08).
+# NOT a 5th brick: monthly corr to brick 3 is +0.07..+0.23 — a SECOND crypto-trend sleeve
+# (hourly cousin of the daily MACD), hence half size. Default OFF.
+# The 25x-spread floor is part of the RULE, not a tuning knob: 1R = max(3*ATR14,
+# 25*spread). Without it the sleeve's R/yr is inflated by 57% on trades whose stop is
+# barely wider than the spread (the ledger's crypto post-mortem).
+# ⚠️ It shares BTCUSD with brick 3 under its own magic (107). That requires a HEDGING
+# account — on a NETTING account the two positions would offset. Check with
+# mt5.account_info().margin_mode == 2 before enabling.
+enable_keltner: false
+kelt_symbol: BTCUSD
+kelt_size_R: 0.5               # fraction of 1R risked per Keltner trade
+kelt_bars: 600                 # H1 bars pulled (needs ~250 warmup for ATR20/ATR14)
+kelt_max_bar_age_min: 20       # skip (do not chase) a signal bar older than this
+
 # ---- risk / prop rules (static-DD firm) ------------------------------------
 # risk_per_trade is a FRACTION of the account, NOT an amount in euros:
 #     1R (in €) = risk_per_trade * balance      (fixed-fractional, NO compounding)

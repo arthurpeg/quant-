@@ -20,6 +20,7 @@ from edgelab.intraday.atr_breakout import ATRBreakParams
 from edgelab.edges.turn_of_month import TurnOfMonthParams
 from edgelab.edges.ibs import IBSParams
 from edgelab.intraday.kaer import KaerParams
+from edgelab.intraday.keltner_btc import KeltParams
 from edgelab.live import signals as S
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
@@ -27,7 +28,7 @@ from edgelab.live.risk import LiveRiskManager
 logger = logging.getLogger("edgelab.live.strategies")
 
 MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas_ibs": 105,
-         "nas_kaer": 106}
+         "nas_kaer": 106, "btc_kelt": 107}
 
 
 def _mins(hhmm: str) -> int:
@@ -481,3 +482,91 @@ class KaerStrategy:
         broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                             f"kaer_{plan.reason}", plan.sl_dist, ref, now_utc,
                             time_exit_at=close_dt)
+
+
+class KeltnerStrategy:
+    """FORWARD-TEST SLEEVE (not a frozen brick) — BTCUSD H1 Keltner-band breakout.
+
+    From the 2026-08-07 cross-asset pass over the whole Kaufman canon, where crypto came
+    out at 16.8x the matched-random-signal placebo on H1 while FX and the indices came out
+    at or below the noise rate. It clears both nulls, both split halves, 9/9 positive
+    years, is cost-immune, and survives the 25x-spread floor.
+
+    It is NOT a decorrelated 5th brick — monthly correlation to brick 3 is +0.07..+0.23,
+    so it is a second CRYPTO-TREND sleeve (an hourly cousin of the daily MACD). Deployed
+    at ``size_R`` (0.5R) on the DEMO as a forward test, like KAER.
+
+    Cadence: once per COMPLETED H1 bar, 24/7 (crypto). Exits are the broker-held stop and
+    target plus a **96-bar time exit** the runner owns. The forming bar is dropped
+    explicitly and a bar older than ``max_bar_age_min`` is skipped rather than chased.
+    """
+
+    def __init__(self, cfg_live: dict):
+        self.p = KeltParams(size_R=float(cfg_live.get("kelt_size_R", 0.5)))
+        self.logical = cfg_live.get("kelt_symbol", "BTCUSD")
+        self.magic = MAGIC["btc_kelt"]
+        self.bars_needed = int(cfg_live.get("kelt_bars", 600))
+        self.max_bar_age_min = float(cfg_live.get("kelt_max_bar_age_min", 20))
+        self._acted_bar = None
+        self._skip_logged = None
+
+    def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
+        step_ = pd.Timedelta(hours=1)
+        bars_all = broker.get_bars(self.logical, "H1", self.bars_needed)
+        if len(bars_all) < 3:
+            return
+        # DROP THE FORMING BAR: a bar stamped t is complete only at t+1h.
+        bars = bars_all.iloc[:-1] if (bars_all.index[-1] + step_) > now_utc else bars_all
+        if not len(bars):
+            return
+        last_ts = bars.index[-1]
+
+        pos = broker.open_position(self.magic)
+
+        # (1) manage the open position: the broker holds SL/TP; we own the 96-bar cap
+        if pos is not None:
+            held = int((last_ts - pd.Timestamp(pos.open_time)) / step_)
+            if not broker.live:
+                closed, px, why = broker.resolve_paper(pos, bars.iloc[-1], now_utc,
+                                                       bars_held=held)
+                if closed:
+                    broker.close(pos, px, why, now_utc)
+                    return
+            if held >= self.p.max_bars:
+                broker.close(pos, float(bars["close"].iloc[-1]), "time_exit", now_utc)
+            return
+
+        # (2) entry, once per completed bar
+        if self._acted_bar is not None and last_ts <= self._acted_bar:
+            return
+        age_min = (now_utc - (last_ts + step_)).total_seconds() / 60.0
+        if age_min > self.max_bar_age_min:
+            self._acted_bar = last_ts
+            logger.info("keltner stale bar %s (%.0f min old) -> skip", last_ts, age_min)
+            return
+
+        res = S.keltner_scan(bars, self.p)
+        self._acted_bar = last_ts
+        if res is None:
+            return
+        _, plan = res
+        ok, why = risk.can_enter()
+        if not ok:
+            day = now_utc.date()
+            if self._skip_logged != day:
+                logger.info("keltner skip entry: %s", why)
+                self._skip_logged = day
+            return
+
+        ref = float(bars["close"].iloc[-1])
+        sl = ref - plan.direction * plan.sl_dist
+        tp = ref + plan.direction * plan.tp_dist
+        budget = risk.risk_budget() * self.p.size_R
+        lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, budget)
+        if lots <= 0:
+            logger.warning("keltner skip entry at %s: cannot size to %.2fR on the lot grid",
+                           last_ts, self.p.size_R)
+            return
+        broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
+                            f"kelt_{plan.reason}", plan.sl_dist, ref, now_utc,
+                            bars_held_limit=self.p.max_bars)
