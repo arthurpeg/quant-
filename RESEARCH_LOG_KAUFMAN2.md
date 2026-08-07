@@ -196,7 +196,55 @@ and the best RoMaD in the book. Do not size it as a brick until the forward test
 | `scratchpad/_tsam_placebo_D1.parquet` | the placebo cells |
 | `scratchpad/_tsam_survivors.csv`, `_tsam_crypto_corr.csv` | the shortlists |
 
-**H1 (partial).** The same sweep on H1 was started and stopped after 3 FX assets: EURUSD
-median t **−1.71** (5 cells of 6,899 above t=2), GBPUSD −1.30, USDJPY −0.62 — far below
-chance, consistent with the ledger's standing "H1 is below chance on all 19 assets"
-measurement. A crypto+metals-only H1 run is the useful remainder.
+---
+
+## 7. H1 — the same answer, louder, once the economic floor is applied
+
+The H1 sweep was run in two parts. On **FX** it was stopped after three assets because the
+verdict was immediate: EURUSD median t **−1.71** (5 cells of 6,899 above t=2), GBPUSD
+−1.30, USDJPY −0.62 — far below chance, consistent with the ledger's standing "H1 is below
+chance on all 19 assets".
+
+On **crypto + gold** the full sweep ran: 20,898 cells, 140 distinct rules. The raw output
+is a trap and it is worth spelling out, because it is the ledger's ProRealCode rule
+recurring:
+
+| | value |
+|---|---|
+| median t | **−2.13** |
+| cells with positive E[R] | **28.3 %** |
+| cells above their own null p95 | **46.0 %** (!) |
+| median excess over the null | **+1.27** |
+| median null t | BTCUSD **−3.51**, ETHUSD **−11.25** (floor −37), XAUUSD −0.40 |
+
+**46 % of H1 cells "beat their null" while 72 % of them lose money.** On H1 the friction is
+charged against a much smaller ATR, so a random entry is catastrophic and merely losing
+less than random clears the null. *Beating a terrible null is not the same as making
+money* — the standing rule, reproduced here at scale.
+
+Applying the **economic floor** (E[R] > 0, n ≥ 60, t > 2) and then the placebo divisor
+(`scratchpad/tsam_placebo_h1.py`, matched random signals through the identical funnel):
+
+| stage | real | placebo | ratio |
+|---|---:|---:|---:|
+| all cells | 20,898 | 20,900 | 1.00× |
+| above null p95 | 9,614 | 4,140 | 2.32× |
+| **+ economic floor** | **1,313** | **241** | **5.45×** |
+| — of which **crypto** | **722** | **43** | **16.8×** |
+| — of which **gold** | 591 | 198 | **3.0×** |
+
+**The H1 result agrees with D1 and is stronger: crypto at 16.8× the noise rate, gold at
+3.0×.** Median excess over the matched null: crypto +1.95 real vs +0.14 placebo.
+
+One qualification on the survivors' shape: they skew to wide stops (520 of 1,313 at
+3.0×ATR, 329 at 2.0×) but not exclusively — 95 sit at 0.75×ATR. So the H1 edge is *partly*
+a stop-width effect (a wider 1R dilutes the toll) and not only that. Two individual cells
+worth naming, both untested beyond this screen: **BTCUSD `Keltner_break_1.5`** (SL 3×ATR,
+TP 2R, 96-bar cap: n=1477, +27.1 R/yr, PF 1.28, t=4.26, RoMaD 1.54) and **XAUUSD
+`Meyers_6`** — Kaufman's own adaptive intraday breakout at its published QQQ parameters,
+on gold H1 (n=1972, +23.8 R/yr, t=3.91, but its null is already +2.72, so the excess is
+only +1.19).
+
+⚠️ Neither has had the exact two-null battery, the split-half, or a monthly-correlation
+check against brick 3. The 16.8× is a **class-level** statement, exactly as on D1; no
+individual H1 cell is a candidate yet.
