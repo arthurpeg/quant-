@@ -1,0 +1,202 @@
+# RESEARCH LOG — the whole Kaufman canon, tested across every asset class
+
+**Date:** 2026-08-07 · **Source:** `TSaM.pdf` (Perry J. Kaufman, *Trading Systems and
+Methods*, 5th ed., Wiley 2013)
+**Mandate (user):** *"reprends le livre, les stratégies qui y sont expliquées et les
+stratégies que tu crées toi en prenant plein de morceaux par-ci par-là ; teste chaque
+stratégie sur l'or, les indices US et EU, les cryptos et le forex — c'est comme ça qu'on a
+déjà trouvé une brique."*
+
+The premise is correct and it is the discovery mechanism this project already used once:
+a rule is never scored only on the market its author had in mind.
+
+---
+
+## 1. What was built
+
+**The catalogue.** The book walked chapter by chapter; every passage carrying a
+reproducible rule was extracted (`scratchpad/tsam_rules.py`, with the chapter/page in the
+docstring of each family):
+
+| ch. | families implemented |
+|---|---|
+| 4 | Dunnigan thrust, Nofri congestion-phase, outside day with an outside close (both the original and Kaufman's reversed reading), Prathap 3-bar inside, pivot-point breakout (k=3/5/10), channel breakout, moving channel, CCI break and fade |
+| 5 | swing breakout with a % swing filter (0.5/1/2/4 %), N-day breakout |
+| 6 | linear-regression slope, 1-bar forecast with 2σ confidence bands |
+| 7–8 | the **six systems Kaufman benchmarks** (M, MA, EXP, NDB, SWG, LRS) at 10/20/40/80, 2-MA crossovers, Bollinger break/fade, Keltner break/fade, % bands, projected crossover |
+| 9 | RSI(2/14) trend and reversion, stochastic, Williams %R, MACD cross, MACD+RSI, **Kaufman's Divergence Index**, double-smoothed momentum (TSI), velocity & acceleration, ADX/DI, Parabolic SAR |
+| 10 | turn-of-month, sell-in-May |
+| 15 | opening-gap fade and follow, weekday reversal, IBS trend and reversion |
+| 17 | **KAMA, VIDYA, FRAMA** (direction + price cross), the ER-gated breakout, **Meyers' adaptive intraday breakout**, Arrington variable-length MA |
+| 19 | Elder triple screen, Pring KST |
+| 20 | volatility-regime gating of a breakout |
+
+**Excluded, with the reason stated in the code**: cycles/MEM (fitted spectra, not a rule),
+volume & breadth (MT5 CFD "volume" is a tick count — the ledger's standing finding),
+spreads/arbitrage (two instruments), behavioural (COT/news/astrology = external data).
+
+**The composites** — the "morceaux par-ci par-là" half: 7 trend filters
+{KAMA, VIDYA, FRAMA, ER-state, ADX, LR-slope, none} × 8 triggers
+{NDB20, NDB40, MA-cross, RSI2, Bollinger, Keltner, IBS, CCI} = **56 pairings**. The filter
+says which side is allowed, the trigger says when — Kaufman's own thesis in ch.8/17/19.
+
+**153 rules → 135 distinct after de-duplicating on the SIGNAL ARRAY** (the book names the
+same mechanism three times: a Donchian channel *is* an N-day breakout *is* a channel
+breakout; counting it three times would inflate everything downstream).
+
+**The grid.** 18 assets (8 FX, 2 metals, 4 US indices, 3 EU indices, 2 crypto) × D1 ×
+5 stops × 5 targets × 2 time caps = **108,094 cells**, on the verified `kauf_lib` engine
+(fill at the next open, one position at a time, pessimistic tie-break, gaps fill worse,
+real Pepperstone cost, R = the trade's own stop).
+
+---
+
+## 2. The headline: the classes are NOT alike, and the placebo says which are real
+
+Raw, the sweep looks unremarkable — median t −0.040, 48.5 % of cells with positive E[R],
+7.6 % above their own random-entry null's 95th percentile against a 5 % chance rate.
+
+That aggregate hides everything. Running the **identical funnel on matched random
+signals** (same count, same long fraction, same bars, same brackets, same null lookup,
+same thresholds, 3 replicates — `scratchpad/tsam_placebo.py`) gives the divisor:
+
+| class | real above null-p95 | placebo | real median excess | placebo | real shortlist | placebo | **ratio** |
+|---|---|---|---|---|---|---|---|
+| **crypto** | **27.7 %** | 6.8 % | **+0.753** | +0.016 | 1,798 | 281 | **6.4×** |
+| **metal** | 9.9 % | 6.4 % | +0.227 | −0.037 | 616 | 305 | **2.0×** |
+| us_idx | 5.4 % | 5.6 % | −0.149 | −0.035 | 241 | 457 | 0.53× |
+| eu_idx | 6.2 % | 5.8 % | −0.339 | +0.003 | 127 | 235 | 0.54× |
+| **forex** | 3.0 % | 5.2 % | −0.128 | −0.009 | 98 | 477 | **0.21×** |
+| all | 7.6 % | 5.9 % | −0.045 | +0.007 | 2,880 | 1,754 | 1.64× |
+
+The placebo behaves exactly as designed (median excess ≈ 0, above-p95 ≈ 6 %), which
+validates the machinery before any conclusion is drawn from it.
+
+**Three findings, in order of importance.**
+
+1. **The user's thesis is confirmed and quantified: cross-asset transfer works, and it
+   points at crypto.** The whole canon — trend, reversion, oscillators, adaptive,
+   patterns, calendar — produces **6.4× more survivors on crypto than pure noise does**,
+   and a median excess over its own drift-matched null of **+0.75 versus +0.02**. This is
+   the largest real/placebo ratio this project has ever measured; every prior corpus pass
+   (TradingView 5,759 scripts, MQL4 1,256, MQL5 2,201, freqtrade 1,103, quantifiedstrategies,
+   quantocracy, ProRealCode) ran at **1.2×**. It re-derives brick 3 blind, from a fourth
+   independent source.
+2. **Forex, US indices and EU indices are BELOW the noise rate.** Not "weak" — *below*.
+   The Kaufman canon produces **fewer** winners on forex (0.21×) than random signals do.
+   That is the friction tax measured as a leftward shift of the whole distribution, the
+   same result the MQL4 corpus produced, now reproduced on the canonical technical
+   literature rather than on retail code.
+3. **Gold and silver sit in between at 2.0×** — real but a third of crypto's rate.
+
+---
+
+## 3. The trap this pass exposes: the daily-correlation illusion
+
+The battery gave exact nulls (400 draws each) to the 369 (asset × rule) representatives:
+**95.9 % beat Null A, 81.8 % beat Null B, 298 beat both.** That is not evidence — it is
+circular, because the shortlist was selected on beating the null in the first place. It is
+exactly why the placebo divisor exists, and it is worth recording that a per-cell null
+*alone* passed 81 % of a shortlist whose true excess-over-noise is 1.6×.
+
+The second trap is new and sharper. Ranking the crypto survivors by their **daily-P&L**
+correlation to brick 3 says they are all decorrelated — median |corr| **0.049**. They are
+not:
+
+| measure | median over the 30 top crypto candidates |
+|---|---|
+| \|corr\| to brick 3, **daily** R | **0.049** |
+| \|corr\| to brick 3, **monthly** R | **0.515** |
+| share of their trading days that also close a brick-3 trade | 26 % |
+| sign agreement on those shared days | 50 % |
+
+**These sleeves fire 80–450 times over ten years, so two rules trading the same crypto
+trend rarely close on the same DAY — and a daily correlation of 0.05 is then an artefact
+of sparsity, not evidence of diversification.** On a portfolio of sparse sleeves the
+horizon that matters is the one a drawdown is felt on. New standing rule: **for any sleeve
+under ~40 trades/year, report the MONTHLY correlation; the daily one will lie.**
+
+---
+
+## 4. What is left after both filters
+
+Only four crypto cells have a monthly correlation to brick 3 below 0.30. All four are
+**slow** trend rules — which is the mechanism: brick 3 is MACD(12,26), a fast trend; a
+40–80 bar trend turns on a different clock.
+
+| cell (BTCUSD D1) | bracket | n | R/yr | PF | t | maxDD | RoMaD | +yrs | split-half (vs own sign-null) | monthly corr b3 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **EXP_dir_80** | SL 1.0×ATR, TP 2×SL, 30 bars | 77 | +5.2 | 2.15 | 3.24 | 3.1 R | **1.66** | **9/9** | early p=0.027 · late p=0.043 ✅ | +0.265 |
+| **EXP_dir_40** | SL 1.5×ATR, TP 1×SL, 120 bars | 89 | +3.3 | 1.95 | 3.17 | 4.1 R | 0.82 | 8/9 | early p=0.000 · late p=0.020 ✅ | +0.015 |
+| MACD_cross | SL 1.0×ATR, no TP, 30 bars | 115 | +16.1 | 2.73 | 3.15 | 12.4 R | 1.30 | **10/10** | early **p=0.697 ❌** · late 0.000 | +0.140 |
+| MA_dir_40 | SL 0.75×ATR, TP 2×SL, 30 bars | 117 | +6.8 | 1.96 | 3.49 | 7.1 R | 0.95 | 9/9 | early **p=0.157 ❌** · late 0.003 | +0.005 |
+
+All four are **cost-insensitive** (+50 broker points/side moves R/yr by <2 % — on crypto
+1R is 60–120× the spread).
+
+**`EXP_dir_80` is the cleanest thing this pass produced**: the direction of an 80-bar EMA
+on BTCUSD, stop 1×ATR14, target 2R, 30-bar cap. **9/9 positive years, RoMaD 1.66 — higher
+than any live brick (IBS 1.59, crypto 0.95, NAS 0.79, gold 0.73)** — and both halves of
+the sample beat their own sign-permutation null. Its weakness is that it is also the most
+correlated of the four to brick 3 (+0.265) and it is thin (7.3 trades/yr, +5.2 R/yr).
+
+`MACD_cross` has the biggest number (+16.1 R/yr, 10/10 years) and the worst provenance:
+its first half does not beat its own null (p=0.70), so all of its measured edge is in the
+recent half.
+
+**Book impact at equal risk** (⚠️ on the 3-brick *literal-cadence* series in
+`bricks_daily.parquet`, not the canonical 4-brick live book — the levels are not
+comparable to `system.md`, only the deltas are):
+
+| config | R/yr | maxDD | RoMaD | Sharpe | %/yr |
+|---|---|---|---|---|---|
+| book (b1+b2+b3) | +32.5 | 15.8 | 2.06 | 1.87 | 10.3 % |
+| + MACD_cross @1R | +48.7 | 17.7 | **2.75** | 2.10 | **13.8 %** |
+| + MA_dir_40 @1R | +39.1 | 15.9 | 2.47 | 2.16 | 12.3 % |
+| + EXP_dir_80 @1R | +37.5 | 16.8 | 2.23 | 2.08 | 11.2 % |
+
+---
+
+## 5. Verdict
+
+**No brick is promoted, and the reason is not the statistics of any single cell — it is
+the selection.** These four were chosen from 128 crypto survivors, themselves from 1,798
+shortlisted crypto cells, themselves from 12,281. The class-level claim is solid (6.4×
+placebo); the cell-level claim is selection-inflated by construction, and two of the four
+already fail their own split-half.
+
+What this pass *establishes*:
+
+* **the cross-asset method the user asked for works, and now has a number on it** — 6.4×
+  on crypto, 2.0× on metals, ≤0.54× everywhere else;
+* **crypto trend is the only robust family in the entire technical canon on this
+  universe**, re-derived blind for the fourth time from a fourth independent source;
+* **forex is below the noise rate** — the strongest form yet of this project's FX wall;
+* **the monthly-correlation rule**, which changes how every sparse sleeve in this project
+  must be judged from now on — and which, applied retroactively, is the reason none of
+  these crypto cells is a diversifier.
+
+**Recommended next step, if any**: forward-test `EXP_dir_80` on BTCUSD at 0.5R alongside
+brick 3 on the demo — it is the only cell that clears both halves, has 9/9 positive years
+and the best RoMaD in the book. Do not size it as a brick until the forward test says so.
+
+---
+
+## 6. Files
+
+| File | Role |
+|---|---|
+| `scratchpad/tsam_rules.py` | 153 rules (135 distinct) — the book's systems + 56 composites |
+| `scratchpad/tsam_sweep.py` | the 108,094-cell cross-asset sweep + the null lookup |
+| `scratchpad/tsam_battery.py` | exact Null A + Null B on the 369 representatives |
+| `scratchpad/tsam_placebo.py` | the divisor: the identical funnel on matched random signals, ×3 |
+| `scratchpad/tsam_crypto.py` | daily vs monthly correlation to brick 3 (the illusion) |
+| `scratchpad/tsam_final.py` | full battery + book impact on the 4 decorrelated candidates |
+| `scratchpad/_tsam_scored_D1.parquet` | every cell with its null and excess |
+| `scratchpad/_tsam_placebo_D1.parquet` | the placebo cells |
+| `scratchpad/_tsam_survivors.csv`, `_tsam_crypto_corr.csv` | the shortlists |
+
+**H1 (partial).** The same sweep on H1 was started and stopped after 3 FX assets: EURUSD
+median t **−1.71** (5 cells of 6,899 above t=2), GBPUSD −1.30, USDJPY −0.62 — far below
+chance, consistent with the ledger's standing "H1 is below chance on all 19 assets"
+measurement. A crypto+metals-only H1 run is the useful remainder.
