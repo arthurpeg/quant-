@@ -8,7 +8,13 @@ for the four bricks on the LIVE cadence, `intraday.kaer.run_kaer` and
 `intraday.keltner_btc.run_keltner` for the two forward-test sleeves — so the report can
 never drift from what the runner trades. No scratchpad imports, no cached blobs.
 
-    python -m edgelab.reports.books_report            -> edgelab/reports/books_backtest.html
+    python -m edgelab.reports.books_report
+
+Writes the same page to three places, matching `build_reports.py`'s convention:
+    edgelab/reports/books_backtest.html          the source page
+    edgelab/reports/_out/books_backtest.html     alongside the runner's outputs
+    RAPPORT_books_agressif_funded.html           repo root — the one you open from the
+                                                 VS Code explorer / "Reveal in File Explorer"
 
 The page is one file: inline SVG charts, inline CSS/JS, no network. Both themes are
 selected (OS preference + an explicit toggle).
@@ -27,7 +33,11 @@ from edgelab.intraday.kaer import run_kaer
 from edgelab.intraday.keltner_btc import run_keltner
 from edgelab.reports.monte_carlo_static import build_daily_R, simulate
 
-OUT = Path(__file__).resolve().parent / "books_backtest.html"
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent.parent
+OUT = HERE / "books_backtest.html"
+COPIES = (HERE / "_out" / "books_backtest.html",
+          ROOT / "RAPPORT_books_agressif_funded.html")
 RISKS = (0.005, 0.0075, 0.01)
 
 BOOKS = {
@@ -515,6 +525,9 @@ def build(out: Path = OUT) -> Path:
            f'<meta name="viewport" content="width=device-width, initial-scale=1">'
            f"<style>{css}</style></head><body>{body}</body></html>")
     out.write_text(doc, encoding="utf-8")
+    for dest in COPIES:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(doc, encoding="utf-8")
     return out
 
 
@@ -622,4 +635,7 @@ document.getElementById('themebtn').onclick=()=>{
 
 if __name__ == "__main__":
     p = build()
-    print(f"-> {p}  ({p.stat().st_size/1024:.0f} kB)")
+    kb = p.stat().st_size / 1024
+    print(f"-> {p}  ({kb:.0f} kB)")
+    for d in COPIES:
+        print(f"-> {d}")
