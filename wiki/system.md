@@ -333,6 +333,30 @@ under its own magic. It waits for the day's bar to actually print before enterin
 stop is never sized off a stale close. No config change was needed to deploy it
 (`ibs_symbol`/`enable_ibs` default to NAS100/true).
 
+**Time exits — the driver owns them, and they are the part `verify` used to skip.**
+Every sleeve has one: b1/KAER flat at 15:55 ET (wall clock), b2 on a count of the month's
+completed D1 bars, b3 at 30 D1 bars, b4 at 30 D1 bars or `IBS>0.8`, KELT at 96 H1 bars.
+Two rules, both learned the hard way on 2026-08-09 (see [[log]]):
+
+1. **Count BARS in the broker's own frame, never calendar dates or elapsed hours.** MT5
+   returns `position.time` on the **server** clock (Athens) but labelled UTC —
+   `broker.server_epoch_to_utc` reinterprets it. Comparing the raw stamp to a true-UTC
+   clock made b3 hold **31** bars instead of 30 and KELT **99+** instead of 96
+   (KELT: +17.2 → +15.0 R/yr, RoMaD 0.94 → **0.60**). And elapsed hours ≠ bars: the
+   BTCUSD H1 feed has 137 two-day holes, so KELT counts index distance like b3/b4.
+2. **Send a rollover exit `ROLLOVER_LEAD_MIN` (5 min) early.** An exit firing *at* 00:00
+   server lands in the daily break of any symbol that has one — **XAUUSD is shut
+   00:00–01:00 server (23:00–00:00 Paris)**, which is why the 2026-08-05 gold time-exit
+   only filled at 01:01. BTCUSD/ETHUSD have **no** break here, so on crypto it is
+   insurance. Because of it, b3 evaluates its **exit on every pass** (its entry stays
+   once per broker day) and parks `_acted_day` on tomorrow's bar so the early close can
+   never be followed by an early re-entry — the `cadence='live'` guarantee.
+
+`python -m edgelab.live.verify` now includes `verify_time_exits()`, which replays the real
+`_manage`/`_held` against both DST sides and against the feed's gaps. ⚠️ **Brick 2 is the
+one sleeve whose break genuinely bites and it is NOT yet on the 5-minute lead** — its time
+exit still fills ~1 h late.
+
 **Order sending is ENABLED (`live_trading: true`) — safe because the Pepperstone account
 is a DEMO.** A hard gate (`allow_real_account: false`) refuses to send orders if the
 connected account is not a demo (fails loudly rather than trading real money). The live

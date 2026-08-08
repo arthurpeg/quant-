@@ -451,6 +451,127 @@ def verify_keltner(window: int = 600, sample: int = 4000) -> bool:
     return ok
 
 
+class _FakeBroker:
+    """Broker stand-in for the time-exit replay: serves a fixed D1 frame, records closes."""
+
+    live = True
+
+    def __init__(self, raw: pd.DataFrame):
+        self._raw = raw
+        self.closed_at: pd.Timestamp | None = None
+        self.closed_why: str | None = None
+
+    def get_bars_raw(self, logical, timeframe, count=90):
+        return self._raw.tail(count).reset_index(drop=True).copy()
+
+    def open_position(self, magic):          # driven explicitly by the replay
+        raise NotImplementedError
+
+    def close(self, pos, price, reason, now_utc):
+        self.closed_at, self.closed_why = now_utc, reason
+        return 0.0
+
+
+def verify_time_exits() -> bool:
+    """The DRIVER's clock arithmetic — the layer the other checks never touch.
+
+    verify_brick3/verify_keltner prove the signal and the engine cadence. Neither ever
+    looked at how the running driver converts an MT5 position timestamp into a bar count,
+    and that is exactly where two silent one-sided errors lived: MT5 hands back the SERVER
+    wall clock labelled as UTC, and it was compared against true-UTC clocks. Brick 3 held
+    31 D1 bars instead of 30; KELT held 99+ H1 bars instead of 96.
+
+    Three assertions, all against the frozen backtests' own convention:
+      (a) server_epoch_to_utc reinterprets the stamp (summer +3 h, winter +2 h);
+      (b) brick 3 closes on the bar the engine closes on — at the rollover if that is the
+          first pass it gets, and ROLLOVER_LEAD_MIN early when it is watching;
+      (c) KELT's completed-bar count hits max_bars exactly on run_keltner's own exit bar.
+    """
+    from edgelab.live.broker import server_epoch_to_utc
+    from edgelab.live.strategies import (CryptoMacdStrategy, KeltnerStrategy, SERVER_TZ,
+                                         ROLLOVER_LEAD_MIN)
+    from edgelab.intraday.keltner_btc import run_keltner, KeltParams, load_h1
+    ok = True
+
+    # ---- (a) the stamp -----------------------------------------------------------
+    def _epoch(naive: str) -> int:
+        return int((pd.Timestamp(naive) - pd.Timestamp("1970-01-01")) // pd.Timedelta("1s"))
+
+    cases = [("2026-07-29 19:29:09", "2026-07-29 16:29:09"),    # EEST, +3
+             ("2026-01-15 12:00:00", "2026-01-15 10:00:00")]    # EET,  +2
+    stamp_ok = all(server_epoch_to_utc(_epoch(s)) == pd.Timestamp(e, tz="UTC")
+                   for s, e in cases)
+    ok = ok and stamp_ok
+    print(f"  TIME-EXIT (a) server stamp -> true UTC on both DST sides: {stamp_ok}")
+
+    # ---- (b) brick 3: 30 D1 bars, counted off the broker's own frame -------------
+    n_bars = 30
+    days = pd.date_range("2026-06-01", periods=120, freq="D")           # server midnights
+    raw = pd.DataFrame({"time": days, "open": 100.0, "high": 101.0, "low": 99.0, "close": 100.0})
+    strat = CryptoMacdStrategy({}, "BTCUSD", {"time_exit_bars": n_bars})
+
+    class _Pos:
+        magic, symbol, direction, sl_dist = 103, "BTCUSD", -1, 1.0
+        open_time = None
+
+    E = 20                                                   # entry bar index
+    entry_srv = pd.Timestamp(days[E]).tz_localize(SERVER_TZ)  # this bar's rollover
+    _Pos.open_time = (entry_srv + pd.Timedelta(seconds=20)).tz_convert("UTC")
+    engine_exit_bar = E + n_bars          # engine: exit at the OPEN of entry_i + 30
+
+    def _replay(watch_lead: bool):
+        """Walk the broker days; return (bar_index, server_time) of the close."""
+        for k in range(E, E + n_bars + 5):
+            srv_day = pd.Timestamp(days[k])
+            stamps = [srv_day.tz_localize(SERVER_TZ)]                       # 00:00 rollover
+            if watch_lead:
+                stamps.append((srv_day + pd.Timedelta(days=1)
+                               - pd.Timedelta(minutes=ROLLOVER_LEAD_MIN)).tz_localize(SERVER_TZ))
+            for srv in stamps:
+                fb = _FakeBroker(raw[raw["time"] <= srv_day])   # bars up to the forming one
+                strat._manage(fb, _Pos, srv.tz_convert("UTC"), srv.date())
+                if fb.closed_at is not None:
+                    return k, srv, fb.closed_why
+        return None, None, None
+
+    k_roll, srv_roll, why_roll = _replay(watch_lead=False)
+    k_lead, srv_lead, why_lead = _replay(watch_lead=True)
+    # rollover-only runner: closes on the engine's own exit bar, at its open
+    b_roll = (k_roll == engine_exit_bar and why_roll == "time_exit")
+    # watching runner: closes ROLLOVER_LEAD_MIN before that same rollover
+    want_lead = (pd.Timestamp(days[engine_exit_bar]) - pd.Timedelta(minutes=ROLLOVER_LEAD_MIN))
+    b_lead = (srv_lead is not None
+              and srv_lead.tz_localize(None) == want_lead and why_lead == "time_exit")
+    ok = ok and b_roll and b_lead
+    print(f"  TIME-EXIT (b) brick 3: engine exits at bar {engine_exit_bar}; driver at "
+          f"rollover {k_roll} ({b_roll}), early at {srv_lead} "
+          f"= {ROLLOVER_LEAD_MIN:.0f} min before it ({b_lead})")
+
+    # ---- (c) KELT: bars, not elapsed hours --------------------------------------
+    # Replayed on the REAL cached H1 index, gaps and all — the BTCUSD feed has 137 two-day
+    # holes, and run_keltner caps on an INDEX distance (exit_bar - entry_bar). An
+    # elapsed-hours count disagreed with it on 155 of the first 200 time-exit trades.
+    p = KeltParams()
+    te = run_keltner(p=p).trades.query("reason == 'time_exit'")
+    idx = load_h1("BTCUSD").index
+    bad = holed = n_ck = 0
+    for _, t in te.iterrows():
+        m, end = int(t["entry_bar"]), int(t["exit_bar"])
+        if end >= len(idx) - 1:
+            continue          # last trade: run_keltner clips `end` at the data edge, not a cap
+        frame = pd.DataFrame(index=idx[: end + 1])            # bars completed at the exit
+        fill = idx[m] + pd.Timedelta(minutes=3)               # the live fill, a few min in
+        n_ck += 1
+        bad += int(KeltnerStrategy._held(frame, fill) != p.max_bars)
+        holed += int((idx[end] - idx[m]) != pd.Timedelta(hours=end - m))
+    kelt_ok = bad == 0 and n_ck > 0
+    ok = ok and kelt_ok
+    print(f"  TIME-EXIT (c) KELT: _held == max_bars ({p.max_bars}) on {n_ck} time-exit "
+          f"trades ({holed} of them span a gap in the feed), mismatches {bad}")
+    print(f"  TIME-EXIT: {'PASS' if ok else 'FAIL'}")
+    return ok
+
+
 def main():
     print("=" * 70)
     print("  LIVE-vs-BACKTEST signal verification")
@@ -461,10 +582,12 @@ def main():
     r4 = verify_brick4()
     rk = verify_kaer()
     rl = verify_keltner()
+    rt = verify_time_exits()
     print("-" * 70)
     print(f"  brick1={'PASS' if r1 else 'FAIL'}  brick2={'PASS' if r2 else 'FAIL'}  "
           f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}  "
-          f"KAER={'PASS' if rk else 'FAIL'}  KELT={'PASS' if rl else 'FAIL'}")
+          f"KAER={'PASS' if rk else 'FAIL'}  KELT={'PASS' if rl else 'FAIL'}  "
+          f"time-exits={'PASS' if rt else 'FAIL'}")
     print("=" * 70)
 
 

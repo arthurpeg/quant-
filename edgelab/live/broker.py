@@ -36,6 +36,22 @@ _TF = {"M1": "TIMEFRAME_M1", "M5": "TIMEFRAME_M5", "M15": "TIMEFRAME_M15",
        "H1": "TIMEFRAME_H1", "H4": "TIMEFRAME_H4", "D1": "TIMEFRAME_D1"}
 
 
+def server_epoch_to_utc(epoch_s) -> pd.Timestamp:
+    """A position's MT5 timestamp -> a genuine UTC instant.
+
+    MT5 stamps ``position.time`` with the SERVER wall clock (EET/EEST) but hands it over
+    as a plain epoch, so naively labelling it UTC puts it +3 h ahead in summer. Bars go
+    through ``to_true_utc`` for exactly this reason; positions must too, or any duration
+    computed as ``now_utc - pos.open_time`` is wrong by the server offset.
+
+    This was not theoretical: with the mislabelled stamp brick 3 held **31** D1 bars
+    instead of 30 and KELT **99+** H1 bars instead of 96 (KELT: +17.2 -> +15.0 R/yr,
+    RoMaD 0.94 -> 0.60 measured on its own backtest). The failure is silent — every
+    order still goes out, just one bar late.
+    """
+    return to_true_utc(pd.DatetimeIndex([pd.Timestamp(int(epoch_s), unit="s")]))[0]
+
+
 @dataclass
 class Position:
     magic: int
@@ -459,7 +475,7 @@ class Broker:
                 return Position(magic=magic, symbol=self._logical_of(pp.symbol), direction=d,
                                 lots=pp.volume, entry_price=pp.price_open, sl=pp.sl,
                                 tp=pp.tp or None, sl_dist=abs(pp.price_open - pp.sl),
-                                open_time=pd.Timestamp(pp.time, unit="s", tz="UTC"),
+                                open_time=server_epoch_to_utc(pp.time),
                                 comment=pp.comment, ticket=pp.ticket)
         return None
 

@@ -13,6 +13,7 @@ re-implements a signal — the decisions come from edgelab.live.signals.
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 
 import pandas as pd
 
@@ -30,9 +31,29 @@ logger = logging.getLogger("edgelab.live.strategies")
 MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas_ibs": 105,
          "nas_kaer": 106, "btc_kelt": 107}
 
+SERVER_TZ = "Europe/Athens"     # the broker's clock: a D1 bar's date IS its server date
+ROLLOVER_LEAD_MIN = 5.0         # send a rollover time-exit this many minutes EARLY
+
 
 def _mins(hhmm: str) -> int:
     return int(hhmm[:2]) * 60 + int(hhmm[3:])
+
+
+def _at_rollover_lead(now_utc: pd.Timestamp, lead_min: float = ROLLOVER_LEAD_MIN) -> bool:
+    """True in the last ``lead_min`` minutes of the broker day (23:55-00:00 server).
+
+    A time-exit that fires AT the 00:00 rollover is sent into the daily maintenance break
+    of every symbol that has one — XAUUSD is shut 00:00-01:00 server (= 23:00-00:00 Paris),
+    which is why the 2026-08-05 gold time-exit only filled at 01:01. Sending it a few
+    minutes early lands it on the last quote of the bar being left, which on a 24 h
+    instrument is the same price the backtest fills at (the next bar's open).
+
+    BTCUSD/ETHUSD have **no** break on this feed (verified: every M5 slot present,
+    00:00 included), so for the crypto sleeves this is insurance rather than a fix — but
+    it costs nothing and it is what makes the exit independent of the symbol's session.
+    """
+    srv = now_utc.tz_convert(SERVER_TZ)
+    return (srv.hour * 60 + srv.minute) >= (24 * 60 - lead_min)
 
 
 class _EntryRetryGuard:
@@ -183,7 +204,7 @@ class GoldTomStrategy(_RolloverBrick):
         # Act ONCE per broker (server) day, triggered right at the daily-bar rollover
         # (00:00 server time). That is where the backtest enters (bar open) and exits
         # (bar close) -> live matches the backtest, no intraday lag.
-        bday = now_utc.tz_convert("Europe/Athens").date()
+        bday = now_utc.tz_convert(SERVER_TZ).date()
         if bday == self._acted_day:
             return
 
@@ -228,7 +249,19 @@ class GoldTomStrategy(_RolloverBrick):
 
 
 class CryptoMacdStrategy(_RolloverBrick):
-    """Brick 3 — MACD(12,26,9)+RSI on one coin (BTCUSD or ETHUSD). Daily; holds multi-day."""
+    """Brick 3 — MACD(12,26,9)+RSI on one coin (BTCUSD or ETHUSD). Daily; holds multi-day.
+
+    ENTRIES happen once per broker day at the 00:00-server rollover (the fresh bar's open,
+    where the backtest fills). EXITS are checked on **every** pass, because the 30-bar time
+    exit has to be able to fire in the ``ROLLOVER_LEAD_MIN`` window before that rollover —
+    see ``_at_rollover_lead``.
+
+    ⚠️ The bar count is taken by LOCATING THE ENTRY BAR IN THE BROKER'S OWN D1 FRAME, never
+    by subtracting calendar dates. The old version did ``now_utc.date - open_time.date``,
+    which mixed a true-UTC date with a server-clock date and silently held **31** bars
+    instead of 30 on every trade that reached the cap (31 % of them). Brick 4 already
+    counted by index; this brings brick 3 in line.
+    """
 
     def __init__(self, cfg_live: dict, logical: str, risk_cfg: dict):
         self.logical = logical
@@ -238,34 +271,71 @@ class CryptoMacdStrategy(_RolloverBrick):
         self._acted_day = None
         self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
+    def _manage(self, broker: Broker, pos, now_utc: pd.Timestamp, bday) -> None:
+        """Resolve an open position. Runs on every pass; owns the 30-bar time exit."""
+        raw = broker.get_bars_raw(self.logical, "D1", 320)
+        raw["time"] = pd.to_datetime(raw["time"], utc=True)
+        daily_all = raw.set_index("time")[["open", "high", "low", "close"]].astype(float).sort_index()
+        dates = list(raw["time"].dt.date)          # server dates: a bar's date IS its bar
+
+        # `j` = the bar of the CURRENT broker day (still forming — crypto prints one a day).
+        # The backtest exits at the OPEN of bar entry_i + time_exit_bars, so:
+        #   already there (or past it, e.g. the runner was down) -> close now;
+        #   one bar short and the rollover is minutes away  -> close now, early.
+        j = len(dates) - 1
+        entry_day = pd.Timestamp(pos.open_time).tz_convert(SERVER_TZ).date()
+        try:
+            bars_now = j - dates.index(entry_day)
+        except ValueError:      # entry bar absent from the frame — never seen; stay able to exit
+            logger.warning("brick3 %s: entry bar %s not in the broker D1 frame -> calendar "
+                           "fallback for the time exit", self.logical, entry_day)
+            bars_now = (pd.Timestamp(dates[j]) - pd.Timestamp(entry_day)).days
+
+        if not broker.live:
+            bar = daily_all.iloc[-1]                          # forming bar for the SL/TP touch
+            closed, px, why = broker.resolve_paper(pos, bar, now_utc, bars_held=bars_now)
+            if closed:
+                broker.close(pos, px, why, now_utc)
+                return
+
+        due_now = bars_now >= self.time_exit_bars
+        due_at_rollover = (bars_now + 1) >= self.time_exit_bars
+        if due_now or (due_at_rollover and _at_rollover_lead(now_utc)):
+            broker.close(pos, float(daily_all.iloc[-1]["close"]), "time_exit", now_utc)
+            # The engine forbids a bar that CLOSED a trade from also opening one
+            # (cadence='live'). Closing early means the exit belongs to the bar about to
+            # open, so block that one too — otherwise we would re-enter a bar early.
+            self._acted_day = (bday + timedelta(days=1)) if not due_now else bday
+
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
-        # Act ONCE per broker (server) day, at the daily-bar rollover (00:00 server time),
-        # entering at the fresh bar's open = where the backtest fills. No intraday lag.
-        bday = now_utc.tz_convert("Europe/Athens").date()
-        if bday == self._acted_day:
+        bday = now_utc.tz_convert(SERVER_TZ).date()
+        pos = broker.open_position(self.magic)
+
+        if pos is not None:
+            # Holding today => never enter on this bar either (that is the cadence='live'
+            # guarantee: a bar that closes a trade cannot open one). Set it BEFORE the
+            # exit runs, so a stop filled mid-bar cannot be followed by a same-bar entry.
+            first_pass_today = self._acted_day != bday
+            self._acted_day = bday
+            if first_pass_today or _at_rollover_lead(now_utc):
+                self._manage(broker, pos, now_utc, bday)
+            return
+
+        # ---- entries: once per broker day, at the rollover -----------------------
+        # ``<=``, not ``==``: an early time-exit parks ``_acted_day`` on TOMORROW's bar
+        # (the one the exit belongs to), and the minutes left in today's bar must stay
+        # blocked too.
+        if self._acted_day is not None and bday <= self._acted_day:
             return
 
         # RAW broker-time D1 (clean date keying). Drop the still-forming bar of the
         # current broker day so the DECISION uses the last CLOSED bar (matches backtest);
-        # keep the forming bar (daily_all) for the current price / intraday paper resolve.
+        # keep the forming bar (daily_all) for the current price.
         raw = broker.get_bars_raw(self.logical, "D1", 320)
         raw["time"] = pd.to_datetime(raw["time"], utc=True)
         daily_all = raw.set_index("time")[["open", "high", "low", "close"]].astype(float).sort_index()
         forming = len(daily_all) > 0 and daily_all.index[-1].date() == bday
         daily = daily_all.iloc[:-1] if forming else daily_all   # completed bars only
-        pos = broker.open_position(self.magic)
-
-        if pos is not None:
-            bars_held = (now_utc.normalize() - pos.open_time.normalize()).days  # crypto trades 7d/7
-            if not broker.live:
-                bar = daily_all.iloc[-1]                          # current forming bar for SL/TP touch
-                closed, px, why = broker.resolve_paper(pos, bar, now_utc, bars_held=bars_held)
-                if closed:
-                    broker.close(pos, px, why, now_utc); self._acted_day = bday; return
-            if bars_held >= self.time_exit_bars:
-                broker.close(pos, float(daily_all.iloc[-1]["close"]), "time_exit", now_utc)
-            self._acted_day = bday
-            return
 
         plan = S.crypto_entry(daily, self.risk_cfg)              # decide on CLOSED bars
         if plan is not None:
@@ -317,8 +387,12 @@ class NasIbsStrategy(_RolloverBrick):
 
     @staticmethod
     def _bars_held(raw: pd.DataFrame, open_time: pd.Timestamp, last_closed_i: int) -> int | None:
-        """D1 bars between the entry bar and the last CLOSED bar, or None if not locatable."""
-        entry_day = pd.Timestamp(open_time).tz_convert("Europe/Athens").date()
+        """D1 bars between the entry bar and the last CLOSED bar, or None if not locatable.
+
+        ``open_time`` is a true-UTC instant (``broker.server_epoch_to_utc``), so converting
+        it to the server tz gives the broker clock, whose date IS the bar's date.
+        """
+        entry_day = pd.Timestamp(open_time).tz_convert(SERVER_TZ).date()
         dates = list(pd.to_datetime(raw["time"]).dt.date)
         try:                                   # the entry bar = the bar of the broker day we entered on
             entry_i = dates.index(entry_day)
@@ -327,7 +401,7 @@ class NasIbsStrategy(_RolloverBrick):
         return last_closed_i - entry_i
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
-        bday = now_utc.tz_convert("Europe/Athens").date()
+        bday = now_utc.tz_convert(SERVER_TZ).date()
         if bday == self._acted_day:
             return
 
@@ -510,6 +584,33 @@ class KeltnerStrategy:
         self._acted_bar = None
         self._skip_logged = None
 
+    @staticmethod
+    def _held(bars: pd.DataFrame, open_time: pd.Timestamp) -> int:
+        """COMPLETED H1 bars of the trade, counted **in bars of the broker's own frame**.
+
+        Three ways to get this wrong, and the first version managed two of them:
+
+        * ``pos.open_time`` used to carry the SERVER clock labelled as UTC, so subtracting
+          it from a true-UTC bar stamp lost the whole +3 h offset (fixed upstream, in
+          ``broker.server_epoch_to_utc``);
+        * the fill lands a few minutes INTO its entry bar, so a raw span truncates one bar
+          low — hence the ``floor`` to the bar boundary;
+        * **elapsed hours are not bars.** The BTCUSD H1 feed really does have holes (137
+          two-day gaps in the cached history), and ``run_keltner`` caps on ``exit_bar -
+          entry_bar``, an INDEX distance. Counting wall-clock hours instead disagreed with
+          the backtest on 155 of its first 200 time-exit trades.
+
+        ``method="ffill"`` degrades gracefully if the entry bar itself is missing from the
+        frame: the position is then counted from the last bar that precedes it.
+        """
+        entry_bar = pd.Timestamp(open_time).floor(pd.Timedelta(hours=1))
+        loc = int(bars.index.get_indexer([entry_bar], method="ffill")[0])
+        if loc < 0:                       # older than the pulled window -> never on a 96-bar cap
+            logger.warning("keltner: entry bar %s precedes the %d-bar window -> elapsed-hours "
+                           "fallback for the time exit", entry_bar, len(bars))
+            return int((bars.index[-1] - entry_bar) / pd.Timedelta(hours=1)) + 1
+        return len(bars) - loc            # bars loc..last, inclusive
+
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
         step_ = pd.Timedelta(hours=1)
         bars_all = broker.get_bars(self.logical, "H1", self.bars_needed)
@@ -523,16 +624,19 @@ class KeltnerStrategy:
 
         pos = broker.open_position(self.magic)
 
-        # (1) manage the open position: the broker holds SL/TP; we own the 96-bar cap
+        # (1) manage the open position: the broker holds SL/TP; we own the 96-bar cap.
         if pos is not None:
-            held = int((last_ts - pd.Timestamp(pos.open_time)) / step_)
+            held = self._held(bars, pos.open_time)
             if not broker.live:
                 closed, px, why = broker.resolve_paper(pos, bars.iloc[-1], now_utc,
                                                        bars_held=held)
                 if closed:
                     broker.close(pos, px, why, now_utc)
                     return
-            if held >= self.p.max_bars:
+            # `held + 1` completes at the next H1 boundary; when that boundary IS the
+            # daily rollover, send the close early rather than into the break.
+            if held >= self.p.max_bars or ((held + 1) >= self.p.max_bars
+                                           and _at_rollover_lead(now_utc)):
                 broker.close(pos, float(bars["close"].iloc[-1]), "time_exit", now_utc)
             return
 
