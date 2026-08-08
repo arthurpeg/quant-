@@ -32,7 +32,7 @@ MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas
          "nas_kaer": 106, "btc_kelt": 107}
 
 SERVER_TZ = "Europe/Athens"     # the broker's clock: a D1 bar's date IS its server date
-ROLLOVER_LEAD_MIN = 5.0         # send a rollover time-exit this many minutes EARLY
+ROLLOVER_LEAD_MIN = 10.0        # send a D-rollover time-exit this many minutes EARLY
 
 
 def _mins(hhmm: str) -> int:
@@ -40,17 +40,24 @@ def _mins(hhmm: str) -> int:
 
 
 def _at_rollover_lead(now_utc: pd.Timestamp, lead_min: float = ROLLOVER_LEAD_MIN) -> bool:
-    """True in the last ``lead_min`` minutes of the broker day (23:55-00:00 server).
+    """True in the last ``lead_min`` minutes of the broker day, i.e. just before the D1 close.
 
-    A time-exit that fires AT the 00:00 rollover is sent into the daily maintenance break
-    of every symbol that has one — XAUUSD is shut 00:00-01:00 server (= 23:00-00:00 Paris),
-    which is why the 2026-08-05 gold time-exit only filled at 01:01. Sending it a few
-    minutes early lands it on the last quote of the bar being left, which on a 24 h
-    instrument is the same price the backtest fills at (the next bar's open).
+    WHY. A time-exit that fires AT the 00:00 rollover is sent into the daily maintenance
+    break of every symbol that has one — NAS100 and XAUUSD are both shut **00:00-01:00
+    server** (23:00-00:00 Paris) — so it is rejected 10018 and only fills when the market
+    reopens. On a Friday that reopen is **Monday**, which is how a sleeve ends up carrying
+    a weekend it never agreed to: 13 % of brick 2's exits and 20 % of brick 4's currently
+    fill at a Monday open. Firing before the close leaves on the bar we are actually
+    leaving.
 
-    BTCUSD/ETHUSD have **no** break on this feed (verified: every M5 slot present,
-    00:00 included), so for the crypto sleeves this is insurance rather than a fix — but
-    it costs nothing and it is what makes the exit independent of the symbol's session.
+    WHY 10 MINUTES AND NOT 5. Mon-Thu these symbols quote through 23:55 server, but on
+    **FRIDAY the last M5 bar is 23:50** — the session ends at 23:55 server (22:55 Paris)
+    exactly. A 5-minute lead would therefore fire precisely at the Friday close, on the
+    one day the weekend is at stake. 23:50 server (22:50 Paris) is the last window that is
+    live every day of the week. Override per-deployment with ``rollover_lead_min``.
+
+    BTCUSD/ETHUSD have **no** break at all on this feed (verified: every M5 slot present,
+    00:00 included), so for the crypto sleeves this is insurance, not a fix.
     """
     srv = now_utc.tz_convert(SERVER_TZ)
     return (srv.hour * 60 + srv.minute) >= (24 * 60 - lead_min)
@@ -191,44 +198,61 @@ class NasOrbStrategy:
 
 
 class GoldTomStrategy(_RolloverBrick):
-    """Brick 2 — XAUUSD turn-of-month. Daily; ~1 trade/month."""
+    """Brick 2 — XAUUSD turn-of-month. Daily; ~1 trade/month.
+
+    ENTRY is once per broker day, at the 00:00-server rollover (the fresh bar's open, where
+    the backtest fills). The EXIT is checked on every pass, because ``run_turn_of_month``
+    exits at the **close** of the window's last bar and XAUUSD is shut 00:00-01:00 server —
+    so an exit sent at the rollover is rejected and fills an hour late, or on **Monday** when
+    that bar is a Friday (13 % of exits). See ``_at_rollover_lead``.
+    """
 
     def __init__(self, cfg_live: dict):
         self.p = TurnOfMonthParams(sl_atr=1.5)
         self.logical = cfg_live.get("gold_symbol", "XAUUSD")
         self.magic = MAGIC["gold_tom"]
+        self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_day = None
         self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
-        # Act ONCE per broker (server) day, triggered right at the daily-bar rollover
-        # (00:00 server time). That is where the backtest enters (bar open) and exits
-        # (bar close) -> live matches the backtest, no intraday lag.
         bday = now_utc.tz_convert(SERVER_TZ).date()
-        if bday == self._acted_day:
-            return
-
-        # RAW broker-time D1: a bar's date IS its trading date, which is what both the
-        # backtest and tom_state's bar-count exit key on. (get_bars' true-UTC index
-        # stamps a session at the *previous* calendar day, which would miscount the
-        # month's completed bars whenever the 1st of the month is a trading day.)
-        d1 = broker.get_bars_raw(self.logical, "D1", 90)
-        day = pd.Timestamp(bday)
-        st = S.tom_state(d1, day, self.p)
         pos = broker.open_position(self.magic)
+        day = pd.Timestamp(bday)
 
-        # exit on the window-end day (or dry-run SL)
+        # ---- open position: exit checked on every pass ---------------------------
         if pos is not None:
+            first_pass_today = self._acted_day != bday
+            self._acted_day = bday
+            in_lead = _at_rollover_lead(now_utc, self.lead_min)
+            if not (first_pass_today or in_lead):
+                return
+            # RAW broker-time D1: a bar's date IS its trading date, which is what both the
+            # backtest and tom_state's bar-count exit key on. (get_bars' true-UTC index
+            # stamps a session at the *previous* calendar day, which would miscount the
+            # month's completed bars whenever the 1st of the month is a trading day.)
+            d1 = broker.get_bars_raw(self.logical, "D1", 90)
+            st = S.tom_state(d1, day, self.p)
             if not broker.live:
                 bar = d1.iloc[-1]
                 closed, px, why = broker.resolve_paper(pos, bar, now_utc)
                 if closed:
-                    broker.close(pos, px, why, now_utc); self._acted_day = bday; return
-            if st.is_exit_day:
+                    broker.close(pos, px, why, now_utc)
+                    return
+            # `is_exit_day` = the count is already tipped (the rollover has passed, e.g. the
+            # runner was down). `bars_done + 1` = the bar closing RIGHT NOW is the one that
+            # tips it — that is the bar the backtest exits on, so leave on it.
+            due_at_close = (st.bars_done + 1) >= self.p.first_days
+            if st.is_exit_day or (due_at_close and in_lead):
                 px = float(d1.iloc[-1]["close"])
                 broker.close(pos, px, "time_exit", now_utc)
-            self._acted_day = bday
             return
+
+        # ---- entries: once per broker day, at the rollover ------------------------
+        if self._acted_day is not None and bday <= self._acted_day:
+            return
+        d1 = broker.get_bars_raw(self.logical, "D1", 90)
+        st = S.tom_state(d1, day, self.p)
 
         # entry on the last-trading-day of the month (at the fresh daily open)
         if st.is_entry_day and st.sl_dist > 0:
@@ -268,6 +292,7 @@ class CryptoMacdStrategy(_RolloverBrick):
         self.magic = MAGIC["btc_macd"] if "BTC" in logical else MAGIC["eth_macd"]
         self.risk_cfg = risk_cfg
         self.time_exit_bars = int(risk_cfg["time_exit_bars"])
+        self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_day = None
         self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
@@ -300,7 +325,7 @@ class CryptoMacdStrategy(_RolloverBrick):
 
         due_now = bars_now >= self.time_exit_bars
         due_at_rollover = (bars_now + 1) >= self.time_exit_bars
-        if due_now or (due_at_rollover and _at_rollover_lead(now_utc)):
+        if due_now or (due_at_rollover and _at_rollover_lead(now_utc, self.lead_min)):
             broker.close(pos, float(daily_all.iloc[-1]["close"]), "time_exit", now_utc)
             # The engine forbids a bar that CLOSED a trade from also opening one
             # (cadence='live'). Closing early means the exit belongs to the bar about to
@@ -317,7 +342,7 @@ class CryptoMacdStrategy(_RolloverBrick):
             # exit runs, so a stop filled mid-bar cannot be followed by a same-bar entry.
             first_pass_today = self._acted_day != bday
             self._acted_day = bday
-            if first_pass_today or _at_rollover_lead(now_utc):
+            if first_pass_today or _at_rollover_lead(now_utc, self.lead_min):
                 self._manage(broker, pos, now_utc, bday)
             return
 
@@ -381,6 +406,7 @@ class NasIbsStrategy(_RolloverBrick):
         self.p = IBSParams(sl_atr=2.5)
         self.logical = cfg_live.get("ibs_symbol", "NAS100")
         self.magic = MAGIC["nas_ibs"]
+        self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_day = None
         self._wait_logged = None
         self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
@@ -402,7 +428,14 @@ class NasIbsStrategy(_RolloverBrick):
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
         bday = now_utc.tz_convert(SERVER_TZ).date()
-        if bday == self._acted_day:
+        pos = broker.open_position(self.magic)
+        in_lead = _at_rollover_lead(now_utc, self.lead_min)
+        if pos is not None:
+            first_pass_today = self._acted_day != bday
+            self._acted_day = bday
+            if not (first_pass_today or in_lead):
+                return
+        elif self._acted_day is not None and bday <= self._acted_day:
             return
 
         # RAW broker-time D1 (the backtest keys on the stored broker date — see edges/ibs.py).
@@ -417,7 +450,6 @@ class NasIbsStrategy(_RolloverBrick):
             return
 
         st = S.ibs_state(daily, self.p)
-        pos = broker.open_position(self.magic)
 
         if pos is not None:
             held = self._bars_held(raw, pos.open_time, last_closed_i)
@@ -425,12 +457,20 @@ class NasIbsStrategy(_RolloverBrick):
                 bar = daily_all.iloc[-1]
                 closed, px, why = broker.resolve_paper(pos, bar, now_utc, bars_held=held)
                 if closed:
-                    broker.close(pos, px, why, now_utc); self._acted_day = bday; return
-            if st.exit_signal or (held is not None and held >= self.p.max_hold):
+                    broker.close(pos, px, why, now_utc); return
+            timed = held is not None and held >= self.p.max_hold
+            # The bar closing right now is the one that would tip the count at the next
+            # rollover -> leave on it rather than into the 00:00-01:00 break / the weekend.
+            # ⚠️ ONLY the TIME exit is anticipated. The ``IBS > 0.8`` exit keeps the rollover
+            # fill because it must be judged on a fully CLOSED bar; anticipating it would
+            # read an IBS that is still 10 minutes from final. (Measured cost of moving it
+            # too: +4.81 -> +4.78 R/yr — cheap, but it is a rule change, not a fix. And the
+            # time exit itself has fired 0 times in 287 trades, so this branch is dormant.)
+            timed_next = held is not None and (held + 1) >= self.p.max_hold
+            if st.exit_signal or timed or (timed_next and in_lead):
                 why = "ibs_high" if st.exit_signal else "time_exit"
                 px = float(daily_all.iloc[-1]["close"])    # current price = the new bar's open
                 broker.close(pos, px, why, now_utc)
-            self._acted_day = bday
             return
 
         if st.entry_ok:
@@ -581,6 +621,7 @@ class KeltnerStrategy:
         self.magic = MAGIC["btc_kelt"]
         self.bars_needed = int(cfg_live.get("kelt_bars", 600))
         self.max_bar_age_min = float(cfg_live.get("kelt_max_bar_age_min", 20))
+        self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_bar = None
         self._skip_logged = None
 
@@ -636,7 +677,7 @@ class KeltnerStrategy:
             # `held + 1` completes at the next H1 boundary; when that boundary IS the
             # daily rollover, send the close early rather than into the break.
             if held >= self.p.max_bars or ((held + 1) >= self.p.max_bars
-                                           and _at_rollover_lead(now_utc)):
+                                           and _at_rollover_lead(now_utc, self.lead_min)):
                 broker.close(pos, float(bars["close"].iloc[-1]), "time_exit", now_utc)
             return
 

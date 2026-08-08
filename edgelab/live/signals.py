@@ -132,6 +132,7 @@ class TomState:
     is_entry_day: bool       # is `day` the entry day (last trading day of month)?
     is_exit_day: bool        # should `day`'s rollover CLOSE the position? (see below)
     sl_dist: float = 0.0     # 1R stop distance in price (= sl_atr * prevATR14)
+    bars_done: int = 0       # bars of `day`'s month COMPLETED before `day` (drives is_exit_day)
 
 
 def _business_tom_flags(day: pd.Timestamp, last_days: int, first_days: int) -> tuple:
@@ -193,6 +194,11 @@ def tom_state(d1: pd.DataFrame, day: pd.Timestamp,
 
     The condition is ``>=``, not ``==``, so a runner that was down for a whole day still
     closes the position on its next pass instead of riding it to the stop.
+
+    ``bars_done`` is returned raw so the DRIVER can also ask the forward-looking question
+    "will the bar that is closing right now tip the count?" — that is what lets it send
+    the exit just before the D1 close instead of into the 00:00-01:00 break. The timing
+    policy belongs to the driver; this function only reports the count.
     """
     p = p or TurnOfMonthParams()
     d = d1.copy()
@@ -220,7 +226,7 @@ def tom_state(d1: pd.DataFrame, day: pd.Timestamp,
         val = float(prior.iloc[-1]) if len(prior) else np.nan
         if np.isfinite(val) and val > 0:
             sl_dist = p.sl_atr * val
-    return TomState(in_win, is_entry, is_exit, sl_dist)
+    return TomState(in_win, is_entry, is_exit, sl_dist, done)
 
 
 # ===========================================================================

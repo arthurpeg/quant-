@@ -344,18 +344,34 @@ Two rules, both learned the hard way on 2026-08-09 (see [[log]]):
    clock made b3 hold **31** bars instead of 30 and KELT **99+** instead of 96
    (KELT: +17.2 → +15.0 R/yr, RoMaD 0.94 → **0.60**). And elapsed hours ≠ bars: the
    BTCUSD H1 feed has 137 two-day holes, so KELT counts index distance like b3/b4.
-2. **Send a rollover exit `ROLLOVER_LEAD_MIN` (5 min) early.** An exit firing *at* 00:00
-   server lands in the daily break of any symbol that has one — **XAUUSD is shut
-   00:00–01:00 server (23:00–00:00 Paris)**, which is why the 2026-08-05 gold time-exit
-   only filled at 01:01. BTCUSD/ETHUSD have **no** break here, so on crypto it is
-   insurance. Because of it, b3 evaluates its **exit on every pass** (its entry stays
-   once per broker day) and parks `_acted_day` on tomorrow's bar so the early close can
-   never be followed by an early re-entry — the `cadence='live'` guarantee.
+2. **Send every D-bar time exit `rollover_lead_min` (10 min) early** — b2, b3, b4 and
+   KELT's 96-bar cap. An exit firing *at* 00:00 server lands in the daily break of any
+   symbol that has one — **NAS100 and XAUUSD are both shut 00:00–01:00 server (23:00–00:00
+   Paris)** — so it is rejected 10018 and fills at the reopen, which **on a Friday is
+   Monday**. That is how a sleeve carries a weekend it never agreed to: **13 % of brick 2's
+   exit bars and 20 % of brick 4's are Fridays.** BTCUSD/ETHUSD have no break, so on crypto
+   the lead is insurance.
+   ⚠️ **Not 5 minutes: on FRIDAY these symbols stop quoting at 23:55 server** (last M5 bar
+   23:50), so a 5-minute lead would fire exactly on the Friday close — the one day the
+   weekend is at stake. 10 min (23:50 server = **22:50 Paris**) is the last window live
+   every day. Because of the lead, b2/b3/b4 evaluate their **exit on every pass** (entries
+   stay once per broker day) and park `_acted_day` so an early close can never be followed
+   by an early re-entry — the `cadence='live'` guarantee.
 
-`python -m edgelab.live.verify` now includes `verify_time_exits()`, which replays the real
-`_manage`/`_held` against both DST sides and against the feed's gaps. ⚠️ **Brick 2 is the
-one sleeve whose break genuinely bites and it is NOT yet on the 5-minute lead** — its time
-exit still fills ~1 h late.
+Cost, measured: brick 2 is a **wash on mean** (tracking error vs the backtest's `c[xi]`
+exit: −0.43 R at 22:50 vs −0.40 R at the current post-break fill, over 89 exits/8.5 yr) but
+clearly **tighter** — σ 0.045 vs 0.066 R, worst case **0.14 vs 0.50 R**. Brick 3/KELT are
+unaffected (no break). Brick 4's cap is **dormant: 0 of 287 exits** — all 262 non-stop exits
+are the `IBS>0.8` signal, which deliberately keeps the rollover fill because it must be
+judged on a fully *closed* bar.
+
+**Open, not done:** moving brick 4's **IBS signal** exit onto the lead too would remove its
+54 Monday fills, costs **+4.81 → +4.78 R/yr**, but means judging IBS on a bar 10 min from
+final. That is a rule change, not a fix — decide it deliberately.
+
+`python -m edgelab.live.verify` includes `verify_time_exits()` (a–e): the stamp on both DST
+sides, b3 against the engine's own exit bar, KELT's `_held` across the feed's gaps, b2's
+lead firing on the backtest's exit bar, and b4's lead landing exactly one bar early.
 
 **Order sending is ENABLED (`live_trading: true`) — safe because the Pepperstone account
 is a DEMO.** A hard gate (`allow_real_account: false`) refuses to send orders if the

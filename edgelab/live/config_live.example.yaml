@@ -112,6 +112,19 @@ daily_decision_et: "09:45"
 # taken at the Sunday-night reopen (~48 h later) — that reopen IS the backtest's fill.
 entry_retry_max_hours: 2
 
+# How many minutes BEFORE the 00:00-server daily rollover a D-bar TIME EXIT is sent
+# (bricks 2, 3, 4 and KELT's 96-bar cap). An exit fired AT the rollover goes into the
+# daily maintenance break — NAS100 and XAUUSD are both shut 00:00-01:00 server — so it is
+# rejected 10018 and fills at the reopen, which on a Friday is MONDAY. That is how a
+# sleeve ends up carrying a weekend it never agreed to (13% of brick 2's exits, 20% of
+# brick 4's). 10 = 23:50 server = 22:50 Paris.
+# ⚠️ DO NOT SET THIS TO 5. Mon-Thu these symbols quote through 23:55 server, but on FRIDAY
+# the session ends AT 23:55 (last M5 bar 23:50) — a 5-minute lead would fire exactly on
+# the Friday close, the one day the weekend is at stake. 10 is the last window that is
+# live every day of the week. Crypto (BTCUSD/ETHUSD) has no break at all, so there the
+# lead is insurance rather than a fix.
+rollover_lead_min: 10
+
 # ---- auto-update from GitHub (no more manual file copies on the VPS) --------
 # Needs the folder to be a git clone of the repo + git installed. Every
 # update_check_min the runner compares to origin/main; if newer, it exits and the

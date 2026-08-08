@@ -488,9 +488,10 @@ def verify_time_exits() -> bool:
       (c) KELT's completed-bar count hits max_bars exactly on run_keltner's own exit bar.
     """
     from edgelab.live.broker import server_epoch_to_utc
-    from edgelab.live.strategies import (CryptoMacdStrategy, KeltnerStrategy, SERVER_TZ,
-                                         ROLLOVER_LEAD_MIN)
+    from edgelab.live.strategies import (CryptoMacdStrategy, KeltnerStrategy, NasIbsStrategy,
+                                         SERVER_TZ, ROLLOVER_LEAD_MIN)
     from edgelab.intraday.keltner_btc import run_keltner, KeltParams, load_h1
+    from edgelab.edges.turn_of_month import _load_d1 as _tom_d1
     ok = True
 
     # ---- (a) the stamp -----------------------------------------------------------
@@ -568,6 +569,60 @@ def verify_time_exits() -> bool:
     ok = ok and kelt_ok
     print(f"  TIME-EXIT (c) KELT: _held == max_bars ({p.max_bars}) on {n_ck} time-exit "
           f"trades ({holed} of them span a gap in the feed), mismatches {bad}")
+
+    # ---- (d) brick 2: the lead fires on the bar run_turn_of_month exits ON ---------
+    # XAUUSD is shut 00:00-01:00 server, so an exit sent at the rollover fills an hour
+    # late — or on MONDAY when the exit bar is a Friday. The backtest exits at c[xi]; the
+    # driver must therefore leave on bar xi itself, which is what `bars_done + 1` detects.
+    gp = TurnOfMonthParams(sl_atr=1.5)
+    gd = _tom_d1("XAUUSD")
+    gmonth = pd.PeriodIndex(gd.index.tz_localize(None), freq="M")
+    gtdom = pd.Series(np.arange(len(gd)), index=gd.index).groupby(gmonth).rank().astype(int).to_numpy()
+    gmonths = gmonth.to_numpy()
+    uniq = list(dict.fromkeys(gmonths))
+    raw_g = pd.DataFrame({"time": gd.index, "open": gd["open"].to_numpy(),
+                          "high": gd["high"].to_numpy(), "low": gd["low"].to_numpy(),
+                          "close": gd["close"].to_numpy()})
+    early = late = fri = n_x = 0
+    for k in range(len(uniq) - 1):
+        nxt = np.where((gmonths == uniq[k + 1]) & (gtdom <= gp.first_days))[0]
+        if not len(nxt):
+            continue
+        xi = nxt[-1]
+        day = pd.Timestamp(gd.index[xi]).tz_localize(None).normalize()
+        stg = S.tom_state(raw_g.iloc[: xi + 1], day, gp)
+        n_x += 1
+        early += int((stg.bars_done + 1) >= gp.first_days)   # the lead leaves on bar xi
+        late += int(stg.is_exit_day)                         # the old code would fire here
+        fri += int(day.dayofweek == 4)
+    b2_ok = (n_x > 0) and (early == n_x) and (late == 0)
+    ok = ok and b2_ok
+    print(f"  TIME-EXIT (d) brick 2: on {n_x} exit bars the lead fires {early}/{n_x} and the "
+          f"rollover rule fires {late}/{n_x} (it fires the NEXT day) — {fri} of those bars "
+          f"are a FRIDAY, i.e. filled on Monday today: {b2_ok}")
+
+    # ---- (e) brick 4: the lead is exactly one D1 bar earlier, on the real calendar --
+    ip = IBSParams(sl_atr=2.5)
+    nd = _ibs_bars()
+    raw_n = pd.DataFrame({"time": nd.index})
+    dates_n = list(pd.to_datetime(raw_n["time"]).dt.date)
+    bad4 = n4 = 0
+    for E in range(60, min(len(dates_n) - ip.max_hold - 3, 600), 17):
+        entry_utc = pd.Timestamp(dates_n[E]).tz_localize(SERVER_TZ).tz_convert("UTC")
+        # rollover of bar k: the last CLOSED bar is k-1
+        first_roll = next((k for k in range(E + 1, len(dates_n))
+                           if NasIbsStrategy._bars_held(raw_n, entry_utc, k - 1) >= ip.max_hold), None)
+        # lead of bar j: the last CLOSED bar is j-1, and bar j is about to tip the count
+        first_lead = next((j for j in range(E + 1, len(dates_n))
+                           if NasIbsStrategy._bars_held(raw_n, entry_utc, j - 1) + 1 >= ip.max_hold), None)
+        n4 += 1
+        bad4 += int(first_roll is None or first_lead is None
+                    or first_roll != E + ip.max_hold + 1 or first_lead != first_roll - 1)
+    b4_ok = bad4 == 0 and n4 > 0
+    ok = ok and b4_ok
+    print(f"  TIME-EXIT (e) brick 4: on {n4} synthetic entries the rollover exit lands at "
+          f"entry+{ip.max_hold}+1 bars and the lead exactly one bar earlier, mismatches {bad4} "
+          f"(NB: this branch is DORMANT — the 30-bar cap has fired 0/287 times live)")
     print(f"  TIME-EXIT: {'PASS' if ok else 'FAIL'}")
     return ok
 
