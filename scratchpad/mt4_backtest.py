@@ -80,6 +80,8 @@ def load(sym, tf):
             return None
         _cache[k] = d.sort_index()
         return _cache[k]
+    import inx_fetch as _f
+    _f.ensure(sym, tf, verbose=True)      # rapatrie depuis MT5 si absent du cache
     for ext, rd in (('parquet', pd.read_parquet), ('csv', pd.read_csv)):
         q = os.path.join('data_cache_mt5', f'{sym}_{tf}.{ext}')
         if os.path.exists(q):

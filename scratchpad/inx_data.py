@@ -63,13 +63,20 @@ def to_true_utc(idx):
                  .tz_convert('UTC'))
 
 
-def _read(sym, tf):
+def _read(sym, tf, fetch=True):
+    """Barres brutes (heure serveur). Si le cache ne les a pas, on les RAPATRIE
+    depuis Pepperstone MT5 (inx_fetch) — demande explicite de l'utilisateur, valable
+    pour tous les travaux en cours."""
     for ext, rd in (('parquet', pd.read_parquet), ('csv', pd.read_csv)):
         p = os.path.join('data_cache_mt5', f'{sym}_{tf}.{ext}')
         if os.path.exists(p):
             d = rd(p)
             d.columns = [c.lower() for c in d.columns]
             return d
+    if fetch:
+        import inx_fetch
+        if inx_fetch.ensure(sym, tf, verbose=True):
+            return _read(sym, tf, fetch=False)
     return None
 
 
@@ -80,9 +87,17 @@ def bars(sym, tf):
         if d is None:
             return None
     else:
-        d = _read(sym, 'M1')
+        # on prefere le M1 (deja en cache pour l'univers, et le reechantillonnage garde
+        # la meme base de barres que les runs precedents); a defaut le TF natif.
+        d = _read(sym, 'M1', fetch=False)
         if d is None:
-            return None
+            nat = _read(sym, tf)
+            if nat is None:
+                return None
+            nat['time'] = pd.to_datetime(nat['time'], utc=True)
+            idx = to_true_utc(pd.DatetimeIndex(nat['time']))
+            nat = nat.loc[idx.notna()].copy(); nat.index = idx[idx.notna()]
+            return nat.sort_index().drop(columns=['time'])
         rule = {'M5': '5min', 'M15': '15min', 'M30': '30min'}[tf]
         d['time'] = pd.to_datetime(d['time'], utc=True)
         agg = {'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last'}

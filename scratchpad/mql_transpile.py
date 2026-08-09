@@ -64,9 +64,38 @@ SELL = re.compile(r'OrderSend\s*\([^;]{0,200}?\bOP_SELL\b|\btrade\s*\.\s*Sell\s*
 # guards that merely say "am I flat / how many orders do I have" -- the engine already
 # enforces one position at a time, so these are structurally satisfied, not signal.
 RE_POSCOUNT = re.compile(
-    r'^\s*\(?\s*(total|totals|cnt|count|orders?|numorders|OrdersTotal\s*\(\s*\)|'
-    r'PositionsTotal\s*\(\s*\)|CountTrades\s*\(\s*\)|OrdersTotalMagic\s*\([^)]*\))'
-    r'\s*(==|<|<=|!=)\s*[01]\s*\)?\s*$', re.I)
+    r'^\s*\(?\s*(total|totals|cnt|count|orders?|numorders|numtrades|nord|n_orders|'
+    r'OrdersTotal\s*\(\s*\)|PositionsTotal\s*\(\s*\)|CountTrades\s*\(\s*\)|'
+    r'CountOrders\s*\(\s*\)|TotalOrders\s*\(\s*\)|OpenOrders\s*\(\s*\)|'
+    r'OrdersTotalMagic\s*\([^)]*\)|\w*(?:trades?|positions?)\s*\(\s*\))'
+    r'\s*(==|<|<=|!=|>)\s*\d{1,2}\s*\)?\s*$', re.I)
+# "suis-je sur une NOUVELLE barre ?" — le moteur decide une fois par barre, donc cette
+# garde est structurellement vraie. Sans elle, 66 fichiers etaient jetes sur des noms
+# comme dtBarCurrent!=dtBarPrevious / lastBarTime != Time[0].
+RE_NEWBAR = re.compile(
+    r'^\s*\(*\s*\w*(?:bar|time|candle)\w*\s*(?:!=|>|<)\s*\w*(?:bar|time|candle)\w*'
+    r'\s*(?:\[\s*\d+\s*\])?\s*\)*\s*$', re.I)
+
+# MQL ecrit ses booleens en MAJUSCULES; sans ca toute garde `flag==TRUE` est rejetee.
+BOOLC = {'TRUE': 'True', 'FALSE': 'False', 'true': 'True', 'false': 'False'}
+
+# --- gestion du carnet d'ordres, pas du signal -------------------------------
+RE_ORDER_TOK = re.compile(r'Orders?Total|OrderSelect|OrderType|OrderMagicNumber|OrderSymbol|OrderTicket|OrderLots|OrderOpenPrice|OrderOpenTime|OrderClosePrice|OrderProfit|OrderComment|OrderStopLoss|OrderTakeProfit|PositionsTotal|PositionSelect|PositionGetInteger|PositionGetDouble|PositionGetSymbol|HistoryDealsTotal|OrdersHistoryTotal|MODE_TRADES|MODE_HISTORY|SELECT_BY_POS|SELECT_BY_TICKET|OP_BUY|OP_SELL|POSITION_TYPE_\w+|ORDER_TYPE_\w+', re.I)
+RE_PRICE_TOK = re.compile(r'\b(?:Close|Open|High|Low|Bid|Ask|iClose|iOpen|iHigh|iLow|iMA|iRSI|iMACD|iStochastic|iCCI|iADX|iBands|iSAR|iEnvelopes|iMomentum|iWPR|iATR|iAO|iDeMarker|iForce|iBearsPower|iBullsPower|Point|Digits)\b')
+
+
+def is_order_bookkeeping(c):
+    """Vrai si la condition ne parle QUE du carnet d'ordres.
+
+    Le moteur impose une position a la fois, donc un test "combien de positions
+    ai-je / de quel type" est structurellement satisfait et peut etre neutralise.
+    On exige qu'AUCUN prix ni indicateur n'apparaisse: sinon la condition porte du
+    signal et on prefere rejeter le fichier que le porter faux.
+    """
+    if not RE_ORDER_TOK.search(c):
+        return False
+    return not RE_PRICE_TOK.search(c)
+
 
 MODE = {'MODE_SMA': I.MODE_SMA, 'MODE_EMA': I.MODE_EMA,
         'MODE_SMMA': getattr(I, 'MODE_SMMA', 2), 'MODE_LWMA': getattr(I, 'MODE_LWMA', 3),
@@ -122,8 +151,14 @@ def find_call(t, i):
 PERIOD = {'PERIOD_M1': 1, 'PERIOD_M5': 5, 'PERIOD_M15': 15, 'PERIOD_M30': 30,
           'PERIOD_H1': 60, 'PERIOD_H4': 240, 'PERIOD_D1': 1440, 'PERIOD_W1': 10080,
           'PERIOD_MN1': 43200}
-TF_NAME = {5: 'M5', 10: 'M10', 15: 'M15', 30: 'M30', 60: 'H1', 1440: 'D1'}
-TF_MIN = {'M5': 5, 'M10': 10, 'M15': 15, 'M30': 30, 'H1': 60, 'D1': 1440}
+TF_NAME = {1: 'M1', 2: 'M2', 3: 'M3', 4: 'M4', 5: 'M5', 6: 'M6', 10: 'M10',
+           12: 'M12', 15: 'M15', 20: 'M20', 30: 'M30', 60: 'H1', 120: 'H2',
+           180: 'H3', 240: 'H4', 360: 'H6', 480: 'H8', 720: 'H12',
+           1440: 'D1', 10080: 'W1', 43200: 'MN1'}
+TF_MIN = {'M1': 1, 'M2': 2, 'M3': 3, 'M4': 4, 'M5': 5, 'M6': 6, 'M10': 10,
+          'M12': 12, 'M15': 15, 'M20': 20, 'M30': 30, 'H1': 60, 'H2': 120,
+          'H3': 180, 'H4': 240, 'H6': 360, 'H8': 480, 'H12': 720,
+          'D1': 1440, 'W1': 10080, 'MN1': 43200}
 
 
 class Ctx:
@@ -251,6 +286,8 @@ class Expr:
         # Validate on a copy with OUR OWN generated calls stripped. Checking the raw
         # string flags `X.shift(...)`/`I.rsi(...)` -- the very code this compiler emits --
         # as "unresolved", which silently rejected ~1000 correctly-translated conditions.
+        s = re.sub(r'(?<![\\w.])TRUE(?![\\w])', 'True', s)
+        s = re.sub(r'(?<![\\w.])FALSE(?![\\w])', 'False', s)
         probe = re.sub(r'\b(?:np|pd|X|I)\.\w+', '@', s)
         if re.search(r'[A-Za-z_]\w*\s*\(', probe):
             raise Unsupported('unresolved call in: ' + s[:60])
@@ -666,7 +703,9 @@ def compile_file(path, max_bytes=400_000):
             parts = []
             for c in conds:
                 # "am I flat" guards are enforced by the engine, not by the rule
-                if RE_POSCOUNT.match(c.strip()):
+                cs = c.strip()
+                if (RE_POSCOUNT.match(cs) or RE_NEWBAR.match(cs)
+                        or is_order_bookkeeping(cs)):
                     continue
                 try:
                     parts.append('(' + E.translate(resolve(c)) + ')')
