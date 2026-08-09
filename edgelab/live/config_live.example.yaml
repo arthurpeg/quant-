@@ -65,6 +65,14 @@ kaer_max_bar_age_min: 5        # skip (do not chase) a signal bar older than thi
 # ⚠️ It shares BTCUSD with brick 3 under its own magic (107). That requires a HEDGING
 # account — on a NETTING account the two positions would offset. Check with
 # mt5.account_info().margin_mode == 2 before enabling.
+#
+# ⛔ RETIRED FROM THE LIVE BOOK 2026-08-09 — this flag is now INERT (runner.py no longer
+# registers the strategy; it logs a warning if the flag is true). Reason: FTMO charges
+# -30 %/yr on BOTH sides of BTCUSD (MT5 "percentage of current price" = ANNUAL interest,
+# 360-day bank year -> 8.33 bps/night). Swap cost in R = nights x rate / stop_pct, so a
+# sleeve with a 2.95 % stop held 2.1 nights, 153 times a year, pays 8.60 R/yr: the sleeve
+# nets +5.00 R/yr at t=0.87. Removing it lowers AGRESSIF's maxDD 21.7->17.3 R and cuts
+# FUNDED's ruin 2.4 %->0.7 %. See wiki/system.md and wiki/log.md 2026-08-09.
 enable_keltner: false
 kelt_symbol: BTCUSD
 kelt_size_R: 0.5               # fraction of 1R risked per Keltner trade

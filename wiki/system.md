@@ -1,6 +1,6 @@
 ---
 type: system
-updated: 2026-07-31
+updated: 2026-08-09
 status: frozen (in-sample; forward-test pending)
 ---
 
@@ -37,8 +37,18 @@ alternative** to MACD-RSI. Single-MA-50 is the fallback if crypto is not prop-tr
 
 | Name | Composition | Where it is used | Live |
 |---|---|---|---|
-| **book AGRESSIF** | b1 @1R + b2 @1R + b3 @1R + b4 @1R + **KAER @0.5R** + **KELT @0.5R** | the **CHALLENGE** phase, at 1.00 %/trade (speed: median 2.4 months to pass) | **this is what is deployed on the demo right now** — magics 101-107 |
-| **book FUNDED** | b1 @1R + b2 @1R + **b3 @0.5R** + b4 @1R + **KELT @0.5R** (no KAER) | the **FUNDED** phase, at 0.50 %/trade (protection) | not deployed; a config change at funding time |
+| **book AGRESSIF** | b1 @1R + b2 @1R + b3 @1R + b4 @1R + **KAER @0.5R** | the **CHALLENGE** phase, at 1.00 %/trade | **deployed on the demo** — magics 101-106 |
+| **book FUNDED** | b1 @1R + b2 @1R + **b3 @0.5R** + b4 @1R (no KAER) | the **FUNDED** phase, at 0.50 %/trade (protection) | not deployed; a config change at funding time |
+
+**KELT was removed from both books on 2026-08-09** (user decision) and unwired from the
+live runner — see the FTMO-cost section below. It never took a live trade (magic 107 stayed
+flat). `keltner_btc.py` and `KeltnerStrategy` are kept for research and `verify`.
+
+**Net of every FTMO cost** (commission + swap, measured below), the two books are
+**AGRESSIF +40.90 R/yr** (maxDD 17.4 R, RoMaD 2.36, Sharpe 1.77) and **FUNDED +22.46 R/yr**
+(maxDD 12.3 R, RoMaD 1.83, Sharpe 1.63). Challenge at 1.00 %: **83.8 % in 3.0 months**;
+funded at 0.50 %: **12.1 %/yr withdrawn at 1.0 % ruin**. The gross numbers below predate the
+cost work and are kept because they are what the sleeve pages and the MC report reproduce.
 
 The two-phase plan is measured in [[log]] (2026-08-08): AGRESSIF@1.00 % → FUNDED@0.50 %
 withdraws **30.2 %** over two years at **1.6 % ruin**, against 27.2 % / 1.4 % for the best
@@ -54,22 +64,24 @@ mean **+4.81 / +4.49 R per month**, median +4.12 / +4.41 R, σ 6.9 / 7.2 R,
 **+4.81 % per month on average**, worst month −14.9 %. FUNDED: +2.99 / +3.10 R per month,
 **76.0 % / 77.1 % positive months**, worst −11.4 R.
 
-⚠️ Both books contain **two sleeves that have never been forward-tested** (KAER, KELT), so
-every number above is in-sample for those parts. AGRESSIF without them degenerates to the
-frozen 4-brick book — slower, not broken.
+⚠️ AGRESSIF still contains **one sleeve that has never been forward-tested** (KAER), so its
+numbers are in-sample for that part. Without it AGRESSIF degenerates to the frozen 4-brick
+book — slower, not broken.
 
 ## Forward-test sleeves (NOT bricks) — KAER and KELT, added 2026-08-07/08
 
 | Sleeve | Asset | Mechanism | Code | Standalone | Live |
 |---|---|---|---|---|---|
 | **KAER** — Kaufman efficiency-ratio intraday breakout | NAS100 (M15) | follow a 10-bar range break when ER(10)'s trailing percentile is in the top tercile; SL 2.0·ATR14, no TP, flat 15:55 ET | [`edgelab/intraday/kaer.py`](../edgelab/intraday/kaer.py) — `run_kaer('NAS100')` | +28.8 R/yr, PF 1.19, t=3.20, **RoMaD 1.13**, 8/9 +yrs | magic **106**, `enable_kaer`, **0.5R** |
-| **KELT** — Keltner-band breakout | BTCUSD (H1) | EMA(20) ± 1.5·ATR(20) band break; **SL = max(3·ATR14, 25×spread)**, TP 2R, 96-bar exit | [`edgelab/intraday/keltner_btc.py`](../edgelab/intraday/keltner_btc.py) — `run_keltner()` | +17.2 R/yr, PF 1.22, t=3.13, RoMaD 0.94, **9/9 +yrs** | magic **107**, `enable_keltner`, **0.5R** |
+| ~~**KELT** — Keltner-band breakout~~ **RETIRED 2026-08-09** | BTCUSD (H1) | EMA(20) ± 1.5·ATR(20) band break; **SL = max(3·ATR14, 25×spread)**, TP 2R, 96-bar exit | [`edgelab/intraday/keltner_btc.py`](../edgelab/intraday/keltner_btc.py) — `run_keltner()` (research + `verify` only) | +17.2 R/yr gross → **+5.04 net of FTMO cost, t=0.87** | **unwired** — never took a live trade |
 
-KELT shares BTCUSD with brick 3 under its own magic — **this requires a HEDGING account**
-(verified: `margin_mode == 2`); on a netting account the two would offset. Its monthly
-correlation to brick 3 is +0.07…+0.23, so it is a *second crypto-trend sleeve*, not a new
-mechanism. The 25×-spread floor is **part of the rule**: without it R/yr reads +27.1
-instead of +17.2.
+KELT shared BTCUSD with brick 3 under its own magic, which **required a HEDGING account**
+(verified: `margin_mode == 2`) — moot since the retirement, but it stands if the sleeve is
+ever revived. Its monthly correlation to brick 3 is +0.07…+0.23, so it was a *second
+crypto-trend sleeve*, not a new mechanism, and the 25×-spread floor is **part of the rule**
+(without it R/yr reads +27.1 instead of +17.2). **What killed it was neither the signal nor
+the floor but the cost structure**: a 2.95 % stop buys 34 % of the balance in notional, and
+FTMO charges that notional a 30 %/yr swap every night it is held.
 
 **KAER is deliberately NOT counted as a 5th brick.** corr **+0.370** to brick 1 with **40 % of
 its trading days closing a brick-1 trade too** — every brick-brick pair above is ≤ 0.03 — and
@@ -173,6 +185,103 @@ sizing tested up to 1.5%. The binding limit is now the **−10% static floor**.
 - 0.75% → ~24.6%/yr, ~12% ruin/yr.
 - **Never above 1%** — E[withdrawn] plateaus at 35–38% while ruin explodes past 47%.
 - **Asymmetric plan:** pass the challenge at 1.0% (speed), drop to 0.5% once funded (protection).
+
+### Margin on an FTMO **Swing** account (measured 2026-08-09)
+
+The swing account is **mandatory** for this book (b2/b3/b4 hold overnight and over
+weekends) and its advertised **1:30 applies to nothing here** — the book holds no forex.
+The leverages that bite are **indices 1:15, metals 1:9, crypto 1:1** (crypto is 1:1 on the
+*normal* account too, so **the swing downgrade is nearly free**). Measured on the real
+position timeline (`scratchpad/ftmo_swing_margin.py`):
+
+| Book | median margin | p99 | max | time > 100 % | entries refused |
+|---|---|---|---|---|---|
+| **AGRESSIF @1.00 %, final (no KELT)** | **19.0 %** | 49.5 % | **84.4 %** | **0 %** | **0 / 3801** |
+| **FUNDED @0.50 %, final (no KELT)** | **4.8 %** | 14.7 % | **24.8 %** | 0 % | **0 / 1445** |
+| *(was)* AGRESSIF with KELT, swing | 31.7 % | 77.6 % | 117.4 % | 0.10 % | 25 / 5034 |
+| *(was)* AGRESSIF with KELT, normal | 30.4 % | 70.6 % | 112.6 % | 0.01 % | 2 / 5034 |
+
+The tail saturation was **KELT's**, not the account's: at 1R it ate **33.9 %** of the balance
+in margin (2.95 % median stop × crypto 1:1) vs KAER 17.5 %, brick 1 16.5 %, brick 4 1.5 %.
+**Retiring it removed the margin problem outright** — the final books never come close to the
+ceiling. (Had it been kept, `0.75 %/trade`, `KELT@0.25R`, or `b3@0.5R + KELT@0.25R` each took
+the max under 100 %.)
+
+⚠️ **`broker.market_order` never calls `order_calc_margin`/`order_check`**, so a 10019
+refusal raises, the runner logs it, and the brick simply **re-attempts on the next pass**
+at a drifted price.
+
+### FTMO commissions (measured 2026-08-09) — one sleeve pays for all of them
+
+**The whole thing is one formula: cost in R = `sides × rate / stop_pct`.** A commission is
+proportional to *notional*, and notional/risk = 1/stop%, so **the same rate hurts in inverse
+proportion to how tight the stop is**. FTMO charges **0.0325 %/side on crypto**, **0.0007 %/side
+on metals**, **0 % on indices**.
+
+| Sleeve | stop % | cost/trade | R/yr → | t → |
+|---|---|---|---|---|
+| **KELT** BTC | 2.95 % | **0.0220 R** | 17.35 → **13.60** | 2.99 → **2.35** |
+| b3 BTC / ETH | 8.6 / 11.4 % | 0.0075 / 0.0057 R | −0.13 / −0.11 | ~flat |
+| b2 XAU | 1.99 % | 0.0007 R | −0.01 | flat |
+| b1 / b4 / KAER | — | 0 | 0 | — |
+
+Book: AGRESSIF **55.97 → 53.85 R/yr** (Sharpe 2.29 → 2.20), FUNDED **34.72 → 32.72**
+(2.21 → 2.08). So **−22 % of KELT's edge and ~−4 % of the book** — the tight-stop sleeve is
+the only one that notices. `scratchpad/ftmo_commissions.py`.
+
+### The swap is the real bill — and it is what retired KELT
+
+FTMO's spec, read symbol by symbol, uses **two different MT5 swap modes**, and each needs
+its own conversion:
+
+| Symbol | MT5 mode | spec | → annual % of price |
+|---|---|---|---|
+| BTCUSD / ETHUSD | *percentage of current price* | −30 / −30, Fri ×3 | **−30 % both sides** |
+| NAS100 | *points* | −559.07 / −56.72, Fri ×3 | **−7.23 % long**, −0.73 % short |
+| XAUUSD | *points* | −78.40 / −23.55, **Wed ×3** | **−7.01 % long**, −2.10 % short |
+
+*Percentage of current price* is `SYMBOL_SWAP_MODE_INTEREST_CURRENT` — the MQL5 doc says
+**annual** interest on a **360-day** bank year, so −30 is 8.33 bps/night, not 30 points.
+*Points* is a fixed cash amount per lot, so its cost as a fraction of notional **depends on
+the price**; converting at today's price gives 7.23 % and 7.01 % — two nearly identical
+funding rates, which is exactly what confirms **point size 0.01 on both** (at 0.1 the NAS
+would read 72 %/yr, which does not exist on an index). The repo's `POINT_SIZE` says 0.1 for
+NAS100 — that is **Pepperstone**; FTMO quotes it to 2 decimals.
+
+Three consequences that do *not* fall out of a naive reading:
+
+1. **Count swap UNITS, not nights.** The weekday factors sum to 7 per week either way, but
+   they are not interchangeable: with gold's **Wednesday** triple a weekend costs **1** unit
+   while crossing a Wednesday costs **3**; with NAS's Friday triple a weekend costs 3.
+2. **Direction matters, because b2 and b4 are long-only** — they always pay the expensive
+   side (10× the short rate on NAS).
+3. **b1 and KAER pay nothing at all.** They are intraday; zero rollovers crossed.
+
+**`cost_R = units × rate/unit / stop_pct`** — inverse in the stop's tightness, linear in the
+holding time. Measured at 1R:
+
+| Sleeve | units/trade | R/yr → | left | t → |
+|---|---|---|---|---|
+| **KELT** *(retired)* | 2.1 | 17.35 → **5.04** | **29 %** | 2.99 → **0.87** |
+| b3 BTC / ETH | 20.3 / 17.5 | 6.41 → 3.13 / 5.50 → 3.07 | ~50 % | 1.41 / 1.25 |
+| b4 NAS IBS | 3.2 | 4.81 → **4.30** | 89 % | 5.16 → 4.59 |
+| b2 XAU ToM | 2.8 | 2.56 → **2.21** | 87 % | 2.35 → 2.07 |
+| **b1, KAER** | **0** | **12.95 / 30.82 unchanged** | **100 %** | — |
+
+Gold and the NAS get off lightly — wide stops, low rates, and for gold the Wednesday triple
+means its month-end weekends are cheap. **Crypto carries essentially the whole bill.**
+
+⭐ **Removing KELT is what the numbers say.** Net of every FTMO cost, with KELT the books are
+AGRESSIF 43.39 R/yr at maxDD **21.92** (RoMaD 1.98, challenge @1 % 82.0 %) and FUNDED 24.96
+at maxDD 14.66 (funded ruin **2.5 %**). Without it: **40.90 / maxDD 17.36 / RoMaD 2.36 /
+challenge 83.8 %** and **22.46 / maxDD 12.31 / RoMaD 1.83 / ruin 1.0 %**. −2.5 R/yr buys
+4.5 R of drawdown and halves ruin. A sleeve at **t = 0.87 net** has no place in a static-DD
+book. Cutting brick 3 as well goes too far — its 3× wider stop absorbs the swap.
+
+**Structural shift worth naming: b1 + KAER now carry 66 % of AGRESSIF's net R/yr** (27.1 of
+40.9) because they are the only sleeves that never cross a rollover. The swing account is
+still mandatory for b2/b3/b4 — but everything it costs lands on the long-hold sleeves.
+`scratchpad/ftmo_swaps.py`. See [[log]] 2026-08-09.
 
 **Payout cadence:** biweekly is **not** better. Annual income is ~flat across cadence,
 but frequent payout strips the cushion (reset to 100% = always 10% from the static

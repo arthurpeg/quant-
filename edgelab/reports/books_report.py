@@ -1,12 +1,16 @@
 """Self-contained HTML backtest report for the two named books.
 
-    book AGRESSIF = b1 + b2 + b3 + b4 @1R + KAER@0.5R + KELT@0.5R   (live on the demo)
-    book FUNDED   = b1 + b2 + b3@0.5R + b4 @1R + KELT@0.5R
+    book AGRESSIF = b1 + b2 + b3 + b4 @1R + KAER@0.5R   (live on the demo)
+    book FUNDED   = b1 + b2 + b3@0.5R + b4 @1R
+
+KELT (BTCUSD H1 Keltner) was RETIRED from both books on 2026-08-09: FTMO charges -30 %/yr
+on BOTH sides of BTCUSD, which takes the sleeve to +5.00 R/yr at t=0.87 and made removing
+it a strict improvement on drawdown and ruin. See wiki/log.md 2026-08-09.
 
 Everything is rebuilt from the canonical modules — `monte_carlo_static.build_daily_R`
-for the four bricks on the LIVE cadence, `intraday.kaer.run_kaer` and
-`intraday.keltner_btc.run_keltner` for the two forward-test sleeves — so the report can
-never drift from what the runner trades. No scratchpad imports, no cached blobs.
+for the four bricks on the LIVE cadence and `intraday.kaer.run_kaer` for the remaining
+forward-test sleeve — so the report can never drift from what the runner trades. No
+scratchpad imports, no cached blobs.
 
     python -m edgelab.reports.books_report
 
@@ -30,7 +34,6 @@ import numpy as np
 import pandas as pd
 
 from edgelab.intraday.kaer import run_kaer
-from edgelab.intraday.keltner_btc import run_keltner
 from edgelab.reports.monte_carlo_static import build_daily_R, simulate
 
 HERE = Path(__file__).resolve().parent
@@ -41,18 +44,18 @@ COPIES = (HERE / "_out" / "books_backtest.html",
 RISKS = (0.005, 0.0075, 0.01)
 
 BOOKS = {
-    "AGRESSIF": dict(w=dict(b1=1.0, b2=1.0, b3=1.0, b4=1.0, KAER=0.5, KELT=0.5),
+    "AGRESSIF": dict(w=dict(b1=1.0, b2=1.0, b3=1.0, b4=1.0, KAER=0.5),
                      use="CHALLENGE — 1.00 %/trade",
-                     note="Déployé en live sur la démo (magics 101→107)."),
-    "FUNDED":   dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, KAER=0.0, KELT=0.5),
+                     note="Déployé en live sur la démo (magics 101→106)."),
+    "FUNDED":   dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, KAER=0.0),
                      use="FUNDED — 0.50 %/trade",
                      note="Bascule à la validation du challenge. Pas encore déployé."),
 }
-SLEEVES = ["b1", "b2", "b3", "b4", "KAER", "KELT"]
+SLEEVES = ["b1", "b2", "b3", "b4", "KAER"]
 SLEEVE_LABEL = {
     "b1": "brique 1 — NAS100 ORB (régime bas)", "b2": "brique 2 — XAUUSD turn-of-month",
     "b3": "brique 3 — BTC+ETH MACD+RSI", "b4": "brique 4 — NAS100 IBS",
-    "KAER": "KAER — NAS100 M15 efficiency ratio", "KELT": "KELT — BTCUSD H1 Keltner",
+    "KAER": "KAER — NAS100 M15 efficiency ratio",
 }
 
 
@@ -71,11 +74,9 @@ def load_sleeves() -> tuple[pd.DataFrame, pd.Timestamp, pd.Timestamp]:
     idx = pd.date_range(start, end, freq="D")
     b1, b2, b3, b4 = [p.reindex(idx).fillna(0.0) for p in parts]
     kr = run_kaer("NAS100").trades
-    kt = run_keltner("BTCUSD").trades
     return pd.DataFrame({
         "b1": b1, "b2": b2, "b3": b3, "b4": b4,
         "KAER": _daily(kr["R"], kr["exit_time"], idx),
-        "KELT": _daily(kt["R"], kt["exit_time"], idx),
     }), start, end
 
 
@@ -497,16 +498,21 @@ def build(out: Path = OUT) -> Path:
  <section class="warn">
   <h2>Ce que ce rapport ne prouve pas</h2>
   <ul>
-   <li><b>KAER et KELT n'ont jamais été forward-testées.</b> Elles sont in-sample et ont
-    été sélectionnées comme meilleures cellules de criblages larges (722 survivantes
-    crypto-H1 pour KELT). Sans elles, AGRESSIF redevient le livre gelé à 4 briques :
-    plus lent, pas cassé.</li>
+   <li><b>KAER n'a jamais été forward-testée.</b> Elle est in-sample et a été
+    sélectionnée comme meilleure cellule d'un criblage large. Sans elle, AGRESSIF
+    redevient le livre gelé à 4 briques : plus lent, pas cassé.</li>
+   <li><b>Les coûts FTMO ne sont PAS dans ces courbes.</b> Commission 0,0325 %/côté sur la
+    crypto et 0,0007 %/côté sur les métaux, et surtout un <b>swap de −30 %/an des deux
+    côtés sur BTCUSD</b> plus les swaps en points du NAS et de l'or. Le coût en R vaut
+    <code>nuits × taux/nuit ÷ stop%</code>, donc il frappe les sleeves à stop serré et à
+    détention longue. C'est ce qui a fait <b>retirer KELT des deux livres le
+    2026-08-09</b>.</li>
    <li><b>Les sleeves ne décroissent pas au même rythme.</b> Entre la première et la
     seconde moitié de l'échantillon : brique 1 ×2.19, brique 2 ×1.68, brique 4 ×0.88,
-    KELT ×0.71, KAER ×0.74, <b>brique 3 ×0.32</b>. C'est pourquoi FUNDED réduit la
-    brique 3 de moitié.</li>
+    KAER ×0.74, <b>brique 3 ×0.32</b>. C'est pourquoi FUNDED réduit la brique 3 de
+    moitié.</li>
    <li><b>Le maximum théorique d'un jour dépasse la règle quotidienne.</b> AGRESSIF peut
-    tenir 7 positions simultanées = 6R ; à 1 %/trade une journée où tout part au stop
+    tenir 6 positions simultanées = 5,5R ; à 1 %/trade une journée où tout part au stop
     coûterait −6 % contre une limite de −5 %. Ce n'est jamais arrivé (pire journée réelle
     −3,58 R) — la protection vient de la décorrélation, pas de la construction.</li>
    <li>Le block-bootstrap <b>sous-estime les régimes baissiers crypto prolongés</b> ;

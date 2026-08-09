@@ -30,8 +30,9 @@ from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 from edgelab.live.strategies import (NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy,
-                                     NasIbsStrategy, KaerStrategy,
-                                     KeltnerStrategy)
+                                     NasIbsStrategy, KaerStrategy)
+# KeltnerStrategy is deliberately NOT imported: KELT was retired from the live book on
+# 2026-08-09 (see build_stack below). The class itself still lives in strategies.py.
 
 LOG = logging.getLogger("edgelab.live.runner")
 CFG_LIVE = Path(__file__).resolve().parent / "config_live.yaml"
@@ -60,10 +61,18 @@ def build(cfg_live: dict):
     # runner enables it in config_live.yaml. See edgelab/intraday/kaer.py.
     if cfg_live.get("enable_kaer", False):
         strategies.append(KaerStrategy(cfg_live))
-    # FORWARD-TEST SLEEVE, not a brick: BTCUSD H1 Keltner breakout, half size.
-    # Same default-OFF discipline as KAER. See edgelab/intraday/keltner_btc.py.
+    # KELT (BTCUSD H1 Keltner) is RETIRED from the live book, 2026-08-09 — user decision.
+    # FTMO's BTCUSD swap is -30 %/yr BOTH sides (MT5 "percentage of current price" =
+    # annual interest, 360-day bank year -> 8.33 bps/night). With that plus the
+    # 0.0325 %/side commission the sleeve nets +5.00 R/yr at t=0.87 instead of +17.35 at
+    # t=2.99, and DROPPING it improves both books (AGRESSIF maxDD 21.7->17.3, RoMaD
+    # 2.03->2.41; FUNDED ruin 2.4 %->0.7 %). A tight stop bought notional that the swap
+    # then charged for every night. `KeltnerStrategy` and `keltner_btc.py` are kept for
+    # research and `verify`; only the LIVE wiring is gone. See wiki/log.md 2026-08-09.
     if cfg_live.get("enable_keltner", False):
-        strategies.append(KeltnerStrategy(cfg_live))
+        LOG.warning("enable_keltner is set but KELT was RETIRED from the live book on "
+                    "2026-08-09 (FTMO swap -30%%/yr both sides) — IGNORING the flag. "
+                    "See wiki/system.md.")
     return broker, risk, strategies
 
 
