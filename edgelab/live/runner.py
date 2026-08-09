@@ -218,6 +218,28 @@ def _maybe_report(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: d
 
 
 _MARKET_CLOSED_SINCE: dict[str, pd.Timestamp] = {}   # strat name -> when it first hit a closed market
+_LAST_FAILURE: dict = {}          # strat name -> (signature, first seen, last logged)
+FAIL_REPEAT_MIN = 15.0            # re-log an UNCHANGED, still-repeating failure this often
+
+
+def _log_failure(name: str, exc: Exception, now_utc: pd.Timestamp) -> None:
+    """Full traceback the first time a brick fails, then one throttled line while the SAME
+    failure keeps repeating.
+
+    Exits are retried on every pass (a position we want out of is never abandoned), so a
+    rejection that persists on an OPEN market — invalid stops, AutoTrading off, a
+    mis-mapped symbol — would otherwise write a traceback every `poll_seconds`, i.e.
+    thousands a day, and rotate the useful history out of runner.log. Same reasoning that
+    made a missing quote a typed MarketClosed instead of an AttributeError (broker._tick_price).
+    """
+    sig = f"{type(exc).__name__}: {exc}"
+    prev = _LAST_FAILURE.get(name)
+    if prev is None or prev[0] != sig:          # new / different failure -> the full story
+        LOG.exception("strategy %s failed: %s", name, exc)
+        _LAST_FAILURE[name] = (sig, now_utc, now_utc)
+    elif (now_utc - prev[2]) >= pd.Timedelta(minutes=FAIL_REPEAT_MIN):
+        LOG.error("strategy %s STILL failing (for %s): %s", name, now_utc - prev[1], sig)
+        _LAST_FAILURE[name] = (sig, prev[1], now_utc)
 
 
 def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Timestamp) -> None:
@@ -225,16 +247,26 @@ def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Time
     for strat in strategies:
         name = type(strat).__name__
         try:
+            sent_before = broker.orders_sent
             strat.step(broker, risk, now_utc)
+            _LAST_FAILURE.pop(name, None)      # a clean pass ends any failure streak
             if name in _MARKET_CLOSED_SINCE:   # a prior pass was waiting -> it just went through
                 waited = now_utc - _MARKET_CLOSED_SINCE.pop(name)
-                LOG.info("%s: market reopened, order placed (waited %s)", name, waited)
+                # `step()` returns nothing, and half a dozen of its exits are legitimately
+                # silent (no signal, day already handled, bar not printed yet). Only the
+                # broker's own counter can say an order really went out — claiming one on a
+                # bare return is what hid brick 4's stuck exit for three days (2026-08-07..09).
+                if broker.orders_sent > sent_before:
+                    LOG.info("%s: market reopened, order placed (waited %s)", name, waited)
+                else:
+                    LOG.info("%s: market reopened, NO order sent on this pass (waited %s)",
+                             name, waited)
         except MarketClosed as exc:            # expected daily break -> log once, keep retrying quietly
             if name not in _MARKET_CLOSED_SINCE:
                 _MARKET_CLOSED_SINCE[name] = now_utc
                 LOG.info("%s: %s -> market closed, will retry until it opens (no error)", name, exc)
         except Exception as exc:               # never let one brick kill the loop
-            LOG.exception("strategy %s failed: %s", name, exc)
+            _log_failure(name, exc, now_utc)
 
 
 def status(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: dict) -> None:

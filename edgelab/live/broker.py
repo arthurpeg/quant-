@@ -96,6 +96,11 @@ class Broker:
         self._paper_balance = float(cfg_live.get("paper_balance", 100000.0))
         # trade journal (both dry-run and live) — one CSV row per entry & exit
         self.trade_log_path = cfg_live.get("trade_log_csv")
+        # Monotonic count of orders this broker actually EXECUTED (entries + exits, live
+        # and paper). The runner diffs it across a `step()` to tell "an order went out"
+        # from "the pass merely returned", which a return value alone cannot say — a
+        # strategy pass has half a dozen legitimate silent exits. See runner.one_pass.
+        self.orders_sent: int = 0
 
     @staticmethod
     def _tag(pos: "Position", reason: str) -> str:
@@ -358,6 +363,7 @@ class Broker:
                        bars_held_limit=bars_held_limit)
         if not self.live:
             self.paper[magic] = pos
+            self.orders_sent += 1
             logger.info("[DRY-RUN] ENTER %s %s %.2f lots @~%.5f  SL=%.5f TP=%s  (%s)",
                         logical, "LONG" if direction > 0 else "SHORT", lots, ref_price,
                         sl, f"{tp:.5f}" if tp else "none", comment)
@@ -391,6 +397,7 @@ class Broker:
             raise RuntimeError(f"order_send failed: {rc}")
         pos.ticket = res.order
         pos.entry_price = res.price
+        self.orders_sent += 1
         logger.info("[LIVE] ENTER %s %s %.2f lots @%.5f ticket=%s SL=%.5f TP=%s",
                     logical, "LONG" if direction > 0 else "SHORT", lots, res.price,
                     res.order, sl, f"{tp:.5f}" if tp else "none")
@@ -492,6 +499,7 @@ class Broker:
         if not self.live:
             self.paper.pop(pos.magic, None)
             self.realized_R += R
+            self.orders_sent += 1
             logger.info("[DRY-RUN] EXIT  %s @%.5f  %s  R=%+.2f  (cumR=%+.1f)",
                         pos.symbol, exit_price, reason, R, self.realized_R)
             self._log_trade({"time": now_utc.isoformat(), "event": "exit", "symbol": pos.symbol,
@@ -519,6 +527,7 @@ class Broker:
                          rc, getattr(res, "comment", mt5.last_error()))
             raise RuntimeError("close order_send failed")
         R = pos.direction * (res.price - pos.entry_price) / pos.sl_dist - cost_R
+        self.orders_sent += 1
         logger.info("[LIVE] EXIT %s @%.5f %s R=%+.2f", pos.symbol, res.price, reason, R)
         self._log_trade({"time": now_utc.isoformat(), "event": "exit", "symbol": pos.symbol,
                          "dir": pos.direction, "lots": pos.lots, "price": round(res.price, 5),

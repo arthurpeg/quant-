@@ -516,6 +516,42 @@ Two rules, both learned the hard way on 2026-08-09 (see [[log]]):
    every day. Because of the lead, b2/b3/b4 evaluate their **exit on every pass** (entries
    stay once per broker day) and park `_acted_day` so an early close can never be followed
    by an early re-entry — the `cadence='live'` guarantee.
+3. **A refused exit must be retried on the very next poll — see the incident below.**
+   Retrying it once per broker day is not "on every pass", and the difference is days of
+   unwanted exposure.
+
+### ⚠️ Incident 2026-08-07→09 — brick 4 could not get out, and the log said it had
+
+Brick 4 held its NAS100 long (ticket 82489480, entered 2026-08-06) for **~3 extra days**.
+`NasIbsStrategy.step` set `_acted_day = bday` **before** attempting `broker.close()`, so the
+first refusal of a broker day consumed that day's only exit attempt: every later pass
+returned at the `first_pass_today` guard without retrying. On a weekend that is three days.
+The runner then printed **`market reopened, order placed`** on the next pass — a line emitted
+whenever `step()` merely returned without raising `MarketClosed`, which proves nothing
+(`step()` has ~6 legitimately silent exits). It fired **six times on 2026-08-09 alone**, each
+20 s after a refusal, so the log positively asserted the opposite of what happened.
+
+Fixed 2026-08-10 in [`strategies.py`](../edgelab/live/strategies.py) /
+[`runner.py`](../edgelab/live/runner.py) / [`broker.py`](../edgelab/live/broker.py):
+
+- **Two day markers instead of one.** `_acted_day` (= don't OPEN on this bar) is still set
+  the moment a position is seen, preserving the `cadence='live'` guarantee against a
+  mid-pass stop fill. The new `_managed_day` (= the exit decision RESOLVED) is set only
+  *after* the close attempt returns. A refusal leaves it unset → the next poll retries.
+  Applied to all three rollover bricks (b2, b3, b4); b1/KAER/KELT never had the bug (their
+  exit branch already runs unconditionally).
+- **`Broker.orders_sent`**, a counter incremented on each executed entry/exit. The runner
+  diffs it across `step()` and now says `NO order sent on this pass` when nothing went out.
+- **Throttled failure logging** (`runner._log_failure`): full traceback once, then one line
+  every 15 min while the *same* failure repeats. Necessary *because* exits now retry — a
+  rejection persisting on an OPEN market would otherwise write a traceback every 20 s and
+  rotate `runner.log`'s useful history away (the same concern that typed a missing quote as
+  `MarketClosed` in `broker._tick_price`).
+
+**Lesson, and it generalises past this repo: a log line must assert what was *observed*, not
+what the code path implies.** The bug was ~3 days old and invisible precisely because the
+runner reported success on a bare return. `verify` could not have caught this — it checks
+signal/cadence fidelity on cached bars, and never exercises a broker that refuses.
 
 Cost, measured: brick 2 is a **wash on mean** (tracking error vs the backtest's `c[xi]`
 exit: −0.43 R at 22:50 vs −0.40 R at the current post-break fill, over 89 exits/8.5 yr) but

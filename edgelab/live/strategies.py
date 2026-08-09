@@ -99,10 +99,38 @@ class _EntryRetryGuard:
 
 
 class _RolloverBrick:
-    """Shared entry plumbing for the bricks that decide at the daily-bar rollover (2, 3, 4).
+    """Shared entry+exit plumbing for the bricks that decide at the daily-bar rollover (2, 3, 4).
 
-    Subclasses set ``self._retry`` and ``self._acted_day``.
+    Subclasses set ``self._retry``, ``self._acted_day`` and ``self._managed_day``.
+
+    TWO SEPARATE DAY MARKERS, and the distinction is the whole point:
+
+    * ``_acted_day`` — "this broker bar is spoken for, do not OPEN on it". Set the moment a
+      position is seen, *before* the exit is attempted, because a broker stop that fills
+      mid-pass must not be followed by a same-bar entry (the cadence='live' guarantee).
+    * ``_managed_day`` — "the exit decision for this bar has RESOLVED". Set only *after*
+      the exit attempt returns without raising.
+
+    They used to be one field, and that silently broke exits. ``_acted_day`` was set before
+    ``broker.close()``, so the first pass of a broker day consumed the day's only exit
+    attempt: a close rejected because the market was shut (weekend, the 00:00-01:00 break)
+    was then not retried until the NEXT broker day, ~24 h later — three days over a weekend.
+    Measured live 2026-08-07..09: brick 4 tried to leave a NAS100 long six times, was
+    refused every time by a closed market, and carried the position ~3 extra days
+    (runner.log; the runner's "market reopened, order placed" line made it look successful).
+    Splitting the markers makes a refused exit retry on the very next poll, so the close
+    lands at the reopen — which is where the backtest exits.
     """
+
+    def _exit_due(self, bday, in_lead: bool) -> bool:
+        """True when this pass must (re-)evaluate the exit of an open position.
+
+        Re-evaluate while the day's decision is unresolved (first pass, or every pass after
+        a refusal), and always inside the pre-rollover lead window, which is where the
+        anticipated time exits fire. An exit is NEVER abandoned — only entries are
+        time-boxed (see _EntryRetryGuard).
+        """
+        return self._managed_day != bday or in_lead
 
     def _place_entry(self, place, bday, now_utc: pd.Timestamp, label: str) -> None:
         """Send an entry, bailing out of the day if an OPEN market keeps refusing it."""
@@ -213,6 +241,7 @@ class GoldTomStrategy(_RolloverBrick):
         self.magic = MAGIC["gold_tom"]
         self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_day = None
+        self._managed_day = None
         self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
@@ -222,10 +251,9 @@ class GoldTomStrategy(_RolloverBrick):
 
         # ---- open position: exit checked on every pass ---------------------------
         if pos is not None:
-            first_pass_today = self._acted_day != bday
-            self._acted_day = bday
+            self._acted_day = bday          # holding today => never OPEN on this bar either
             in_lead = _at_rollover_lead(now_utc, self.lead_min)
-            if not (first_pass_today or in_lead):
+            if not self._exit_due(bday, in_lead):
                 return
             # RAW broker-time D1: a bar's date IS its trading date, which is what both the
             # backtest and tom_state's bar-count exit key on. (get_bars' true-UTC index
@@ -238,6 +266,7 @@ class GoldTomStrategy(_RolloverBrick):
                 closed, px, why = broker.resolve_paper(pos, bar, now_utc)
                 if closed:
                     broker.close(pos, px, why, now_utc)
+                    self._managed_day = bday
                     return
             # `is_exit_day` = the count is already tipped (the rollover has passed, e.g. the
             # runner was down). `bars_done + 1` = the bar closing RIGHT NOW is the one that
@@ -246,6 +275,9 @@ class GoldTomStrategy(_RolloverBrick):
             if st.is_exit_day or (due_at_close and in_lead):
                 px = float(d1.iloc[-1]["close"])
                 broker.close(pos, px, "time_exit", now_utc)
+            # reached only if the close went through (or none was due): a refusal raises
+            # out of `step` and leaves the day unresolved, so the next poll retries.
+            self._managed_day = bday
             return
 
         # ---- entries: once per broker day, at the rollover ------------------------
@@ -294,6 +326,7 @@ class CryptoMacdStrategy(_RolloverBrick):
         self.time_exit_bars = int(risk_cfg["time_exit_bars"])
         self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_day = None
+        self._managed_day = None
         self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
     def _manage(self, broker: Broker, pos, now_utc: pd.Timestamp, bday) -> None:
@@ -340,10 +373,10 @@ class CryptoMacdStrategy(_RolloverBrick):
             # Holding today => never enter on this bar either (that is the cadence='live'
             # guarantee: a bar that closes a trade cannot open one). Set it BEFORE the
             # exit runs, so a stop filled mid-bar cannot be followed by a same-bar entry.
-            first_pass_today = self._acted_day != bday
             self._acted_day = bday
-            if first_pass_today or _at_rollover_lead(now_utc, self.lead_min):
+            if self._exit_due(bday, _at_rollover_lead(now_utc, self.lead_min)):
                 self._manage(broker, pos, now_utc, bday)
+                self._managed_day = bday   # only if _manage returned: a refusal raises
             return
 
         # ---- entries: once per broker day, at the rollover -----------------------
@@ -408,6 +441,7 @@ class NasIbsStrategy(_RolloverBrick):
         self.magic = MAGIC["nas_ibs"]
         self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_day = None
+        self._managed_day = None
         self._wait_logged = None
         self._retry = _EntryRetryGuard(cfg_live.get("entry_retry_max_hours", 2))
 
@@ -431,9 +465,8 @@ class NasIbsStrategy(_RolloverBrick):
         pos = broker.open_position(self.magic)
         in_lead = _at_rollover_lead(now_utc, self.lead_min)
         if pos is not None:
-            first_pass_today = self._acted_day != bday
-            self._acted_day = bday
-            if not (first_pass_today or in_lead):
+            self._acted_day = bday          # holding today => never OPEN on this bar either
+            if not self._exit_due(bday, in_lead):
                 return
         elif self._acted_day is not None and bday <= self._acted_day:
             return
@@ -457,7 +490,7 @@ class NasIbsStrategy(_RolloverBrick):
                 bar = daily_all.iloc[-1]
                 closed, px, why = broker.resolve_paper(pos, bar, now_utc, bars_held=held)
                 if closed:
-                    broker.close(pos, px, why, now_utc); return
+                    broker.close(pos, px, why, now_utc); self._managed_day = bday; return
             timed = held is not None and held >= self.p.max_hold
             # The bar closing right now is the one that would tip the count at the next
             # rollover -> leave on it rather than into the 00:00-01:00 break / the weekend.
@@ -471,6 +504,9 @@ class NasIbsStrategy(_RolloverBrick):
                 why = "ibs_high" if st.exit_signal else "time_exit"
                 px = float(daily_all.iloc[-1]["close"])    # current price = the new bar's open
                 broker.close(pos, px, why, now_utc)
+            # reached only if the close went through (or none was due): a refusal raises
+            # out of `step` and leaves the day unresolved, so the next poll retries.
+            self._managed_day = bday
             return
 
         if st.entry_ok:
