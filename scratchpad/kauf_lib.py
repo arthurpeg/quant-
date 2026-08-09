@@ -287,7 +287,7 @@ class Bars:
 # the bracket engine
 # --------------------------------------------------------------------------------
 def outcomes(b, sl_mult, tp_mult, maxbars, direction, rt=None, deadline=None,
-             floor_spread=0.0):
+             floor_spread=0.0, dist_override=None):
     """Resolve the hypothetical trade entered at EVERY bar for one bracket.
 
     Entry bar m means the signal fired at bar m-1's close and we fill at open[m]; the stop
@@ -310,7 +310,13 @@ def outcomes(b, sl_mult, tp_mult, maxbars, direction, rt=None, deadline=None,
 
     m = np.arange(n)
     dist = np.full(n, np.nan)
-    dist[1:] = sl_mult * b.atr[:-1]
+    if dist_override is not None:
+        # stop de STRUCTURE (ex: plus-bas des N dernieres barres). Comme pour l'ATR on
+        # decale d'une barre: la distance est celle CONNUE A LA DECISION, jamais celle
+        # de la barre d'entree (qui serait du look-ahead).
+        dist[1:] = np.asarray(dist_override, float)[:-1]
+    else:
+        dist[1:] = sl_mult * b.atr[:-1]
     if floor_spread:
         f = np.full(n, np.nan)
         f[1:] = floor_spread * b.spread_px[:-1]
@@ -371,12 +377,15 @@ class Table:
     """Long and short outcome tables for one bracket -- what a rule is scored against."""
 
     def __init__(self, b, sl_mult, tp_mult, maxbars, rt=None, session=True,
-                 floor_spread=0.0):
+                 floor_spread=0.0, dist_override=None):
         self.b = b
-        self.key = (sl_mult, tp_mult, maxbars, session, floor_spread)
+        self.key = (sl_mult, tp_mult, maxbars, session, floor_spread,
+                    None if dist_override is None else id(dist_override))
         dl = b.deadline if session else None
-        self.RL, self.XL = outcomes(b, sl_mult, tp_mult, maxbars, +1, rt, dl, floor_spread)
-        self.RS, self.XS = outcomes(b, sl_mult, tp_mult, maxbars, -1, rt, dl, floor_spread)
+        self.RL, self.XL = outcomes(b, sl_mult, tp_mult, maxbars, +1, rt, dl, floor_spread,
+                                    dist_override)
+        self.RS, self.XS = outcomes(b, sl_mult, tp_mult, maxbars, -1, rt, dl, floor_spread,
+                                    dist_override)
 
     def walk(self, sig):
         idx = np.flatnonzero(sig != 0)
