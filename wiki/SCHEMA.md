@@ -171,3 +171,19 @@ Run this pass every so often (or when asked to "lint the wiki"):
   once; no dead links.
 
 Log each lint pass with a `lint` line in [log.md](log.md).
+
+## Standing rule — the TEST UNIVERSE (user, 2026-08-09)
+
+**Every strategy backtested in this project runs on US indices, EU indices AND gold.**
+Not one asset, and not only the asset its author had in mind.
+
+The recurring failure mode here is a cell that looks significant on one name and
+replicates nowhere: KAER (NAS100 t=3.19, significant on no other index), the GER40
+EU-open ORB, TSM-Coil (GER40 2.51 → gold −0.54). **Cross-asset replication is the test
+that separates an edge from a selection artefact**, so it belongs inside the harness, not
+bolted on once a promising number appears. It is also how brick 3 was found in the first
+place — a rule proposed for one market, scored on a different asset class.
+
+**How to apply.** Put the asset loop in the harness. Report the **per-symbol table
+(median AND max t)** next to any headline number, and state the replication result in the
+same breath as the best cell — never the best cell alone.
