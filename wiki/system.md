@@ -283,6 +283,40 @@ book. Cutting brick 3 as well goes too far — its 3× wider stop absorbs the sw
 still mandatory for b2/b3/b4 — but everything it costs lands on the long-hold sleeves.
 `scratchpad/ftmo_swaps.py`. See [[log]] 2026-08-09.
 
+### "Then why not go 100 % intraday?" — measured, and the answer is no
+
+b1 and KAER keep **100 %** of their edge net of FTMO cost, so the question is natural. At
+**equal risk** (each book at its own −10 % static floor, funded income under a 2 % ruin cap
+— the project's admission-test metric since 2026-07-31):
+
+| Book | R/yr | maxDD | RoMaD | **funded %/yr @ ≤2 % ruin** |
+|---|---|---|---|---|
+| **A — current (b1+b2+b3+b4+KAER)** | 40.90 | **17.36** | **2.36** | **15.0 %** |
+| F — no gold | 38.71 | 17.86 | 2.17 | 14.3 % |
+| **E — no crypto (b1+b2+b4+KAER)** | 34.79 | **17.12** | 2.03 | **14.6 %** |
+| D — intraday + b4 | 32.60 | 17.47 | 1.87 | 13.8 % |
+| B — intraday only, KAER@0.5R | 28.31 | 18.00 | 1.57 | 10.8 % |
+| C — intraday only, KAER@1R | **43.71** | **28.76** | 1.52 | **9.6 %** |
+
+**C is the lesson in one row: the highest gross R/yr of the lot and the lowest income at
+equal risk**, because its maxDD nearly doubles. B is starker still — **maxDD 18.00 R, worse
+than the whole book's 17.36, for 12.6 R/yr less**. The cause is already on this page:
+**b1 and KAER correlate +0.36, same asset, same family** — which is exactly why KAER was
+never counted as a 5th brick. An intraday-only book is not a cheaper diversified book, it is
+**one bet on one asset**, and its drawdowns stack instead of cancelling.
+
+⭐ **The instinct does land, one sleeve over: dropping CRYPTO costs only 0.4 pts** (E: 14.6 %
+at 1.4 % ruin vs A's 15.0 % at 1.6 %) and in exchange removes all the −30 %/yr swap, the 1:1
+margin that was the swing account's only saturation point, weekend gap risk, and takes the
+**worst day from −4.36 R to −2.63 R**. Brick 3 nets only 6.2 R/yr now (vs 11.9 gross) and
+carries most of the bad path. **Decide it explicitly — don't drift into it.**
+
+**Do not cut b2 or b4 to "go intraday".** They are the sleeves that survive the costs best
+(89 % and 87 % kept, net t 4.59 and 2.07) *and* the real decorrelators (|corr| ≤ 0.12 to
+everything, against +0.36 between b1 and KAER); their swap bill is −0.51 and −0.34 R/yr.
+⚠️ And **KAER is still not forward-tested** — an intraday-only book would stake its entire
+result on the least-proven sleeve in the set.
+
 **Payout cadence:** biweekly is **not** better. Annual income is ~flat across cadence,
 but frequent payout strips the cushion (reset to 100% = always 10% from the static
 floor) → **~2× the ruin risk** vs monthly/quarterly. Take payouts **as infrequently as
