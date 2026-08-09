@@ -406,6 +406,22 @@ losses cluster. **On a static-DD prop account the path is what you are paid on.*
 Standalone RoMaD is the cleanest admission test: IBS **1.59**, crypto 0.95, NAS 0.79,
 gold 0.73, **GER40 0.38**.
 
+⚠️ **PARTIALLY REVERSED 2026-08-09 by the FTMO cost work — GER40 is no longer closed.**
+The verdict above was measured **at 1R, on a book without KAER, and gross of FTMO cost**.
+Net of cost, on the real book, and **at half size**, it becomes the first configuration ever
+tested that *beats* the book at equal risk: **A + GER40@0.5R = 16.4 %/yr at 1.5 % ruin**
+against A's 15.0 % at 1.6 %. At 1R it still loses the point (15.4 %, maxDD 17.4 → 26.4 R) —
+same sizing lesson as KAER and KELT: **a sleeve with a poor standalone RoMaD is worth only
+its decorrelation, so it is dosed at half.** And **A − crypto + GER40@1R = 15.8 % at 1.0 %
+ruin**, i.e. better than today's book with **no crypto at all**.
+
+What changed is not GER40 but its competition: it is **intraday, so its swap is zero and its
+index commission is zero** — it keeps 100 % of +10.17 R/yr — while brick 3 fell from 11.9 to
+6.2 R/yr. Still **in-sample, best-of-5 variants, regime filter inverted vs brick 1**, and the
+same ATR-breakout *mechanism* as brick 1 on another index/session. **Forward-test it at 0.5R
+alongside KAER — do not add it to the book on these numbers.** `scratchpad/dax_orb.py`,
+[[log]] 2026-08-09.
+
 | Sleeve | R/yr | daily vol | **standalone Sharpe** |
 |---|---|---|---|
 | IBS (b4) | +4.8 | 0.442 | **4.84** |
