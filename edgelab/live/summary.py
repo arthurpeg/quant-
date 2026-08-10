@@ -35,11 +35,33 @@ BRICK_LABEL = {
     "brick2": "brick 2 - gold ToM",
     "brick3": "brick 3 - crypto",
     "brick4": "brick 4 - NAS IBS",
-    "kaer": "KAER - NAS M15 ER breakout (fwd-test, 0.5R)",
-    "kelt": "KELT - BTC H1 Keltner breakout (fwd-test, 0.5R)",
+    "hmasto": "HMASTO - NAS M15 HMA/EMA cross + 3 osc (fwd-test, 0.5R)",
+    "kaer": "KAER - NAS M15 ER breakout (RETIRED 2026-08-10, replaced by HMASTO)",
+    "kelt": "KELT - BTC H1 Keltner breakout (RETIRED 2026-08-09)",
 }
+# ⚠️ THIS MAP MUST TRACK `strategies.MAGIC`. It is a SECOND, hand-maintained copy, so a
+# new sleeve shows up as "?" in the journal until it is added here — which is exactly what
+# happened to HMASTO (magic 108) on the day it was wired. The assertion below turns that
+# silent gap into an import-time failure.
 MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "brick4",
-             106: "kaer", 107: "kelt"}
+             106: "kaer", 107: "kelt", 108: "hmasto"}
+
+
+def _assert_magics_covered() -> None:
+    """Fail loudly at import if a sleeve exists that the journal cannot name."""
+    from edgelab.live.strategies import MAGIC
+    missing = sorted(set(MAGIC.values()) - set(MAGIC_TAG))
+    if missing:
+        raise RuntimeError(
+            f"summary.MAGIC_TAG is missing magic(s) {missing} present in "
+            f"strategies.MAGIC -- add them (and a BRICK_LABEL) or the live journal "
+            f"will report those positions as '?'.")
+    unlabelled = sorted(set(MAGIC_TAG.values()) - set(BRICK_LABEL))
+    if unlabelled:
+        raise RuntimeError(f"summary.BRICK_LABEL is missing {unlabelled}")
+
+
+_assert_magics_covered()
 
 
 def _brick(symbol: str, reason: str = "") -> str:

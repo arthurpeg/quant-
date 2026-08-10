@@ -1,6 +1,7 @@
 """Self-contained HTML backtest report for the two named books.
 
-    book AGRESSIF = b1 + b2 + b3 + b4 @1R + KAER@0.5R   (live on the demo)
+    book AGRESSIF = b1 + b2 + b3 + b4 @1R + HMASTO@0.5R  (live on the demo)
+                    KAER@0.5R held that slot until 2026-08-10; HMASTO replaced it
     book FUNDED   = b1 + b2 + b3@0.5R + b4 @1R
 
 KELT (BTCUSD H1 Keltner) was RETIRED from both books on 2026-08-09: FTMO charges -30 %/yr
@@ -46,7 +47,7 @@ RISKS = (0.005, 0.0075, 0.01)
 BOOKS = {
     "AGRESSIF": dict(w=dict(b1=1.0, b2=1.0, b3=1.0, b4=1.0, KAER=0.5),
                      use="CHALLENGE — 1.00 %/trade",
-                     note="Déployé en live sur la démo (magics 101→106)."),
+                     note="Déployé en live sur la démo (magics 101→105 + 108; KAER/106 retirée le 2026-08-10)."),
     "FUNDED":   dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, KAER=0.0),
                      use="FUNDED — 0.50 %/trade",
                      note="Bascule à la validation du challenge. Pas encore déployé."),
@@ -55,7 +56,7 @@ SLEEVES = ["b1", "b2", "b3", "b4", "KAER"]
 SLEEVE_LABEL = {
     "b1": "brique 1 — NAS100 ORB (régime bas)", "b2": "brique 2 — XAUUSD turn-of-month",
     "b3": "brique 3 — BTC+ETH MACD+RSI", "b4": "brique 4 — NAS100 IBS",
-    "KAER": "KAER — NAS100 M15 efficiency ratio",
+    "KAER": "KAER — NAS100 M15 efficiency ratio (retirée 2026-08-10)",
 }
 
 
