@@ -299,6 +299,98 @@ def verify_brick4() -> bool:
     return same
 
 
+def verify_hmasto(window: int = 400, sample: int = 4000) -> bool:
+    """FORWARD-TEST SLEEVE — NAS100 M15 HMA/EMA cross + triple-oscillator confirmation.
+
+    This sleeve replaced KAER in the live slot on 2026-08-10, and it carries an extra
+    burden the other sleeves do not: its rule was VALIDATED BY A TRANSPILER
+    (`scratchpad/tv_transpile.py` running the original Pine) and then RE-IMPLEMENTED in
+    `edgelab/intraday/hma_stoch.py`. The handoff's `adx_di.py` blocker is the cautionary
+    tale: 98.36 % signal agreement between a transpiled port and its repo module was
+    enough to turn RoMaD 1.12 into 0.67. 98 % is not agreement; 100 % is.
+
+    Four checks, any of which failing means the module has forked and must not trade:
+
+    (1) TRUNCATED WINDOW. The driver hands ``hma_scan`` only the last ``hmasto_bars``
+        bars while the backtest sees the whole history. Every indicator here is a short
+        rolling window (HMA 12, EMA 5 shifted 2, RSI 14, stoch 12/5 smoothed 3), so a
+        400-bar trailing window should be exact — but RSI is Wilder-recursive and seeded,
+        so it converges rather than matching instantly. This is what pins it down.
+    (2) STOP DISTANCE. 1R = max(1.0*ATR14, 25*spread), both read at the SIGNAL bar. The
+        25x-spread floor is load-bearing; without it the sleeve is inflated.
+    (3) SEQUENCING. The driver only scans while FLAT, so a signal firing mid-trade must be
+        skipped exactly as the backtest skips it.
+    (4) NO TARGET. tp_R must stay None: with TP=1R the cost stress goes NEGATIVE (-3.16).
+    """
+    from edgelab.intraday.hma_stoch import (HmaStochParams, run_hma_stoch, load_m15,
+                                            hma_signals, hma_atr, stop_distance)
+
+    p = HmaStochParams()
+    if p.tp_R is not None:                                   # ---- (4)
+        print("  HMASTO: tp_R is not None — the validated profile has NO target. FAIL")
+        return False
+
+    bars = load_m15("NAS100")
+    bt = run_hma_stoch("NAS100", p, bars=bars).trades
+    if not len(bt):
+        print("  HMASTO: no backtest trades — cannot verify")
+        return False
+
+    full_sig = hma_signals(bars, p)
+    full_atr = hma_atr(bars, p)
+    n = len(bars)
+
+    # ---- (1) + (2) truncated window vs full history ---------------------------------
+    rng = np.random.default_rng(0)
+    sig_bars = np.flatnonzero(full_sig != 0)
+    sig_bars = sig_bars[sig_bars >= window]
+    others = np.arange(window, n)
+    others = others[full_sig[others] == 0]
+    take = np.concatenate([
+        sig_bars,
+        rng.choice(others, min(sample, len(others)), replace=False)])
+    bad_sig = bad_sl = 0
+    for i in take:
+        sub = bars.iloc[i - window + 1: i + 1]
+        res = S.hma_scan(sub, p, "NAS100")
+        live_dir = 0 if res is None else res[1].direction
+        if live_dir != int(full_sig[i]):
+            bad_sig += 1
+            continue
+        if res is not None:
+            want = stop_distance(bars, i, p, full_atr, "NAS100")
+            if abs(res[1].sl_dist - want) > 1e-9:
+                bad_sl += 1
+    print(f"  HMASTO window fidelity: {len(take)} bars replayed through a {window}-bar "
+          f"trailing window ({len(sig_bars)} of them signal bars) — "
+          f"{len(take) - bad_sig} direction matches, {bad_sig} mismatches, "
+          f"{bad_sl} stop-distance mismatches")
+
+    # ---- (3) one-position-at-a-time sequencing --------------------------------------
+    exits = dict(zip(bt["signal_i"].astype(int), bt["exit_i"].astype(int)))
+    live, i = [], max(250, p.atr_p + 2)
+    while i < n - 1:
+        if full_sig[i] == 0 or stop_distance(bars, i, p, full_atr, "NAS100") <= 0:
+            i += 1
+            continue
+        live.append((i, int(full_sig[i])))
+        nxt = exits.get(i)
+        if nxt is None:
+            break
+        i = nxt
+    bt_entries = [(int(r["signal_i"]), int(r["direction"])) for _, r in bt.iterrows()]
+    seq_ok = live == bt_entries
+    print(f"  HMASTO sequencing: backtest {len(bt_entries)} entries, driver replay "
+          f"{len(live)} entries, identical: {seq_ok}")
+    if not seq_ok:
+        for a, b in [(a, b) for a, b in zip(live, bt_entries) if a != b][:5]:
+            print(f"    MISMATCH live={a} backtest={b}")
+    ok = (bad_sig == 0) and (bad_sl == 0) and seq_ok
+    print(f"  HMASTO (fwd-test sleeve, {len(bt_entries)} entries, sized "
+          f"{p.size_R:.2f}R live): {'PASS' if ok else 'FAIL'}")
+    return ok
+
+
 def verify_kaer(window: int = 2600, sample: int = 4000) -> bool:
     """FORWARD-TEST SLEEVE — NAS100 M15 Kaufman ER breakout.
 
@@ -635,14 +727,19 @@ def main():
     r2 = verify_brick2()
     r3 = verify_brick3()
     r4 = verify_brick4()
+    rh = verify_hmasto()
     rk = verify_kaer()
     rl = verify_keltner()
     rt = verify_time_exits()
     print("-" * 70)
     print(f"  brick1={'PASS' if r1 else 'FAIL'}  brick2={'PASS' if r2 else 'FAIL'}  "
           f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}  "
-          f"KAER={'PASS' if rk else 'FAIL'}  KELT={'PASS' if rl else 'FAIL'}  "
-          f"time-exits={'PASS' if rt else 'FAIL'}")
+          f"HMASTO={'PASS' if rh else 'FAIL'}  KAER={'PASS' if rk else 'FAIL'}  "
+          f"KELT={'PASS' if rl else 'FAIL'}  time-exits={'PASS' if rt else 'FAIL'}")
+    # HMASTO is the sleeve that is LIVE-wired (KAER and KELT are kept for research only),
+    # so its result is the one that gates deployment alongside the four bricks.
+    print(f"  LIVE-WIRED SET (bricks 1-4 + HMASTO): "
+          f"{'PASS' if all([r1, r2, r3, r4, rh, rt]) else 'FAIL'}")
     print("=" * 70)
 
 

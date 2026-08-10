@@ -30,7 +30,11 @@ from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 from edgelab.live.strategies import (NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy,
-                                     NasIbsStrategy, KaerStrategy)
+                                     NasIbsStrategy, HmaStochStrategy)
+# KaerStrategy is deliberately NOT imported: KAER was replaced by HMASTO in the live
+# forward-test slot on 2026-08-10 (same family, corr +0.335). The class stays in
+# strategies.py for research and `verify`; importing it here would only make it easy to
+# re-wire a sleeve that must not run alongside HMASTO.
 # KeltnerStrategy is deliberately NOT imported: KELT was retired from the live book on
 # 2026-08-09 (see build_stack below). The class itself still lives in strategies.py.
 
@@ -56,11 +60,24 @@ def build(cfg_live: dict):
         strategies.append(CryptoMacdStrategy(cfg_live, coin, risk_cfg))
     if cfg_live.get("enable_ibs", True):          # brick 4 (exp-009); set false to disable
         strategies.append(NasIbsStrategy(cfg_live))
-    # FORWARD-TEST SLEEVE, not a brick: NAS100 M15 Kaufman ER breakout, half size.
-    # Defaults to OFF so a plain checkout keeps trading the frozen 4-brick book; the demo
-    # runner enables it in config_live.yaml. See edgelab/intraday/kaer.py.
+    # FORWARD-TEST SLEEVE, not a brick: NAS100 M15 HMA/EMA cross + 3 oscillators, half
+    # size. Defaults to OFF so a plain checkout keeps trading the frozen 4-brick book; the
+    # demo runner enables it in config_live.yaml. See edgelab/intraday/hma_stoch.py.
+    if cfg_live.get("enable_hmasto", False):
+        strategies.append(HmaStochStrategy(cfg_live))
+    # KAER (NAS100 M15 Kaufman ER breakout) was REPLACED by HMASTO in the forward-test
+    # slot, 2026-08-10 — user decision. The two are the SAME family (corr +0.335 monthly,
+    # same asset, same timeframe), so they are alternatives, never a pair: stacking them
+    # takes the book's maxDD 17.1 -> 20.0 and its funded ruin 7.3 % -> 12.3 % at
+    # 0.5 %/trade, while swapping cuts maxDD to 15.3 and ruin to 3.8 %. HMASTO also
+    # dominates KAER standalone (R/yr +42.8 vs +30.9, RoMaD 1.72 vs 1.22) and its two
+    # half-samples GROW where KAER's decay. `KaerStrategy` and `kaer.py` are kept for
+    # research and `verify`; only the LIVE wiring is gone. See wiki/log.md 2026-08-10.
     if cfg_live.get("enable_kaer", False):
-        strategies.append(KaerStrategy(cfg_live))
+        LOG.warning("enable_kaer is set but KAER was REPLACED by HMASTO in the live "
+                    "forward-test slot on 2026-08-10 (same family, corr +0.335; "
+                    "stacking both degrades the book) — IGNORING the flag. "
+                    "Set enable_hmasto instead. See wiki/log.md.")
     # KELT (BTCUSD H1 Keltner) is RETIRED from the live book, 2026-08-09 — user decision.
     # FTMO's BTCUSD swap is -30 %/yr BOTH sides (MT5 "percentage of current price" =
     # annual interest, 360-day bank year -> 8.33 bps/night). With that plus the

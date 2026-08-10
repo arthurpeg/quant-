@@ -14,7 +14,8 @@ Bricks:
   4) NAS100 IBS reversion, SL=2.5*ATR               -> ibs_state()
 
 Forward-test sleeves (NOT frozen bricks):
-  K) NAS100 M15 Kaufman efficiency-ratio breakout   -> kaer_scan()
+  H) NAS100 M15 HMA/EMA cross + triple oscillator   -> hma_scan()
+  K) NAS100 M15 Kaufman efficiency-ratio breakout   -> kaer_scan()   [REPLACED by H]
   L) BTCUSD H1 Keltner-band breakout                -> keltner_scan()
 """
 from __future__ import annotations
@@ -28,6 +29,8 @@ import pandas as pd
 from edgelab.intraday.atr_breakout import ATRBreakParams, _wilder_atr
 from edgelab.intraday.kaer import KaerParams, kaer_atr, kaer_signals
 from edgelab.intraday.keltner_btc import KeltParams, keltner_signals, stop_distance
+from edgelab.intraday.hma_stoch import (HmaStochParams, hma_atr, hma_signals,
+                                        stop_distance as hma_stop_distance)
 from edgelab.edges.turn_of_month import TurnOfMonthParams
 from edgelab.edges.ibs import IBSParams, _wilder_atr as _ibs_wilder_atr
 from edgelab.risk.trade_rules import atr as engine_atr  # Wilder ATR, min_periods=window
@@ -382,3 +385,35 @@ def keltner_scan(h1: pd.DataFrame, p: KeltParams | None = None) -> tuple[int, En
     return i, EntryPlan(direction, dist, p.tp_R * dist,
                         "kelt_break_up" if direction > 0 else "kelt_break_dn",
                         float(h1["close"].iloc[i]))
+
+
+# ===========================================================================
+# FORWARD-TEST SLEEVE — NAS100 M15 HMA/EMA cross + triple-oscillator confirmation
+# ===========================================================================
+def hma_scan(m15: pd.DataFrame, p: HmaStochParams | None = None,
+             symbol: str = "NAS100") -> tuple[int, EntryPlan] | None:
+    """Decide on the LAST bar of ``m15``, which must already EXCLUDE the forming bar.
+
+    The rule and the FLOORED stop both come from :mod:`edgelab.intraday.hma_stoch` -- the
+    same functions the backtest calls -- so the live decision cannot fork. The 25x-spread
+    floor on 1R is not optional: it is what forbids trades whose toll would eat the R, and
+    the validated profile carries it.
+
+    Returns ``(idx, EntryPlan)`` with ``idx`` the signal bar (the fill is the next bar's
+    open, i.e. a market order placed now), or None.
+    """
+    p = p or HmaStochParams()
+    if len(m15) < 60:
+        return None                       # HMA(12)+EMA(5)[2]+RSI(14)+stoch(12) warmup
+    sig = hma_signals(m15, p)
+    i = len(m15) - 1
+    if sig[i] == 0:
+        return None
+    atr = hma_atr(m15, p)
+    dist = hma_stop_distance(m15, i, p, atr, symbol)
+    if dist <= 0:
+        return None
+    direction = int(sig[i])
+    return i, EntryPlan(direction, dist, p.tp_R * dist if p.tp_R else None,
+                        "hma_cross_up" if direction > 0 else "hma_cross_dn",
+                        float(m15["close"].iloc[i]))

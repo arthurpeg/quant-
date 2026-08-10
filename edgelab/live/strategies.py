@@ -20,6 +20,7 @@ import pandas as pd
 from edgelab.intraday.atr_breakout import ATRBreakParams
 from edgelab.edges.turn_of_month import TurnOfMonthParams
 from edgelab.edges.ibs import IBSParams
+from edgelab.intraday.hma_stoch import HmaStochParams
 from edgelab.intraday.kaer import KaerParams
 from edgelab.intraday.keltner_btc import KeltParams
 from edgelab.live import signals as S
@@ -29,7 +30,7 @@ from edgelab.live.risk import LiveRiskManager
 logger = logging.getLogger("edgelab.live.strategies")
 
 MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas_ibs": 105,
-         "nas_kaer": 106, "btc_kelt": 107}
+         "nas_kaer": 106, "btc_kelt": 107, "nas_hmasto": 108}
 
 SERVER_TZ = "Europe/Athens"     # the broker's clock: a D1 bar's date IS its server date
 ROLLOVER_LEAD_MIN = 10.0        # send a D-rollover time-exit this many minutes EARLY
@@ -631,6 +632,109 @@ class KaerStrategy:
         close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
         broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                             f"kaer_{plan.reason}", plan.sl_dist, ref, now_utc,
+                            time_exit_at=close_dt)
+
+
+class HmaStochStrategy:
+    """FORWARD-TEST SLEEVE (not a frozen brick) — NAS100 M15 HMA/EMA cross + 3 oscillators.
+
+    DEPLOYED 2026-08-10 IN KAER'S SLOT, on the user's explicit instruction, after the
+    corpus campaign measured it as the only non-breakout survivor on NAS100. It REPLACES
+    KAER rather than joining it: the two correlate **+0.335 monthly** (same asset, same
+    timeframe, same intraday-following family), so stacking them raises the book's maxDD
+    17.1 -> 20.0 and its funded ruin 7.3% -> 12.3% at 0.5%/trade, while SWAPPING cuts
+    maxDD to 15.3 and ruin to 3.8%. Standalone it dominates KAER on every axis
+    (R/yr +42.8 vs +30.9, RoMaD 1.72 vs 1.22) and its two half-samples GROW where KAER's
+    decay.
+
+    ⚠️ It is mono-asset, in-sample, and the best of 112 by RoMaD on the asset where the
+    campaign's selection pressure is strongest. Sized at ``size_R`` (0.5R) exactly as KAER
+    was, in the same forward-test slot. Sizing it up is a decision, not a default. See
+    edgelab/intraday/hma_stoch.py for what this is and is not.
+
+    Cadence: once per COMPLETED M15 bar inside 09:30-15:30 ET, mirroring KAER. The forming
+    bar is dropped explicitly, and a bar older than ``max_bar_age_min`` is skipped rather
+    than chased -- if the runner was down, the fill would no longer be the next-bar open
+    the backtest measured.
+    """
+
+    def __init__(self, cfg_live: dict):
+        self.p = HmaStochParams(size_R=float(cfg_live.get("hmasto_size_R", 0.5)))
+        self.logical = cfg_live.get("hmasto_symbol", "NAS100")
+        self.magic = MAGIC["nas_hmasto"]
+        self.bars_needed = int(cfg_live.get("hmasto_bars", 400))
+        self.max_bar_age_min = float(cfg_live.get("hmasto_max_bar_age_min", 5))
+        self._acted_bar = None
+        self._skip_logged = None
+
+    def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
+        et = now_utc.tz_convert(self.p.tz)
+        minute = et.hour * 60 + et.minute
+        open_m, cut_m = _mins(self.p.session_open), _mins(self.p.entry_cutoff)
+        flat_m = _mins(self.p.session_close)
+
+        pos = broker.open_position(self.magic)
+
+        # (1) manage the open position: forced flat at 15:55 ET; dry-run resolves the stop
+        if pos is not None:
+            if not broker.live:
+                bar = broker.get_bars(self.logical, "M15", 3).iloc[-1]
+                closed, px, why = broker.resolve_paper(pos, bar, now_utc)
+                if closed:
+                    broker.close(pos, px, why, now_utc)
+                    return
+            if minute >= flat_m:
+                px = float(broker.get_bars(self.logical, "M15", 2).iloc[-1]["close"])
+                broker.close(pos, px, "time_exit", now_utc)
+            return
+
+        # (2) entries only inside the signal window
+        if not (open_m <= minute <= cut_m + 15):
+            return
+
+        bars_all = broker.get_bars(self.logical, "M15", self.bars_needed)
+        if len(bars_all) < 3:
+            return
+        # DROP THE FORMING BAR: a bar stamped t is complete only at t+15min.
+        step_ = pd.Timedelta(minutes=15)
+        bars = bars_all.iloc[:-1] if (bars_all.index[-1] + step_) > now_utc else bars_all
+        if not len(bars):
+            return
+        last_ts = bars.index[-1]
+        if self._acted_bar is not None and last_ts <= self._acted_bar:
+            return                                  # already handled this bar
+
+        age_min = (now_utc - (last_ts + step_)).total_seconds() / 60.0
+        if age_min > self.max_bar_age_min:
+            self._acted_bar = last_ts               # stale (runner was down) -> do not chase
+            logger.info("hmasto stale bar %s (%.1f min old) -> skip", last_ts, age_min)
+            return
+
+        res = S.hma_scan(bars, self.p, self.logical)
+        self._acted_bar = last_ts
+        if res is None:
+            return
+
+        _, plan = res
+        ok, why = risk.can_enter()
+        if not ok:
+            if self._skip_logged != et.date():
+                logger.info("hmasto skip entry: %s", why)
+                self._skip_logged = et.date()
+            return
+
+        ref = float(bars["close"].iloc[-1])
+        sl = ref - plan.direction * plan.sl_dist
+        tp = ref + plan.direction * plan.tp_dist if plan.tp_dist else None
+        budget = risk.risk_budget() * self.p.size_R
+        lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, budget)
+        if lots <= 0:
+            logger.warning("hmasto skip entry at %s: cannot size to %.2fR on the lot grid",
+                           last_ts, self.p.size_R)
+            return
+        close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
+        broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
+                            f"hmasto_{plan.reason}", plan.sl_dist, ref, now_utc,
                             time_exit_at=close_dt)
 
 

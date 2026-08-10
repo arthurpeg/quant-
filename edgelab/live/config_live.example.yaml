@@ -40,20 +40,33 @@ ibs_symbol: NAS100             # brick 4 (IBS reversion) — same instrument as 
                                # mechanism & magic (105); the two never share a position.
 enable_ibs: true               # set false to run the old 3-brick book
 
-# ---- KAER forward-test sleeve (NOT a brick) --------------------------------
-# NAS100 M15 Kaufman efficiency-ratio breakout (edgelab/intraday/kaer.py, added
-# 2026-08-07). It is NOT a 5th brick: corr +0.370 to brick 1, 40% of its trading days
-# overlap, and it replicates on no other index — it is a forward test of whether it is a
-# BETTER brick 1. See RESEARCH_LOG_KAUFMAN.md and the ledger row.
+# ---- HMASTO forward-test sleeve (NOT a brick) ------------------------------
+# NAS100 M15 HMA(12)/EMA(5)[2] crossover confirmed by RSI(14) + two smoothed stochastics
+# (edgelab/intraday/hma_stoch.py, added 2026-08-10). The only NON-breakout survivor of the
+# corpus campaign, which is why it is not redundant with brick 1 (corr +0.133) nor with
+# brick 4 / IBS on the same underlying (corr -0.148).
 # Default OFF so a plain checkout keeps trading the frozen 4-brick book.
-# HALF SIZE is deliberate: at equal risk +KAER@0.5R improves the book on every axis
-# (R/yr, maxDD, Sharpe, RoMaD, prop ruin) while +KAER@1R makes it worse.
-# It trades ~290x/yr — far more than any brick — so watch the journal, not just the P&L.
+# HALF SIZE is deliberate, exactly as KAER was: +HMASTO@0.5R improves the book while @1R
+# raises maxDD 17.16 -> 23.93 and lowers RoMaD.
+# It trades ~256x/yr — far more than any brick — so watch the journal, not just the P&L.
+# ⚠️ mono-asset, in-sample, best of 112 by RoMaD on the asset where the campaign's
+# selection pressure is strongest. Forward test, not a promotion. Do not size it up.
+enable_hmasto: false
+hmasto_symbol: NAS100
+hmasto_size_R: 0.5             # fraction of 1R risked per HMASTO trade
+hmasto_bars: 400               # M15 bars pulled (needs ~60 for the HMA/RSI/stoch warmup)
+hmasto_max_bar_age_min: 5      # skip (do not chase) a signal bar older than this
+
+# ---- KAER — REPLACED by HMASTO on 2026-08-10 (do not re-enable) -------------
+# NAS100 M15 Kaufman efficiency-ratio breakout (edgelab/intraday/kaer.py, added
+# 2026-08-07, retired from the live wiring 2026-08-10). KAER and HMASTO are the SAME
+# family — same asset, same timeframe, corr +0.335 monthly — so they are alternatives,
+# never a pair: net of FTMO costs, running BOTH takes the book's maxDD 17.16 -> 20.29,
+# while swapping gains +5.90 R/yr for a maxDD that does not degrade. HMASTO also
+# dominates KAER standalone (net R/yr +42.62 vs +30.82) and its two half-samples GROW
+# where KAER's decay. The runner IGNORES this flag with a warning; the module and its
+# `verify` check are kept for research. See wiki/log.md 2026-08-10.
 enable_kaer: false
-kaer_symbol: NAS100
-kaer_size_R: 0.5               # fraction of 1R risked per KAER trade
-kaer_bars: 2600                # M15 bars pulled (needs ~1820 for the ER percentile window)
-kaer_max_bar_age_min: 5        # skip (do not chase) a signal bar older than this
 
 # ---- KELT forward-test sleeve (NOT a brick) --------------------------------
 # BTCUSD H1 Keltner-band breakout (edgelab/intraday/keltner_btc.py, added 2026-08-08).

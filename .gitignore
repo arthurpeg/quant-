@@ -39,3 +39,7 @@ edgelab/data/_cache_yahoo/
 # Root convenience copies of the HTML reports (versioned copies live in edgelab/reports/)
 /RAPPORT_backtest_portefeuille.html
 /RAPPORT_monte_carlo.html
+
+# Campaign outputs (regenerable): corpus sweeps, battery runs, per-asset CSVs. 47 MB and
+# rebuilt by scratchpad/battery_*.py — the wiki links to the scripts, not to these blobs.
+scratchpad/_inx/
