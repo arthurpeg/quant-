@@ -48,6 +48,32 @@ BRICK_LABEL = {
 MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "brick4",
              106: "kaer", 107: "kelt", 108: "hmasto", 109: "tlf", 110: "tlf"}
 
+# ⚠️ DEUX UNITES DE R COEXISTENT, ET LES CONFONDRE FAUSSE LE TOTAL.
+#   * le JOURNAL enregistre le R DE LA SLEEVE : un stop plein vaut -1.00 quelle que soit
+#     la taille deployee, exactement comme le backtest de la sleeve le calcule ;
+#   * le LIVRE raisonne en R DE COMPTE, ou 1 R = `risk_per_trade` du capital. Une sleeve
+#     deployee a 0.5R n'y contribue que la MOITIE : `books_report.book_series` multiplie
+#     bien sa serie par son poids.
+# Sommer le journal a plat revenait donc a compter un stop TLF (0,5 % du capital perdu)
+# comme un stop de la brique 1 (1 %). Signale par l'utilisateur le 2026-08-11.
+# Ce facteur DOIT rester egal aux poids de `books_report.BOOKS['AGRESSIF']['w']` et aux
+# `*_size_R` de config_live.yaml.
+SIZE_R = {"brick1": 1.0, "brick2": 1.0, "brick3": 0.5, "brick4": 1.0,
+          "hmasto": 0.5, "tlf": 0.5, "kaer": 0.5, "kelt": 0.5}
+
+
+def account_R(reason: str, symbol: str, R: float) -> float:
+    """R du journal (unite sleeve) -> R de COMPTE (unite du livre)."""
+    if R is None:
+        return 0.0
+    head = str(reason or "").split("_")[0].split(":")[0]
+    if head not in SIZE_R:
+        for m, t in MAGIC_TAG.items():
+            if BRICK.get(symbol, "").startswith(t):
+                head = t
+                break
+    return float(R) * SIZE_R.get(head, 1.0)
+
 
 def _assert_magics_covered() -> None:
     """Fail loudly at import if a sleeve exists that the journal cannot name."""
@@ -61,6 +87,11 @@ def _assert_magics_covered() -> None:
     unlabelled = sorted(set(MAGIC_TAG.values()) - set(BRICK_LABEL))
     if unlabelled:
         raise RuntimeError(f"summary.BRICK_LABEL is missing {unlabelled}")
+    unsized = sorted(set(MAGIC_TAG.values()) - set(SIZE_R))
+    if unsized:
+        raise RuntimeError(
+            f"summary.SIZE_R is missing {unsized} -- sans sa taille deployee, le R de "
+            f"cette sleeve serait somme comme s'il valait 1 R de compte.")
 
 
 _assert_magics_covered()
