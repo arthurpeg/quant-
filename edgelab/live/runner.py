@@ -269,6 +269,35 @@ def _log_failure(name: str, exc: Exception, now_utc: pd.Timestamp) -> None:
         _LAST_FAILURE[name] = (sig, prev[1], now_utc)
 
 
+def _heartbeat(broker, risk, strategies, now_utc: pd.Timestamp) -> None:
+    """Ecrit `_out/heartbeat.txt` a chaque passe. C'est la SEULE preuve de vie continue.
+
+    `runner.log` n'en est pas une : `one_pass` ne journalise que sur EVENEMENT (ordre
+    envoye, marche ferme, echec), donc un marche calme laisse le log muet pendant des
+    heures alors que tout va bien. Un controle qui lisait la fraicheur du log a donc
+    signale un runner mort qui tournait parfaitement (2026-08-11). Le fichier ci-dessous
+    supprime l'ambiguite : s'il est frais, la boucle tourne.
+
+    Volontairement pas un log : ecrire une ligne toutes les 20 s ferait tourner l'histoire
+    utile hors de runner.log en quelques jours -- exactement ce que le commentaire sur
+    MarketClosed cherche deja a eviter.
+    """
+    try:
+        out = Path(__file__).resolve().parent / "_out"
+        out.mkdir(parents=True, exist_ok=True)
+        n_pos = sum(1 for s_ in strategies if broker.open_position(s_.magic) is not None)
+        (out / "heartbeat.txt").write_text(
+            f"{now_utc.isoformat()}\n"
+            f"commit={_git_head()}\n"
+            f"strategies={len(strategies)}\n"
+            f"magics={sorted(s_.magic for s_ in strategies)}\n"
+            f"open_positions={n_pos}\n"
+            f"realized_R={getattr(broker, 'realized_R', 0.0):.3f}\n",
+            encoding="utf-8")
+    except Exception:                    # un disque qui hoquette ne doit JAMAIS tuer la boucle
+        LOG.debug("heartbeat write failed", exc_info=True)
+
+
 def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Timestamp) -> None:
     risk.on_equity(_equity(broker, risk), now_utc)
     for strat in strategies:
@@ -394,6 +423,7 @@ def main() -> int:
                     time.sleep(poll); continue
             now = pd.Timestamp.now(tz="UTC")
             one_pass(broker, risk, strategies, now)
+            _heartbeat(broker, risk, strategies, now)
             _maybe_session_alerts(cfg_live, now)
             _maybe_report(broker, risk, strategies, cfg_live, now)
             if _check_update(cfg_live):

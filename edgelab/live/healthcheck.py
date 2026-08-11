@@ -218,8 +218,9 @@ def check_runner(cfg: dict) -> None:
     ne trade. Trois signaux indépendants, parce qu'aucun n'est suffisant seul :
 
       * le PROCESSUS (autorité, mais absent si le contrôle tourne sur une autre machine) ;
-      * la FRAÎCHEUR de `runner.log` (il écrit à chaque passe, donc un log figé = mort) ;
-      * la FRAÎCHEUR du journal (rien ne s'y écrit sans trade, donc informatif seulement).
+      * le BATTEMENT DE CŒUR `_out/heartbeat.txt`, ecrit a chaque passe (l'autorite locale) ;
+      * les LOGS, purement informatifs : `one_pass` ne journalise que sur evenement, donc
+        un marche calme laisse `runner.log` muet des heures sans que rien n'aille mal.
     """
     head("E. RUNNER")
     out = HERE / "_out"
@@ -246,22 +247,39 @@ def check_runner(cfg: dict) -> None:
                  "-> relancer `run_forever.ps1` (si le runner est sur un autre hote, "
                  "ignorer et lire les fraicheurs ci-dessous)")
 
-    # --- 2. fraicheur des logs ---------------------------------------------------
-    for name, budget_min, why in ((
-            "runner.log", 5, "le runner ecrit a chaque passe (~20 s)"),
-            ("supervisor.log", 60, "le superviseur ecrit au (re)lancement")):
+    # --- 2. le battement de coeur : LA preuve de vie ------------------------------
+    poll = float(cfg.get("poll_seconds", 20))
+    budget = max(3.0 * poll / 60.0, 2.0)          # 3 passes, plancher 2 min
+    hb = out / "heartbeat.txt"
+    if not hb.exists():
+        say(WARN, f"heartbeat.txt absent de {out} — runner sur un autre hote, ou "
+                  f"version anterieure au 2026-08-11 (relancer le runner pour l'obtenir)")
+    else:
+        mins = (now - datetime.fromtimestamp(hb.stat().st_mtime).astimezone()
+                ).total_seconds() / 60.0
+        say(OK if mins <= budget else BAD,
+            f"heartbeat ecrit il y a {mins:.1f} min (budget {budget:.1f} min = 3 passes)")
+        for line in hb.read_text(encoding="utf-8", errors="replace").splitlines():
+            print(f"            {line}")
+
+    # --- 3. les logs : INFORMATIFS, jamais un echec -------------------------------
+    # `runner.log` n'est PAS une preuve de vie : one_pass ne journalise que sur evenement
+    # (ordre, marche ferme, echec), donc un marche calme le laisse muet des heures alors
+    # que la boucle tourne. Traiter sa fraicheur comme un critere a produit un FAIL sur un
+    # runner parfaitement vivant le 2026-08-11 — d'ou le heartbeat ci-dessus.
+    for name in ("runner.log", "supervisor.log"):
         f = out / name
         if not f.exists():
             say(WARN, f"{name} absent de {out} (runner sur un autre hote ?)")
             continue
-        age = (now - datetime.fromtimestamp(f.stat().st_mtime).astimezone())
-        mins = age.total_seconds() / 60.0
-        lvl = OK if mins <= budget_min else (WARN if name == "supervisor.log" else BAD)
-        say(lvl, f"{name} ecrit il y a {mins:.1f} min (budget {budget_min} min) - {why}")
-        if lvl is not OK and name == "runner.log":
+        mins = (now - datetime.fromtimestamp(f.stat().st_mtime).astimezone()
+                ).total_seconds() / 60.0
+        say(OK, f"{name} ecrit il y a {mins:.1f} min (informatif : ce log ne parle que "
+                f"sur evenement, le silence est normal)")
+        if name == "runner.log":
             try:
-                tail = f.read_text(encoding="utf-8", errors="replace").splitlines()[-3:]
-                for t in tail:
+                for t in f.read_text(encoding="utf-8",
+                                     errors="replace").splitlines()[-3:]:
                     print(f"            {t[:150]}")
             except Exception:
                 pass
