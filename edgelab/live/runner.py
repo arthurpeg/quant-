@@ -286,12 +286,23 @@ def _heartbeat(broker, risk, strategies, now_utc: pd.Timestamp) -> None:
         out = Path(__file__).resolve().parent / "_out"
         out.mkdir(parents=True, exist_ok=True)
         n_pos = sum(1 for s_ in strategies if broker.open_position(s_.magic) is not None)
+        # DERNIERE BARRE SCANNEE, par sleeve. Sans ca, "aucune ligne de log" est ambigu :
+        # une sleeve qui scanne chaque barre et ne trouve rien est SILENCIEUSE, exactement
+        # comme une sleeve bloquee. Cette ligne separe les deux d'un coup d'oeil -- c'est
+        # la question posee le 2026-08-11 ("es-tu sur que c'est normal que les 2 briques
+        # skip ?") a laquelle rien dans le processus ne repondait.
+        scanned = []
+        for s_ in strategies:
+            b_ = getattr(s_, "_acted_bar", None)
+            if b_ is not None:
+                scanned.append(f"{s_.magic}@{pd.Timestamp(b_).strftime('%H:%M')}")
         (out / "heartbeat.txt").write_text(
             f"{now_utc.isoformat()}\n"
             f"commit={_git_head()}\n"
             f"strategies={len(strategies)}\n"
             f"magics={sorted(s_.magic for s_ in strategies)}\n"
             f"open_positions={n_pos}\n"
+            f"last_scanned_bar_utc={' '.join(scanned) if scanned else '(aucune)'}\n"
             f"realized_R={getattr(broker, 'realized_R', 0.0):.3f}\n",
             encoding="utf-8")
     except Exception:                    # un disque qui hoquette ne doit JAMAIS tuer la boucle
