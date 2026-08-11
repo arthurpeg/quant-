@@ -1,4 +1,4 @@
-"""Self-contained HTML backtest report for the two named books.
+"""Self-contained HTML backtest report for the two named books, NET of FTMO cost.
 
     book AGRESSIF = b1 + b2 + b4 @1R + b3@0.5R + HMASTO@0.5R + TLF@0.5R (live)
                     b3 halved 2026-08-10: the verified FTMO crypto swap
@@ -42,6 +42,7 @@ import pandas as pd
 
 from edgelab.intraday.hma_stoch import run_hma_stoch
 from edgelab.intraday.two_leg_fade import run_two_leg_fade
+from edgelab.reports.ftmo_costs import daily_cost, trade_cost_R
 from edgelab.reports.monte_carlo_static import build_daily_R, simulate
 
 HERE = Path(__file__).resolve().parent
@@ -86,11 +87,73 @@ def load_sleeves() -> tuple[pd.DataFrame, pd.Timestamp, pd.Timestamp]:
     # TLF trade DEUX symboles sous deux magics (109 NAS100, 110 US500), comme la brique 3
     # avec ses deux coins : on somme leurs R quotidiens en une seule sleeve.
     tlf = pd.concat([run_two_leg_fade(s_).trades for s_ in ("NAS100", "US500")])
-    return pd.DataFrame({
+    M = pd.DataFrame({
         "b1": b1, "b2": b2, "b3": b3, "b4": b4,
         "HMASTO": _daily(hm["R"], hm["exit_time"], idx),
         "TLF": _daily(tlf["R"], tlf["exit_time"], idx),
-    }), start, end
+    })
+    for k, c in _ftmo_costs(idx).items():
+        M[k] = M[k] - c
+    return M, start, end
+
+
+def _ftmo_costs(idx: pd.DatetimeIndex) -> dict:
+    """Coût FTMO quotidien par sleeve, en R. Voir `edgelab/reports/ftmo_costs.py`.
+
+    Seules b2, b3 et b4 portent la nuit. b1, HMASTO et TLF sont intraday pures (sortie le
+    jour même, 0 unité de swap) et les indices sont sans commission sur ce compte : elles
+    conservent 100 % de leur R, ce que `swap_units` produit tout seul.
+
+    ⚠️ Ce coût n'est PAS une correction cosmétique. Sur la brique 3 il vaut 5,71 R/an
+    contre 5,72 R/an de brut encore gagné depuis juillet 2022 : il l'annule exactement.
+    """
+    from dataclasses import replace as _replace
+
+    from edgelab.backtest.costs import CostModel
+    from edgelab.backtest.engine import BacktestEngine
+    from edgelab.config import load_config, risk_for
+    from edgelab.edges.ibs import IBSParams, run_ibs
+    from edgelab.edges.turn_of_month import TurnOfMonthParams, run_turn_of_month
+    from edgelab.reports.monte_carlo_static import load as _load, macd_rsi as _macd
+    from edgelab.risk.trade_rules import atr as _atr
+
+    out = {}
+
+    # --- b2 : or, LONG-ONLY -> paie le cote cher --------------------------------
+    g = run_turn_of_month("XAUUSD", TurnOfMonthParams(sl_atr=1.5))
+    ent = pd.DatetimeIndex(pd.to_datetime(g["date"]))
+    ext = ent + pd.to_timedelta(g["bars_held"].to_numpy(), unit="D")
+    out["b2"] = daily_cost(ext, trade_cost_R("XAUUSD", ent, ext, g["entry"].to_numpy(),
+                                             g["r_dist"].to_numpy(), direction=+1), idx)
+
+    # --- b4 : NAS100 IBS, LONG-ONLY --------------------------------------------
+    i0 = run_ibs("NAS100", IBSParams(sl_atr=2.5), cadence="live")
+    out["b4"] = daily_cost(i0["exit_dt"],
+                           trade_cost_R("NAS100", i0["entry_dt"], i0["exit_dt"],
+                                        i0["entry"].to_numpy(), i0["r_dist"].to_numpy(),
+                                        direction=+1), idx)
+
+    # --- b3 : crypto, bidirectionnelle. Le moteur n'expose pas sa distance de stop,
+    # on la reconstruit sur l'ATR de la barre PRECEDANT l'entree -- exactement comme le
+    # moteur la dimensionne.
+    cfg = load_config()
+    crisk = risk_for(cfg, "crypto")
+    eng = BacktestEngine(_replace(cfg, raw={**cfg.raw, "risk": crisk}),
+                         cost_model=CostModel(10, 3, {"BTCUSD": 5, "ETHUSD": 8}),
+                         cadence="live")
+    tot = None
+    for sym in ("BTCUSD", "ETHUSD"):
+        d = _load(sym)
+        a = _atr(d, int(crisk["atr_window"])).shift(1)
+        tr = eng.run(d, _macd(d), sym, "x").trades
+        sl = float(crisk["stop_loss_atr"]) * a.reindex(
+            pd.DatetimeIndex(pd.to_datetime(tr["entry_time"], utc=True))).to_numpy()
+        c = daily_cost(tr["exit_time"],
+                       trade_cost_R(sym, tr["entry_time"], tr["exit_time"],
+                                    tr["entry_price"].to_numpy(), sl), idx)
+        tot = c if tot is None else tot + c
+    out["b3"] = tot
+    return out
 
 
 def book_series(M: pd.DataFrame, w: dict) -> pd.Series:
@@ -533,12 +596,15 @@ def build(out: Path = OUT) -> Path:
     (elle ne réplique sur aucun autre indice) et a été sélectionnée comme meilleure
     cellule par RoMaD d'un criblage de 112 mécanismes. Sans elle, AGRESSIF redevient
     le livre gelé à 4 briques : plus lent, pas cassé.</li>
-   <li><b>Les coûts FTMO ne sont PAS dans ces courbes.</b> Commission 0,0325 %/côté sur la
-    crypto et 0,0007 %/côté sur les métaux, et surtout un <b>swap de −30 %/an des deux
-    côtés sur BTCUSD</b> plus les swaps en points du NAS et de l'or. Le coût en R vaut
-    <code>nuits × taux/nuit ÷ stop%</code>, donc il frappe les sleeves à stop serré et à
-    détention longue. C'est ce qui a fait <b>retirer KELT des deux livres le
-    2026-08-09</b>.</li>
+   <li><b>Les coûts FTMO SONT désormais dans ces courbes</b> (depuis le 2026-08-11) :
+    commission et swap, prélevés <b>trade par trade</b>, aux taux relevés en direct sur le
+    terminal FTMO le 2026-08-10. Le coût en R vaut <code>unités × taux/nuit ÷ stop%</code>,
+    donc il frappe les sleeves à stop serré et à détention longue, et il est
+    <b>invariant à la taille de position</b>. b1, HMASTO et TLF sont intraday pures :
+    zéro nuit portée, zéro swap, et les indices sont sans commission ici. Ordre de
+    grandeur : sur la brique 3 le swap vaut <b>5,71 R/an contre 5,72 R/an de brut encore
+    gagné depuis juillet 2022</b> — il l'annule exactement, ce qui a motivé son passage à
+    0.5R.</li>
    <li><b>Les sleeves ne décroissent pas au même rythme.</b> Entre la première et la
     seconde moitié de l'échantillon : brique 1 ×2.19, brique 2 ×1.68, brique 4 ×0.88,
     HMASTO ×1.45, <b>brique 3 ×0.32</b>. C'est pourquoi FUNDED réduit la brique 3 de
