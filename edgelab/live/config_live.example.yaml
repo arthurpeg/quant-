@@ -31,11 +31,19 @@ symbol_map:
   XAUUSD: XAUUSD
   BTCUSD: BTCUSD
   ETHUSD: ETHUSD
+  US500: US500          # 2e symbole de TLF
 
 # which symbol each brick trades
 nas_symbol: NAS100
 gold_symbol: XAUUSD
 crypto_symbols: [BTCUSD, ETHUSD]
+
+# Fraction de 1R risquee par trade de la BRIQUE 3 (crypto). Defaut du code = 1.0.
+# Ramenee a 0.5 le 2026-08-10 : le swap FTMO sur BTCUSD/ETHUSD vaut -30 %/an sur LES DEUX
+# COTES (verifie sur le terminal), soit 5.71 R/an, contre 5.72 R/an de brut encore gagnes
+# depuis juillet 2022 -> contribution NETTE +0.01 R/an sur 4 ans. A 0.5R la ruine funded du
+# livre passe de 60.7 % a 49.2 % (MC periode recente, 1 %/trade).
+crypto_size_R: 0.5
 ibs_symbol: NAS100             # brick 4 (IBS reversion) — same instrument as brick 1, distinct
                                # mechanism & magic (105); the two never share a position.
 enable_ibs: true               # set false to run the old 3-brick book
@@ -56,6 +64,35 @@ hmasto_symbol: NAS100
 hmasto_size_R: 0.5             # fraction of 1R risked per HMASTO trade
 hmasto_bars: 400               # M15 bars pulled (needs ~60 for the HMA/RSI/stoch warmup)
 hmasto_max_bar_age_min: 5      # skip (do not chase) a signal bar older than this
+
+# ---- TLF forward-test sleeve (NOT a brick) ---------------------------------
+# TLF = Two-Leg Fade. M5, SHORT-ONLY, NAS100 (magic 109) + US500 (magic 110).
+# La SELECTION DES BARRES vient d'Al Brooks (contexte always-in ch.19 + repli a DEUX
+# jambes ch.20 + signal bar FORTE ch.5). La DIRECTION est l'INVERSE de la sienne : sur les
+# memes barres, sa direction rend +0.106 R/trade quand tout prendre en SHORT rend +0.128.
+# Contre 120 tirages apparies : selection de barres +0.113 R (108 % de l'edge, p=0.000),
+# direction du signal -0.022 R (-22 %). D'ou le nom, et surtout PAS "Brooks".
+#
+# ENTREE SUR ORDRE STOP, comme le backtest valide : SELL STOP a "plus-bas de la signal bar
+# - 1 tick", vivant la barre suivante SEULEMENT. L'ordre est annule PAR LE DRIVER a la
+# barre d'apres (one_bar_expiry), jamais par une expiration broker (granularite = minute,
+# elle ne sait pas exprimer "une barre M5"). 1R est RE-ANCRE sur le fill (modify_sl) :
+# l'ordre porte SL = trigger + 1R, mais si le prix a gappe a travers le trigger le
+# backtest mesure 1R depuis le FILL. Profil : n=1357, E[R] +0.1275, +20.22 R/an,
+# t_jours +3.04. ~42-44 % des ordres armes sont remplis, le reste EXPIRE -> le journal
+# montre beaucoup plus d'ordres que de trades, c'est normal.
+#
+# ⚠️ FORWARD TEST, PAS UNE PROMOTION. Reserves serieuses : retirer 2020 ET 2022 -> t=+1.77
+# (52.6 % de son R vient de ces deux annees) ; l'echelle de detection n'est PAS monotone
+# (M5 +3.05, M10 -1.54, M15 +0.91, M30 +0.34) ; ne sort pas des indices US (2/13 actifs a
+# t>2) ; conjonction fragile (retirer les jambes -> +0.13, l'always-in -> +0.10, leg 3 ->
+# -0.63) ; direction retournee A POSTERIORI sur 2 709 cellules. Ne pas augmenter la taille.
+# Voir edgelab/intraday/two_leg_fade.py.
+enable_tlf: false            # true sur la demo ; false par defaut
+tlf_symbols: [NAS100, US500]
+tlf_size_R: 0.5              # fraction de 1R risquee par trade TLF
+tlf_bars: 600                # barres M5 tirees (min 300 : WARMUP 250 + EMA20/ATR14)
+tlf_max_bar_age_min: 2       # barre de signal plus vieille que ca -> on ne chasse pas
 
 # ---- KAER — REPLACED by HMASTO on 2026-08-10 (do not re-enable) -------------
 # NAS100 M15 Kaufman efficiency-ratio breakout (edgelab/intraday/kaer.py, added

@@ -564,6 +564,118 @@ class _FakeBroker:
         return 0.0
 
 
+
+def verify_tlf(window: int = 600, sample: int = 4000) -> bool:
+    """FORWARD-TEST SLEEVE — TLF, Two-Leg Fade. M5, SHORT-ONLY, NAS100 + US500.
+
+    This sleeve carries two burdens the others do not.
+
+    First, its rule HOLDS STATE: the always-in flag is a forward-fill that can reach
+    arbitrarily far back, and the two-leg state machine remembers a phase, the bar the
+    pullback started on, and the pre-pullback extreme. A truncated window can therefore
+    fork from full history in a way a pure rolling indicator never does.
+
+    Second, it is the only sleeve that enters on a WORKING STOP ORDER. The live layer had
+    no pending-order support until 2026-08-10; deploying a market-entry approximation
+    instead would have cost 10 % (+17.93 vs +20.25 R/yr). `Broker.place_stop`,
+    `cancel_pending`, `resolve_paper_stop` and `modify_sl` exist for this sleeve, and the
+    checks below are what say they behave like the backtest.
+
+    Six checks, any of which failing means the module has forked and must not trade:
+
+    (1) TRUNCATED WINDOW. Every armed-bar decision inside the driver's window must match
+        the full-history one.
+    (2) TRIGGER PRICE. The live scan's trigger must equal the backtest's, to the tick.
+    (3) SEQUENCING. The driver scans only while FLAT and with no working order, so a
+        setup firing mid-trade must be skipped exactly as the backtest skips it.
+    (4) DIRECTION. Every trade must be SHORT. Brooks' own direction measures −0.022 R.
+    (5) NO TARGET. tp_R must stay None.
+    (6) POINT SIZE. A missing point size once priced US500 ten times too cheap and let
+        through 688 trades instead of 460. `point_size` must RAISE on an unknown symbol.
+    """
+    from edgelab.intraday.two_leg_fade import (TwoLegFadeParams, run_two_leg_fade,
+                                               load_m5, armed_bars, point_size)
+    from edgelab.live.signals import tlf_scan
+
+    p = TwoLegFadeParams()
+    if p.tp_R is not None:                                            # ---- (5)
+        print("  TLF: tp_R is not None — the validated profile has NO target. FAIL")
+        return False
+    if p.entry_mode != "stop":
+        print(f"  TLF: entry_mode={p.entry_mode!r} — the validated profile enters on a "
+              f"STOP order. FAIL")
+        return False
+    try:                                                              # ---- (6)
+        point_size("EURUSD")
+        print("  TLF: point_size() silently defaulted on an unknown symbol. FAIL")
+        return False
+    except KeyError:
+        pass
+
+    ok_all = True
+    for sym in ("NAS100", "US500"):
+        bars = load_m5(sym)
+        res = run_two_leg_fade(sym, p, bars=bars)
+        bt, full = res.trades, res.triggers
+        if not len(bt):
+            print(f"  TLF {sym}: no backtest trades — cannot verify")
+            return False
+        if (bt["direction"] != -1).any():                             # ---- (4)
+            print(f"  TLF {sym}: a trade is not SHORT. FAIL")
+            return False
+
+        n = len(bars)
+        rng = np.random.default_rng(0)
+        armed_idx = np.flatnonzero(full != 0)
+        armed_idx = armed_idx[armed_idx >= window]
+        others = np.arange(window, n)
+        others = rng.choice(others, size=min(sample, len(others)), replace=False)
+        probe = np.unique(np.concatenate([armed_idx, others]))
+        bad = bad_trig = 0
+        tick = point_size(sym)
+        for i in probe:                                               # ---- (1) + (2)
+            w = bars.iloc[i - window + 1:i + 1]
+            got = armed_bars(w, p, sym)[-1]
+            if int(got) != int(full[i]):
+                bad += 1
+                continue
+            if got != 0:
+                plan = tlf_scan(w, p, sym)
+                want = float(bars["low"].iloc[i]) - tick
+                if plan is None or abs(plan[1].trigger - want) > 1e-9:
+                    bad_trig += 1
+        print(f"  TLF {sym} window fidelity: {len(probe)} bars replayed through a "
+              f"{window}-bar trailing window ({len(armed_idx)} of them armed) — "
+              f"{bad} decision mismatches, {bad_trig} trigger-price mismatches")
+        ok_all &= (bad == 0 and bad_trig == 0)
+
+        # ---- (3) sequencing: replay the driver's flat-and-no-order cadence -----------
+        taken, busy_until = [], -1
+        for i in np.flatnonzero(full != 0):
+            # STRICTLY less: the backtest re-arms ON the exit bar (its walk advances with
+            # searchsorted(idx, exit_i, "left"), which keeps a signal AT exit_i), and so
+            # does the driver — it polls, sees flat, and scans the bar that just closed.
+            # Using <= here cost a phantom 889-vs-890 mismatch on 2026-08-10.
+            if i < busy_until:
+                continue
+            m = i + 1
+            row = bt[bt["entry_time"] == bars.index[m]] if m < n else bt.iloc[0:0]
+            if not len(row):
+                continue                       # order expired unfilled — as in the driver
+            taken.append(bars.index[m])
+            busy_until = int(np.searchsorted(bars.index, row["exit_time"].iloc[0]))
+        same = len(taken) == len(bt) and all(
+            a == b for a, b in zip(taken, bt["entry_time"].tolist()))
+        fill_rate = 100.0 * len(bt) / max(int((full != 0).sum()), 1)
+        print(f"  TLF {sym} sequencing: backtest {len(bt)} entries, driver replay "
+              f"{len(taken)} entries, identical: {same} "
+              f"({fill_rate:.0f} % of armed orders ever fill; the rest expire)")
+        ok_all &= bool(same)
+        print(f"  TLF {sym} ({len(bt)} entries, STOP entry, sized {p.size_R:.2f}R live): "
+              f"{'PASS' if ok_all else 'FAIL'}")
+    return bool(ok_all)
+
+
 def verify_time_exits() -> bool:
     """The DRIVER's clock arithmetic — the layer the other checks never touch.
 
@@ -728,18 +840,20 @@ def main():
     r3 = verify_brick3()
     r4 = verify_brick4()
     rh = verify_hmasto()
+    rf = verify_tlf()
     rk = verify_kaer()
     rl = verify_keltner()
     rt = verify_time_exits()
     print("-" * 70)
     print(f"  brick1={'PASS' if r1 else 'FAIL'}  brick2={'PASS' if r2 else 'FAIL'}  "
           f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}  "
-          f"HMASTO={'PASS' if rh else 'FAIL'}  KAER={'PASS' if rk else 'FAIL'}  "
+          f"HMASTO={'PASS' if rh else 'FAIL'}  TLF={'PASS' if rf else 'FAIL'}  "
+          f"KAER={'PASS' if rk else 'FAIL'}  "
           f"KELT={'PASS' if rl else 'FAIL'}  time-exits={'PASS' if rt else 'FAIL'}")
     # HMASTO is the sleeve that is LIVE-wired (KAER and KELT are kept for research only),
     # so its result is the one that gates deployment alongside the four bricks.
-    print(f"  LIVE-WIRED SET (bricks 1-4 + HMASTO): "
-          f"{'PASS' if all([r1, r2, r3, r4, rh, rt]) else 'FAIL'}")
+    print(f"  LIVE-WIRED SET (bricks 1-4 + HMASTO + TLF): "
+          f"{'PASS' if all([r1, r2, r3, r4, rh, rf, rt]) else 'FAIL'}")
     print("=" * 70)
 
 

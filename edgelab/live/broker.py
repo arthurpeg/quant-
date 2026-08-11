@@ -70,6 +70,27 @@ class Position:
 
 
 @dataclass
+class PendingOrder:
+    """A working STOP entry. Added 2026-08-10 for TLF, whose validated profile enters on
+    a SELL STOP one tick under the signal bar's low and lets the order EXPIRE if the next
+    bar never touches it. Until then the live layer only sent market orders, and the
+    sleeve had to be deployed on a re-measured market-entry variant instead -- 10 % worse
+    (+17.93 vs +20.25 R/yr). Reproducing the backtest requires the real order type."""
+    magic: int
+    symbol: str
+    direction: int
+    lots: float
+    trigger: float
+    sl: float
+    tp: float | None
+    sl_dist: float
+    placed_at: pd.Timestamp
+    comment: str = ""
+    time_exit_at: pd.Timestamp | None = None
+    ticket: int | None = None
+
+
+@dataclass
 class SymbolSpec:
     point: float
     tick_size: float
@@ -92,6 +113,7 @@ class Broker:
         self.server = None
         # paper book (dry-run)
         self.paper: dict[int, Position] = {}
+        self.paper_orders: dict[int, PendingOrder] = {}
         self.realized_R: float = 0.0
         self._paper_balance = float(cfg_live.get("paper_balance", 100000.0))
         # trade journal (both dry-run and live) — one CSV row per entry & exit
@@ -471,6 +493,154 @@ class Broker:
             else:
                 break
         return res
+
+    # ---- pending STOP entries (TLF) --------------------------------------
+    def place_stop(self, logical: str, direction: int, lots: float, trigger: float,
+                   sl: float, tp: float | None, magic: int, comment: str,
+                   sl_dist: float, now_utc: pd.Timestamp,
+                   time_exit_at: pd.Timestamp | None = None) -> PendingOrder:
+        """Send a working BUY_STOP / SELL_STOP. The CALLER owns its lifetime.
+
+        `type_time` stays GTC on purpose and the strategy cancels the order on the next
+        bar. Broker-side expiry granularity is minutes and varies by symbol; a rule whose
+        order must live exactly one M5 bar cannot depend on it. Cancelling ourselves is
+        the only way the live lifetime matches the backtest's "the order lives bar i+1
+        and then expires"."""
+        sym = self.broker_symbol(logical)
+        po = PendingOrder(magic=magic, symbol=logical, direction=direction, lots=lots,
+                          trigger=trigger, sl=sl, tp=tp, sl_dist=sl_dist,
+                          placed_at=now_utc, comment=comment, time_exit_at=time_exit_at)
+        if not self.live:
+            self.paper_orders[magic] = po
+            self.orders_sent += 1
+            logger.info("[DRY-RUN] STOP-ORDER %s %s %.2f lots trigger=%.5f SL=%.5f (%s)",
+                        logical, "BUY" if direction > 0 else "SELL", lots, trigger, sl,
+                        comment)
+            self._log_trade({"time": now_utc.isoformat(), "event": "stop_order",
+                             "symbol": logical, "dir": direction, "lots": lots,
+                             "price": round(trigger, 5), "sl": round(sl, 5),
+                             "tp": round(tp, 5) if tp else "", "reason": comment})
+            return po
+        import MetaTrader5 as mt5
+        spec = self.symbol_spec(logical)
+        lots = self._clamp_lots(lots, spec)
+        req = {
+            "action": mt5.TRADE_ACTION_PENDING, "symbol": sym, "volume": float(lots),
+            "type": mt5.ORDER_TYPE_BUY_STOP if direction > 0 else mt5.ORDER_TYPE_SELL_STOP,
+            "price": round(trigger, spec.digits), "sl": round(sl, spec.digits),
+            "tp": round(tp, spec.digits) if tp else 0.0,
+            "magic": magic, "comment": comment[:31],
+            "type_time": mt5.ORDER_TIME_GTC,
+            "type_filling": self._filling(spec, mt5),
+        }
+        res = self._send_retry(req, mt5)
+        if res is None or res.retcode != mt5.TRADE_RETCODE_DONE:
+            rc = getattr(res, "retcode", None)
+            if rc == mt5.TRADE_RETCODE_MARKET_CLOSED:
+                raise MarketClosed(f"{logical} market closed")
+            logger.error("LIVE stop-order FAILED %s: retcode=%s %s", logical, rc,
+                         getattr(res, "comment", mt5.last_error()))
+            raise RuntimeError(f"stop order_send failed: {rc}")
+        po.ticket = res.order
+        self.orders_sent += 1
+        logger.info("[LIVE] STOP-ORDER %s %s %.2f lots trigger=%.5f ticket=%s SL=%.5f",
+                    logical, "BUY" if direction > 0 else "SELL", lots, trigger,
+                    res.order, sl)
+        self._log_trade({"time": now_utc.isoformat(), "event": "stop_order",
+                         "symbol": logical, "dir": direction, "lots": lots,
+                         "price": round(trigger, 5), "sl": round(sl, 5),
+                         "tp": round(tp, 5) if tp else "", "reason": comment,
+                         "ticket": res.order})
+        return po
+
+    def pending_order(self, magic: int) -> "PendingOrder | None":
+        if not self.live:
+            return self.paper_orders.get(magic)
+        import MetaTrader5 as mt5
+        for oo in (mt5.orders_get() or []):
+            if oo.magic != magic:
+                continue
+            d = 1 if oo.type in (mt5.ORDER_TYPE_BUY_STOP, mt5.ORDER_TYPE_BUY_LIMIT) else -1
+            return PendingOrder(magic=magic, symbol=self._logical_of(oo.symbol),
+                                direction=d, lots=oo.volume_current,
+                                trigger=oo.price_open, sl=oo.sl, tp=oo.tp or None,
+                                sl_dist=abs(oo.price_open - oo.sl),
+                                placed_at=server_epoch_to_utc(oo.time_setup),
+                                comment=oo.comment, ticket=oo.ticket)
+        return None
+
+    def cancel_pending(self, po: "PendingOrder", reason: str,
+                       now_utc: pd.Timestamp) -> bool:
+        """Remove a working order. Returns True if it is gone afterwards."""
+        if not self.live:
+            self.paper_orders.pop(po.magic, None)
+            logger.info("[DRY-RUN] CANCEL %s magic %s (%s)", po.symbol, po.magic, reason)
+            return True
+        import MetaTrader5 as mt5
+        res = self._send_retry({"action": mt5.TRADE_ACTION_REMOVE,
+                                "order": int(po.ticket)}, mt5)
+        ok = res is not None and res.retcode == mt5.TRADE_RETCODE_DONE
+        if ok:
+            logger.info("[LIVE] CANCEL %s ticket=%s (%s)", po.symbol, po.ticket, reason)
+            self._log_trade({"time": now_utc.isoformat(), "event": "cancel",
+                             "symbol": po.symbol, "reason": reason, "ticket": po.ticket})
+        else:
+            # it may have triggered between our read and this call -- not an error
+            logger.info("[LIVE] cancel %s ticket=%s refused (retcode=%s) - likely filled",
+                        po.symbol, po.ticket, getattr(res, "retcode", None))
+        return ok
+
+    def resolve_paper_stop(self, po: "PendingOrder", bar, now_utc: pd.Timestamp):
+        """DRY-RUN only: did ``bar`` touch the trigger? -> Position or None.
+
+        Fill logic mirrors the backtest exactly: a gap THROUGH the trigger fills at the
+        WORSE of (trigger, bar open), never better."""
+        hi, lo, op = float(bar["high"]), float(bar["low"]), float(bar["open"])
+        if po.direction > 0:
+            if hi < po.trigger:
+                return None
+            fill = max(po.trigger, op)
+        else:
+            if lo > po.trigger:
+                return None
+            fill = min(po.trigger, op)
+        self.paper_orders.pop(po.magic, None)
+        pos = Position(magic=po.magic, symbol=po.symbol, direction=po.direction,
+                       lots=po.lots, entry_price=fill,
+                       sl=fill - po.direction * po.sl_dist, tp=po.tp,
+                       sl_dist=po.sl_dist, open_time=now_utc, comment=po.comment,
+                       time_exit_at=po.time_exit_at)
+        self.paper[po.magic] = pos
+        logger.info("[DRY-RUN] STOP FILLED %s %s %.2f lots @%.5f SL=%.5f", po.symbol,
+                    "LONG" if po.direction > 0 else "SHORT", po.lots, fill, pos.sl)
+        return pos
+
+    def modify_sl(self, pos: Position, new_sl: float, now_utc: pd.Timestamp) -> bool:
+        """Move a position's stop -- used to re-anchor 1R on the ACTUAL fill.
+
+        The pending order carries SL = trigger -/+ 1R. If the fill gapped through the
+        trigger, the backtest measures 1R from the FILL, so the live stop has to follow
+        or the realised R stops being -1.00 on a stop-out."""
+        if abs(new_sl - pos.sl) < 1e-12:
+            return True
+        if not self.live:
+            pos.sl = new_sl
+            return True
+        import MetaTrader5 as mt5
+        spec = self.symbol_spec(pos.symbol)
+        res = self._send_retry({"action": mt5.TRADE_ACTION_SLTP,
+                                "position": int(pos.ticket),
+                                "sl": round(new_sl, spec.digits),
+                                "tp": round(pos.tp, spec.digits) if pos.tp else 0.0}, mt5)
+        ok = res is not None and res.retcode == mt5.TRADE_RETCODE_DONE
+        if ok:
+            logger.info("[LIVE] SL moved %s ticket=%s %.5f -> %.5f", pos.symbol,
+                        pos.ticket, pos.sl, new_sl)
+            pos.sl = new_sl
+        else:
+            logger.error("[LIVE] SL move REFUSED %s ticket=%s retcode=%s", pos.symbol,
+                         pos.ticket, getattr(res, "retcode", None))
+        return ok
 
     def open_position(self, magic: int) -> Position | None:
         if not self.live:

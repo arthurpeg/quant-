@@ -30,7 +30,8 @@ from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 from edgelab.live.strategies import (NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy,
-                                     NasIbsStrategy, HmaStochStrategy)
+                                     NasIbsStrategy, HmaStochStrategy,
+                                     TwoLegFadeStrategy)
 # KaerStrategy is deliberately NOT imported: KAER was replaced by HMASTO in the live
 # forward-test slot on 2026-08-10 (same family, corr +0.335). The class stays in
 # strategies.py for research and `verify`; importing it here would only make it easy to
@@ -65,6 +66,15 @@ def build(cfg_live: dict):
     # demo runner enables it in config_live.yaml. See edgelab/intraday/hma_stoch.py.
     if cfg_live.get("enable_hmasto", False):
         strategies.append(HmaStochStrategy(cfg_live))
+    # FORWARD-TEST SLEEVE, not a brick: TLF (Two-Leg Fade), M5, SHORT-ONLY, one instance
+    # per symbol (NAS100 magic 109, US500 magic 110), half size. Deployed 2026-08-10 on
+    # the user's explicit instruction. Defaults to OFF so a plain checkout keeps trading
+    # the frozen book. The bar SELECTION is Brooks'; the DIRECTION is the opposite of his
+    # (his direction measures -0.022 R, the selection +0.113 R at p=0.000) — which is why
+    # it is called Two-Leg Fade and not "Brooks". See edgelab/intraday/two_leg_fade.py.
+    if cfg_live.get("enable_tlf", False):
+        for sym in cfg_live.get("tlf_symbols", ["NAS100", "US500"]):
+            strategies.append(TwoLegFadeStrategy(cfg_live, sym))
     # KAER (NAS100 M15 Kaufman ER breakout) was REPLACED by HMASTO in the forward-test
     # slot, 2026-08-10 — user decision. The two are the SAME family (corr +0.335 monthly,
     # same asset, same timeframe), so they are alternatives, never a pair: stacking them

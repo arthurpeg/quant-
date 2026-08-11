@@ -417,3 +417,48 @@ def hma_scan(m15: pd.DataFrame, p: HmaStochParams | None = None,
     return i, EntryPlan(direction, dist, p.tp_R * dist if p.tp_R else None,
                         "hma_cross_up" if direction > 0 else "hma_cross_dn",
                         float(m15["close"].iloc[i]))
+
+
+# --------------------------------------------------------------------------- TLF
+@dataclass
+class StopEntryPlan:
+    """A working STOP entry: trigger price, 1R, and the direction."""
+    direction: int
+    trigger: float
+    sl_dist: float
+    tp_dist: float | None
+    reason: str
+    ref_price: float
+
+
+def tlf_scan(m5: pd.DataFrame, p: "TwoLegFadeParams | None" = None,
+             symbol: str = "NAS100") -> "tuple[int, StopEntryPlan] | None":
+    """Decide on the LAST bar of ``m5``, which must already EXCLUDE the forming bar.
+
+    That last bar is an ARMED SETUP bar: a two-leg pullback completed on a strong signal
+    bar, inside the entry window and past the friction gate. The live order is a SELL STOP
+    one tick under its low, living the NEXT bar only — exactly what `run_two_leg_fade`
+    measures in its default ``entry_mode="stop"``.
+
+    The rule, the gate and the stop all come from :mod:`edgelab.intraday.two_leg_fade` —
+    the same functions the backtest calls — so the live decision cannot fork. Always
+    SHORT: the edge is in the bar selection, and on those bars the direction that pays is
+    the fade (see the module docstring for the decomposition).
+    """
+    from edgelab.intraday.two_leg_fade import (TwoLegFadeParams, armed_bars, wilder_atr,
+                                               point_size)
+    p = p or TwoLegFadeParams()
+    if len(m5) < 300:
+        return None                        # WARMUP(250) + EMA20/ATR14 + the state machine
+    armed = armed_bars(m5, p, symbol)
+    i = len(m5) - 1
+    if armed[i] == 0:
+        return None
+    atr = wilder_atr(m5["high"].to_numpy(float), m5["low"].to_numpy(float),
+                     m5["close"].to_numpy(float), p.atr_p)
+    dist = float(p.k_stop * atr[i])
+    if not (dist > 0):
+        return None
+    trigger = float(m5["low"].iloc[i]) - point_size(symbol)
+    return i, StopEntryPlan(-1, trigger, dist, p.tp_R * dist if p.tp_R else None,
+                            "two_leg_fade", float(m5["close"].iloc[i]))

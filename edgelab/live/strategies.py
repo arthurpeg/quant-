@@ -30,7 +30,8 @@ from edgelab.live.risk import LiveRiskManager
 logger = logging.getLogger("edgelab.live.strategies")
 
 MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas_ibs": 105,
-         "nas_kaer": 106, "btc_kelt": 107, "nas_hmasto": 108}
+         "nas_kaer": 106, "btc_kelt": 107, "nas_hmasto": 108,
+         "nas_tlf": 109, "spx_tlf": 110}
 
 SERVER_TZ = "Europe/Athens"     # the broker's clock: a D1 bar's date IS its server date
 ROLLOVER_LEAD_MIN = 10.0        # send a D-rollover time-exit this many minutes EARLY
@@ -324,6 +325,13 @@ class CryptoMacdStrategy(_RolloverBrick):
         self.logical = logical
         self.magic = MAGIC["btc_macd"] if "BTC" in logical else MAGIC["eth_macd"]
         self.risk_cfg = risk_cfg
+        # fraction de 1R risquee par trade. 1.0 jusqu'au 2026-08-10, ramenee a 0.5 sur
+        # instruction de l'utilisateur : le swap FTMO (-30 %/an des DEUX cotes, verifie
+        # en direct sur le terminal) coute 5.71 R/an a cette sleeve, soit exactement ce
+        # qu'elle gagne encore en brut depuis 2022 (5.72 R/an) -> contribution NETTE de
+        # +0.01 R/an sur les 4 dernieres annees pour 9.7 R/an de volatilite propre.
+        # A 0.5R la ruine funded du livre tombe de 60.7 % a 49.2 % (MC periode recente).
+        self.size_R = float(cfg_live.get("crypto_size_R", 1.0))
         self.time_exit_bars = int(risk_cfg["time_exit_bars"])
         self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_day = None
@@ -404,10 +412,11 @@ class CryptoMacdStrategy(_RolloverBrick):
             ref = float(daily_all.iloc[-1]["close"])   # current price for the market entry
             sl = ref - plan.direction * plan.sl_dist
             tp = ref + plan.direction * plan.tp_dist if plan.tp_dist else None
-            lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, risk.risk_budget())
+            budget = risk.risk_budget() * self.size_R
+            lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, budget)
             if lots <= 0:
-                logger.warning("brick3 %s skip entry on %s: cannot size to 1R (min lot exceeds risk cap)",
-                               self.logical, bday)
+                logger.warning("brick3 %s skip entry on %s: cannot size to %.2fR (min lot exceeds risk cap)",
+                               self.logical, bday, self.size_R)
             else:
                 self._place_entry(
                     lambda: broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
@@ -855,3 +864,141 @@ class KeltnerStrategy:
         broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                             f"kelt_{plan.reason}", plan.sl_dist, ref, now_utc,
                             bars_held_limit=self.p.max_bars)
+
+
+class TwoLegFadeStrategy:
+    """FORWARD-TEST SLEEVE (not a frozen brick) — TLF, Two-Leg Fade. M5, SHORT-ONLY.
+
+    One instance per symbol: NAS100 (magic 109) and US500 (magic 110), like brick 3's two
+    coins. Deployed 2026-08-10 at ``size_R`` (0.5R) on the user's explicit instruction.
+
+    WHAT IT TRADES. Bar selection from Brooks (always-in context + two-leg pullback +
+    strong signal bar), but the trade is the OPPOSITE of what he teaches: on those bars
+    the direction worth money is the SHORT. Decomposition of the +0.104 R/trade edge over
+    matched-random: bar selection +0.113 R (p=0.000), signal direction −0.022 R. See
+    edgelab/intraday/two_leg_fade.py.
+
+    ENTRY = A WORKING STOP ORDER, and that is not cosmetic. The validated profile enters
+    on a SELL STOP one tick under the signal bar's low, and the order EXPIRES if the next
+    bar never touches it. A market-entry approximation was measured and is 10 % worse
+    (+17.93 vs +20.25 R/yr, t 2.76 vs 3.05) — so `Broker.place_stop` / `cancel_pending`
+    were added rather than deploying the approximation.
+
+    THE ORDER LIVES EXACTLY ONE BAR. It is cancelled by US on the next completed bar, not
+    by a broker-side expiry: expiry granularity is minutes and varies by symbol, which
+    cannot express "one M5 bar".
+
+    1R IS RE-ANCHORED ON THE FILL. The pending order carries SL = trigger + 1R; if price
+    gapped through the trigger the backtest measures 1R from the FILL, so the live stop is
+    moved to match. Without that, a stop-out would not be −1.00 R.
+
+    ⚠️ The reserves are in the module docstring and they are serious (ex-2020-AND-2022
+    t=+1.77; M10 = −1.54 while M5 = +3.05; 2/13 assets; direction flipped a posteriori on
+    a 2 709-cell surface). Do not size it up.
+    """
+
+    def __init__(self, cfg_live: dict, logical: str):
+        from edgelab.intraday.two_leg_fade import TwoLegFadeParams
+        self.p = TwoLegFadeParams(size_R=float(cfg_live.get("tlf_size_R", 0.5)))
+        self.logical = logical
+        self.magic = MAGIC["nas_tlf"] if "NAS" in logical.upper() else MAGIC["spx_tlf"]
+        self.bars_needed = int(cfg_live.get("tlf_bars", 600))
+        self.max_bar_age_min = float(cfg_live.get("tlf_max_bar_age_min", 2))
+        self._acted_bar = None      # last bar we scanned
+        self._order_bar = None      # bar whose close armed the working order
+        self._anchored = None       # ticket whose SL we already re-anchored on the fill
+        self._skip_logged = None
+
+    def _completed(self, broker: Broker, now_utc: pd.Timestamp):
+        bars_all = broker.get_bars(self.logical, "M5", self.bars_needed)
+        if len(bars_all) < 300:
+            return None
+        step_ = pd.Timedelta(minutes=5)
+        bars = bars_all.iloc[:-1] if (bars_all.index[-1] + step_) > now_utc else bars_all
+        return bars if len(bars) else None
+
+    def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
+        et = now_utc.tz_convert(self.p.tz)
+        minute = et.hour * 60 + et.minute
+        open_m, cut_m = _mins(self.p.session_open), _mins(self.p.entry_cutoff)
+        flat_m = _mins(self.p.session_close)
+
+        pos = broker.open_position(self.magic)
+
+        # (1) an open position: re-anchor 1R on the fill, then manage it
+        if pos is not None:
+            self._order_bar = None
+            if pos.ticket is not None and self._anchored != pos.ticket:
+                want = pos.entry_price - pos.direction * pos.sl_dist
+                if abs(want - pos.sl) > 1e-9:
+                    broker.modify_sl(pos, want, now_utc)
+                self._anchored = pos.ticket
+            if not broker.live:
+                bar = broker.get_bars(self.logical, "M5", 3).iloc[-1]
+                closed, px, why = broker.resolve_paper(pos, bar, now_utc)
+                if closed:
+                    broker.close(pos, px, why, now_utc)
+                    return
+            if minute >= flat_m:
+                px = float(broker.get_bars(self.logical, "M5", 2).iloc[-1]["close"])
+                broker.close(pos, px, "time_exit", now_utc)
+            return
+
+        bars = self._completed(broker, now_utc)
+        if bars is None:
+            return
+        last_ts = bars.index[-1]
+
+        # (2) a working order: resolve it, then let it live EXACTLY one bar
+        po = broker.pending_order(self.magic)
+        if po is not None:
+            if self._order_bar is not None and last_ts <= self._order_bar:
+                return                                  # still its own bar — wait
+            if not broker.live:
+                filled = broker.resolve_paper_stop(po, bars.iloc[-1], now_utc)
+                if filled is not None:
+                    self._order_bar = None
+                    return
+                po = broker.pending_order(self.magic)
+            if po is not None:
+                broker.cancel_pending(po, "one_bar_expiry", now_utc)
+            self._order_bar = None
+            # fall through: this bar may itself arm a new order
+
+        # (3) flat and no order — scan, inside the signal window only
+        if not (open_m <= minute <= cut_m + 5):
+            return
+        if self._acted_bar is not None and last_ts <= self._acted_bar:
+            return
+        age_min = (now_utc - (last_ts + pd.Timedelta(minutes=5))).total_seconds() / 60.0
+        if age_min > self.max_bar_age_min:
+            self._acted_bar = last_ts                   # stale -> do NOT chase
+            logger.info("tlf %s stale bar %s (%.1f min old) -> skip", self.logical,
+                        last_ts, age_min)
+            return
+
+        res = S.tlf_scan(bars, self.p, self.logical)
+        self._acted_bar = last_ts
+        if res is None:
+            return
+        _, plan = res
+        ok, why = risk.can_enter()
+        if not ok:
+            if self._skip_logged != et.date():
+                logger.info("tlf %s skip entry: %s", self.logical, why)
+                self._skip_logged = et.date()
+            return
+
+        sl = plan.trigger - plan.direction * plan.sl_dist        # short -> SL above
+        tp = plan.trigger + plan.direction * plan.tp_dist if plan.tp_dist else None
+        budget = risk.risk_budget() * self.p.size_R
+        lots = broker.lots_for_risk(self.logical, plan.direction, plan.trigger, sl, budget)
+        if lots <= 0:
+            logger.warning("tlf %s skip entry at %s: cannot size to %.2fR on the lot grid",
+                           self.logical, last_ts, self.p.size_R)
+            return
+        close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
+        broker.place_stop(self.logical, plan.direction, lots, plan.trigger, sl, tp,
+                          self.magic, f"tlf_{plan.reason}", plan.sl_dist, now_utc,
+                          time_exit_at=close_dt)
+        self._order_bar = last_ts
