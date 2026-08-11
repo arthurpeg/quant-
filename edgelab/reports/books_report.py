@@ -106,6 +106,11 @@ def stats(s: pd.Series) -> dict:
         worst_day=float(s.min()), worst_week=float(s.rolling(7).sum().min()),
         worst_month=float(m.min()), best_month=float(m.max()),
         m_mean=float(m.mean()), m_med=float(m.median()), m_std=float(m.std()),
+        # jour actif : moyenne ET mediane. Sur une serie de R, l'ecart entre les deux
+        # mesure directement l'asymetrie -- une mediane negative avec une moyenne
+        # positive est la signature d'une strategie a rares gros gains.
+        d_mean=float(active.mean()) if len(active) else float("nan"),
+        d_med=float(active.median()) if len(active) else float("nan"),
         pos_months=float((m > 0).mean()), n_months=int(len(m)),
         active_days=int(len(active)), span=float(span),
         years=int(s.groupby(s.index.year).sum().gt(0).sum()),
@@ -340,6 +345,8 @@ def build(out: Path = OUT) -> Path:
             _tile("max drawdown", num(s["maxDD"], 1, False) + " R", f"RoMaD {s['RoMaD']:.2f}"),
             _tile("Sharpe", f"{s['Sharpe']:.2f}", "quotidien annualisé"),
             _tile("pire journée", num(s["worst_day"], 2), f"pire mois {s['worst_month']:+.1f} R", "neg"),
+            _tile("R / jour actif (moy.)", num(s["d_mean"], 3),
+                  f"médiane {s['d_med']:+.3f} R sur {s['active_days']} jours"),
         ])
 
     # ---------- monthly % table ----------
@@ -358,12 +365,13 @@ def build(out: Path = OUT) -> Path:
             if c["risk"] not in RISKS:
                 continue
             mo = f"{c['med_months']:.1f} mo" if c["med_months"] else "—"
+            mo_a = f"{c['mean_months']:.1f} mo" if c.get("mean_months") else "—"
             first = c["risk"] == RISKS[0]
             prop_rows += (
                 f"<tr><th>{n if first else ''}</th><td>{c['risk']*100:.2f} %</td>"
-                f"<td>{c['p_pass']*100:.1f} %</td><td>{mo}</td>"
+                f"<td>{c['p_pass']*100:.1f} %</td><td>{mo}</td><td class='muted'>{mo_a}</td>"
                 f"<td>{c['p_fail_dd']*100:.1f} %</td><td>{c['p_fail_daily']*100:.1f} %</td>"
-                f"<td>{f['mean_wd']:.1f} %</td>"
+                f"<td>{f['mean_wd']:.1f} %</td><td class='muted'>{f['med_wd']:.1f} %</td>"
                 f"<td class='{'neg' if f['p_ruin'] > .10 else ''}'>{f['p_ruin']*100:.1f} %</td></tr>")
 
     mc_rows = ""
@@ -371,8 +379,10 @@ def build(out: Path = OUT) -> Path:
         a, d = mc[n]["annual"], mc[n]["mdd"]
         mc_rows += (f"<tr><th>{n}</th><td>{(a>0).mean()*100:.1f} %</td>"
                     f"<td>{np.percentile(a,5):+.1f}</td><td>{np.median(a):+.1f}</td>"
+                    f"<td class='muted'>{a.mean():+.1f}</td>"
                     f"<td>{np.percentile(a,95):+.1f}</td>"
-                    f"<td>{np.median(d):.1f}</td><td>{np.percentile(d,95):.1f}</td></tr>")
+                    f"<td>{np.median(d):.1f}</td><td class='muted'>{d.mean():.1f}</td>"
+                    f"<td>{np.percentile(d,95):.1f}</td></tr>")
 
     sleeve_rows = ""
     for r in sl_rows:
@@ -489,7 +499,8 @@ def build(out: Path = OUT) -> Path:
   <p class="sub">Block-bootstrap (blocs de 14 jours, 20 000 tirages), la fonction
    canonique du projet.</p>
   <table><thead><tr><th>livre</th><th>P(année +)</th><th>5ᵉ pct</th><th>médiane</th>
-   <th>95ᵉ pct</th><th>maxDD médian</th><th>maxDD 95ᵉ</th></tr></thead>
+   <th>moyenne</th><th>95ᵉ pct</th><th>maxDD médian</th><th>maxDD moyen</th>
+   <th>maxDD 95ᵉ</th></tr></thead>
    <tbody>{mc_rows}</tbody></table>
  </section>
 
@@ -498,7 +509,8 @@ def build(out: Path = OUT) -> Path:
   <p class="sub">Cible +15 %, plancher statique −10 %, perte quotidienne −5 %.
    Funded : payout mensuel remettant le solde à l'initial.</p>
   <table><thead><tr><th>livre</th><th>risque</th><th>P(PASS)</th><th>délai méd.</th>
-   <th>P(fail DD)</th><th>P(fail jour)</th><th>E[retiré]/an</th><th>P(ruine)/an</th>
+   <th>délai moy.</th><th>P(fail DD)</th><th>P(fail jour)</th>
+   <th>retiré/an (moy.)</th><th>retiré/an (méd.)</th><th>P(ruine)/an</th>
    </tr></thead><tbody>{prop_rows}</tbody></table>
  </section>
 

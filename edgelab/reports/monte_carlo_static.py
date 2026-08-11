@@ -132,7 +132,13 @@ def simulate(R, N=40000, seed=7, B=14):
             elif res == 'fd': nfd += 1
             elif res == 'fl': nfl += 1
         chal.append(dict(risk=r, p_pass=npass / N, p_fail_dd=nfd / N, p_fail_daily=nfl / N,
-                         med_months=(np.median(days) / 30.44 if days else None)))
+                         med_months=(np.median(days) / 30.44 if days else None),
+                         # la MOYENNE du delai est systematiquement au-dessus de la
+                         # mediane : la distribution du temps de passage est bornee a
+                         # gauche et a une longue queue a droite (les parcours qui
+                         # trainent). Publier la seule mediane fait paraitre le challenge
+                         # plus rapide qu'il ne l'est en esperance.
+                         mean_months=(float(np.mean(days)) / 30.44 if days else None)))
 
     # --- 2) funded -----------------------------------------------------------------
     pathsF = np.array([path(365) for _ in range(N)]); MO = 30; fund = []
