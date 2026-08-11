@@ -209,6 +209,64 @@ def check_broker(want: dict, cfg: dict) -> None:
         mt5.shutdown()
 
 
+# ------------------------------------------------------------------------ E. runner
+def check_runner(cfg: dict) -> None:
+    """Le runner tourne-t-il VRAIMENT ? C'est la question que tout le reste presuppose.
+
+    Le wiki enregistre deux fois « LE RUNNER N'EST TOUJOURS PAS LANCE » : un contrôle qui
+    lit le compte, la config et le journal peut être entièrement vert alors que plus rien
+    ne trade. Trois signaux indépendants, parce qu'aucun n'est suffisant seul :
+
+      * le PROCESSUS (autorité, mais absent si le contrôle tourne sur une autre machine) ;
+      * la FRAÎCHEUR de `runner.log` (il écrit à chaque passe, donc un log figé = mort) ;
+      * la FRAÎCHEUR du journal (rien ne s'y écrit sans trade, donc informatif seulement).
+    """
+    head("E. RUNNER")
+    out = HERE / "_out"
+    now = datetime.now().astimezone()
+
+    # --- 1. le processus ---------------------------------------------------------
+    procs = []
+    try:
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-Command",
+             "Get-CimInstance Win32_Process -Filter \"Name like 'python%'\" | "
+             "Where-Object { $_.CommandLine -like '*edgelab.live.runner*' } | "
+             "ForEach-Object { \"$($_.ProcessId)|$($_.CommandLine)\" }"],
+            capture_output=True, text=True, timeout=30)
+        procs = [x for x in (r.stdout or "").splitlines() if x.strip()]
+    except Exception as e:
+        say(WARN, f"impossible d'interroger les processus ({e})")
+    if procs:
+        for x in procs:
+            pid = x.split("|", 1)[0]
+            say(OK, f"processus runner VIVANT (pid {pid})")
+    else:
+        say(BAD, "AUCUN processus `edgelab.live.runner` sur cette machine "
+                 "-> relancer `run_forever.ps1` (si le runner est sur un autre hote, "
+                 "ignorer et lire les fraicheurs ci-dessous)")
+
+    # --- 2. fraicheur des logs ---------------------------------------------------
+    for name, budget_min, why in ((
+            "runner.log", 5, "le runner ecrit a chaque passe (~20 s)"),
+            ("supervisor.log", 60, "le superviseur ecrit au (re)lancement")):
+        f = out / name
+        if not f.exists():
+            say(WARN, f"{name} absent de {out} (runner sur un autre hote ?)")
+            continue
+        age = (now - datetime.fromtimestamp(f.stat().st_mtime).astimezone())
+        mins = age.total_seconds() / 60.0
+        lvl = OK if mins <= budget_min else (WARN if name == "supervisor.log" else BAD)
+        say(lvl, f"{name} ecrit il y a {mins:.1f} min (budget {budget_min} min) - {why}")
+        if lvl is not OK and name == "runner.log":
+            try:
+                tail = f.read_text(encoding="utf-8", errors="replace").splitlines()[-3:]
+                for t in tail:
+                    print(f"            {t[:150]}")
+            except Exception:
+                pass
+
+
 # ----------------------------------------------------------------------- D. journal
 def check_journal() -> None:
     head("D. JOURNAL DE TRADES")
@@ -263,14 +321,15 @@ def main() -> int:
     c = check_config()
     if not a.no_mt5:
         check_broker(c["want"], c["cfg"])
+    check_runner(c["cfg"])
     check_journal()
 
     if a.verify:
-        head("E. FIDÉLITÉ DES MOTEURS (verify)")
+        head("F. FIDELITE DES MOTEURS (verify)")
         r = subprocess.run([sys.executable, "-m", "edgelab.live.verify"], cwd=ROOT)
         say(OK if r.returncode == 0 else BAD, f"verify exit={r.returncode}")
     else:
-        head("E. FIDÉLITÉ DES MOTEURS")
+        head("F. FIDELITE DES MOTEURS")
         say(WARN, "non execute - relancer avec --verify (~4 min) apres tout "
                   "changement de regle, de bracket ou de moteur")
 
