@@ -123,6 +123,11 @@ def _parse(csv_path: Path) -> list[dict]:
                     rec["R"] = float(r[9])
                 except ValueError:
                     rec["R"] = None
+                # `R` reste le R DE LA SLEEVE tel que le journal l'ecrit (un stop plein
+                # vaut -1.00 quelle que soit la taille deployee, comme dans le backtest
+                # de la sleeve). `aR` est le meme trade en R DE COMPTE, seule unite dans
+                # laquelle des sleeves de tailles differentes peuvent etre ADDITIONNEES.
+                rec["aR"] = account_R(rec["reason"], rec["symbol"], rec["R"])
             rows.append(rec)
     return rows
 
@@ -172,7 +177,7 @@ def summarise(csv_path: Path) -> None:
     if not exits:
         print("    no closed trades yet - R is only realised on exit (SL/TP/time-exit).")
     else:
-        Rs = [r["R"] for r in exits]
+        Rs = [r["aR"] for r in exits]
         tot = sum(Rs); wins = [x for x in Rs if x > 0]; losses = [x for x in Rs if x <= 0]
         pf = (sum(wins) / -sum(losses)) if losses and sum(losses) != 0 else float("inf")
         yrs = max(span_days / 365.25, 1e-9)
@@ -180,15 +185,20 @@ def summarise(csv_path: Path) -> None:
         print(f"    n={len(Rs)}  win {100*len(wins)/len(Rs):.0f}%  PF {pf:.2f}  "
               f"avg {tot/len(Rs):+.2f} R  best {max(Rs):+.2f}  worst {min(Rs):+.2f}")
         print(f"    ~cash @ 1R=100: {tot*100:+.0f} (account currency)")
+        print("    R DE COMPTE : les sleeves a 0.5R (b3, HMASTO, TLF) comptent moitie, "
+              "sinon\n    leur stop -- 0,5 % du capital -- pesait autant qu'un stop "
+              "plein a 1 %.")
 
         # per brick
         print("\n  --- per brick (closed) ---")
-        byb = defaultdict(list)
+        byb = defaultdict(list); bys = defaultdict(list)
         for r in exits:
-            byb[_brick(r["symbol"], r.get("reason", ""))].append(r["R"])
+            k = _brick(r["symbol"], r.get("reason", ""))
+            byb[k].append(r["aR"]); bys[k].append(r["R"])
         for b in sorted(byb):
             v = byb[b]; w = sum(1 for x in v if x > 0)
-            print(f"    {b:18} n={len(v):>3}  win {100*w/len(v):>3.0f}%  totR {sum(v):>+7.2f}")
+            print(f"    {b:18} n={len(v):>3}  win {100*w/len(v):>3.0f}%  "
+                  f"compte {sum(v):>+7.2f} R   (sleeve {sum(bys[b]):>+7.2f} R)")
 
         # per month
         print("\n  --- per month (closed) ---")
@@ -196,7 +206,7 @@ def summarise(csv_path: Path) -> None:
         for r in exits:
             dt = _dt(r["time"])
             if dt:
-                key = dt.strftime("%Y-%m"); bym[key] += r["R"]; cntm[key] += 1
+                key = dt.strftime("%Y-%m"); bym[key] += r["aR"]; cntm[key] += 1
         for m in sorted(bym):
             print(f"    {m}   {bym[m]:>+7.2f} R   ({cntm[m]} trades)")
 
@@ -229,13 +239,13 @@ def build_report_text(csv_path: Path, header: list[str] | None = None) -> str:
             net[r["symbol"]] -= 1
     open_syms = [s for s, n in net.items() if n > 0]
     if exits:
-        Rs = [r["R"] for r in exits]; tot = sum(Rs)
+        Rs = [r["aR"] for r in exits]; tot = sum(Rs)
         w = [x for x in Rs if x > 0]; l = [x for x in Rs if x <= 0]
         pf = (sum(w) / -sum(l)) if l and sum(l) != 0 else float("inf")
         lines.append(f"closed {len(exits)} | realised {tot:+.2f} R | win {100*len(w)/len(Rs):.0f}% | PF {pf:.2f}")
         byb = defaultdict(float)
         for r in exits:
-            byb[_brick(r["symbol"], r.get("reason", ""))] += r["R"]
+            byb[_brick(r["symbol"], r.get("reason", ""))] += r["aR"]
         lines.append("  " + " | ".join(f"{b.split('(')[0].strip()} {v:+.1f}R" for b, v in sorted(byb.items())))
     else:
         lines.append("closed 0 | realised +0.00 R (nothing closed yet)")
@@ -287,10 +297,14 @@ def build_report_embed(csv_path: Path, ctx: dict) -> dict:
         return out
 
     t_exits, t_entries = _on_today(exits), _on_today(entries)
-    t_R = sum(r["R"] for r in t_exits)
-    tot = sum(r["R"] for r in exits)
-    wins = [r["R"] for r in exits if r["R"] > 0]
-    losses = [r["R"] for r in exits if r["R"] <= 0]
+    # ⚠️ TOUT CE QUI EST AGREGE ICI EST EN R DE COMPTE (`aR`), jamais en R de sleeve.
+    # Un stop TLF fait perdre 0,5 % du capital et doit peser -0.50 R, pas -1.00 : la
+    # sleeve est deployee a 0.5R. Additionner le journal a plat comptait un stop TLF
+    # comme un stop de la brique 1, qui coute le double.
+    t_R = sum(r["aR"] for r in t_exits)
+    tot = sum(r["aR"] for r in exits)
+    wins = [r["aR"] for r in exits if r["aR"] > 0]
+    losses = [r["aR"] for r in exits if r["aR"] <= 0]
 
     bal, init = ctx.get("balance"), ctx.get("initial")
     pnl_pct = ((bal / init - 1.0) * 100.0) if (bal and init) else 0.0
@@ -345,17 +359,25 @@ def build_report_embed(csv_path: Path, ctx: dict) -> dict:
     if exits:
         byb = defaultdict(list)
         for r in exits:
-            byb[_brick(r["symbol"], r.get("reason", ""))].append(r["R"])
-        tbl = ["{:<20}{:>4}{:>7}{:>8}".format("brick", "n", "win", "R")]
+            byb[_brick(r["symbol"], r.get("reason", ""))].append(r)
+        # colonne `sz` : la taille deployee de la sleeve, pour que le lecteur voie
+        # POURQUOI une ligne a 0.5 contribue moitie moins que son R de sleeve.
+        tbl = ["{:<20}{:>4}{:>5}{:>6}{:>8}".format("brick", "n", "sz", "win", "R")]
         for b in sorted(byb):
             v = byb[b]
-            tbl.append("{:<20}{:>4}{:>6.0f}%{:>+8.2f}".format(
-                b, len(v), 100 * sum(1 for x in v if x > 0) / len(v), sum(v)))
+            sz = SIZE_R.get(str(v[0].get("reason", "")).split("_")[0].split(":")[0], 1.0)
+            # tronque : les libelles portent leur description complete (celui de TLF fait
+            # 62 caracteres) et debordaient la colonne, cassant l'alignement du bloc.
+            tbl.append("{:<20}{:>4}{:>5.1f}{:>5.0f}%{:>+8.2f}".format(
+                b.split(" - ")[0][:20], len(v), sz,
+                100 * sum(1 for x in v if x["aR"] > 0) / len(v),
+                sum(x["aR"] for x in v)))
         pf = (sum(wins) / -sum(losses)) if losses and sum(losses) != 0 else float("inf")
         tbl.append("")
         tbl.append("PF {:.2f}   avg {:+.2f} R   best {:+.2f}   worst {:+.2f}".format(
-            pf, tot / len(exits), max(r["R"] for r in exits), min(r["R"] for r in exits)))
-        fields.append({"name": "\U0001F9F1 By brick (closed)", "inline": False,
+            pf, tot / len(exits), max(r["aR"] for r in exits), min(r["aR"] for r in exits)))
+        tbl.append("R de COMPTE (1 R = risk_per_trade) : une sleeve a sz 0.5 compte moitie.")
+        fields.append({"name": "\U0001F9F1 By brick (closed, account-R)", "inline": False,
                        "value": "```\n" + "\n".join(tbl)[:1000] + "\n```"})
 
     foot = f"{now_et:%a %d %b %Y · %H:%M} ET" if now_et else "edgelab.live"
