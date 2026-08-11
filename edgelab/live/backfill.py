@@ -87,12 +87,26 @@ def scan(days: int, magics) -> list:
         mt5.shutdown()
 
 
-def existing_tickets(path: Path) -> set:
+def existing_tickets(path: Path) -> tuple[set, set]:
+    """-> (tickets ayant une ligne `enter`, tickets ayant une ligne `exit`)
+
+    ⚠️ IL FAUT DISTINGUER LES DEUX. Le trou qu'on rattrape est une ENTRÉE journalisée sans
+    sa SORTIE : le driver a ouvert la position, puis le stop du broker l'a fermée sans que
+    personne ne l'écrive. Chercher le ticket n'importe où déclarait donc « déjà présent »
+    exactement les trades qu'on veut réparer — c'est ce qui s'est produit sur le VPS le
+    2026-08-11 pour TLF (ticket 83515343). Seule l'absence de ligne `exit` fait foi.
+    """
     if not path.exists():
-        return set()
+        return set(), set()
+    ent, ext = set(), set()
     with open(path, newline="", encoding="utf-8") as fh:
-        return {str(r.get("ticket", "")).strip()
-                for r in csv.DictReader(fh) if r.get("ticket")}
+        for r in csv.DictReader(fh):
+            tk = str(r.get("ticket", "") or "").strip()
+            if not tk:
+                continue
+            (ent if r.get("event") == "enter" else ext if r.get("event") == "exit"
+             else set()).add(tk)
+    return ent, ext
 
 
 def main() -> int:
@@ -109,20 +123,22 @@ def main() -> int:
     from edgelab.live.strategies import MAGIC
     magics = set(MAGIC.values())
     path = Path(a.csv)
-    have = existing_tickets(path)
+    have_enter, have_exit = existing_tickets(path)
     rows = scan(a.days, magics)
 
-    missing = [(pid, ex, en) for pid, ex, en in rows if str(pid) not in have]
+    missing = [(pid, ex, en) for pid, ex, en in rows if str(pid) not in have_exit]
     print(f"journal   : {path}")
     print(f"positions fermées trouvées sur {a.days} j : {len(rows)}")
-    print(f"déjà dans le journal                      : {len(rows) - len(missing)}")
-    print(f"MANQUANTES                                : {len(missing)}\n")
+    print(f"déjà closes dans le journal               : {len(rows) - len(missing)}")
+    print(f"SORTIES MANQUANTES                        : {len(missing)}\n")
     if not missing:
         print("rien à injecter.")
         return 0
     for pid, ex, en in missing:
+        tag = "sortie seule" if str(pid) in have_enter else "entrée + sortie"
         print(f"  {ex['time'][:19]}  {ex['symbol']:7s} {'SHORT' if ex['dir'] < 0 else 'LONG '} "
-              f"{ex['lots']:g} @ {ex['price']:.2f}  R={ex['R']}  '{ex['reason']}'  ticket {pid}")
+              f"{ex['lots']:g} @ {ex['price']:.2f}  R={ex['R']}  '{ex['reason']}'  "
+              f"ticket {pid}  [{tag}]")
     if not a.write:
         print("\n(aperçu — relancer avec --write pour injecter)")
         return 0
@@ -133,10 +149,15 @@ def main() -> int:
         w = csv.DictWriter(fh, fieldnames=FIELDS, extrasaction="ignore")
         if new:
             w.writeheader()
+        n_en = 0
         for pid, ex, en in missing:
-            w.writerow(en)
+            # ne PAS redoubler une entrée que le driver a déjà écrite : le cas normal est
+            # justement une entrée présente et une sortie perdue.
+            if str(pid) not in have_enter:
+                w.writerow(en)
+                n_en += 1
             w.writerow(ex)
-    print(f"\n{len(missing)} trade(s) injecté(s) ({2 * len(missing)} lignes).")
+    print(f"\n{len(missing)} sortie(s) injectée(s), {n_en} entrée(s) manquante(s) avec.")
     print("⚠️ Les lignes sont AJOUTÉES à la fin, donc le journal n'est plus trié par date.")
     print("   `summary` et le rapport lisent par ligne, pas par ordre — sans effet sur eux.")
     return 0
