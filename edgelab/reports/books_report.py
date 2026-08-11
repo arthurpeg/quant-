@@ -1,6 +1,6 @@
 """Self-contained HTML backtest report for the two named books.
 
-    book AGRESSIF = b1 + b2 + b4 @1R + b3@0.5R + HMASTO@0.5R  (live on the demo)
+    book AGRESSIF = b1 + b2 + b4 @1R + b3@0.5R + HMASTO@0.5R + TLF@0.5R (live)
                     b3 halved 2026-08-10: the verified FTMO crypto swap
                     (-30 %/yr BOTH sides) costs it 5.71 R/yr against 5.72 R/yr
                     of gross since 2022 -> net +0.01 R/yr over 4 years.
@@ -41,6 +41,7 @@ import numpy as np
 import pandas as pd
 
 from edgelab.intraday.hma_stoch import run_hma_stoch
+from edgelab.intraday.two_leg_fade import run_two_leg_fade
 from edgelab.reports.monte_carlo_static import build_daily_R, simulate
 
 HERE = Path(__file__).resolve().parent
@@ -51,18 +52,19 @@ COPIES = (HERE / "_out" / "books_backtest.html",
 RISKS = (0.005, 0.0075, 0.01)
 
 BOOKS = {
-    "AGRESSIF": dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, HMASTO=0.5),
+    "AGRESSIF": dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, HMASTO=0.5, TLF=0.5),
                      use="CHALLENGE — 1.00 %/trade",
-                     note="Déployé en live sur la démo (magics 101→105 + 108; KAER/106 retirée le 2026-08-10)."),
-    "FUNDED":   dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, HMASTO=0.0),
+                     note="Déployé en live sur la démo : magics 101→105, 108 (HMASTO) et 109/110 (TLF). Brique 3 ramenée à 0.5R le 2026-08-10 (swap FTMO crypto −30 %/an des DEUX côtés). KAER/106 et KELT/107 retirées."),
+    "FUNDED":   dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, HMASTO=0.0, TLF=0.0),
                      use="FUNDED — 0.50 %/trade",
                      note="Bascule à la validation du challenge. Pas encore déployé."),
 }
-SLEEVES = ["b1", "b2", "b3", "b4", "HMASTO"]
+SLEEVES = ["b1", "b2", "b3", "b4", "HMASTO", "TLF"]
 SLEEVE_LABEL = {
     "b1": "brique 1 — NAS100 ORB (régime bas)", "b2": "brique 2 — XAUUSD turn-of-month",
     "b3": "brique 3 — BTC+ETH MACD+RSI", "b4": "brique 4 — NAS100 IBS",
     "HMASTO": "HMASTO — NAS100 M15 croisement HMA/EMA + RSI/Stoch (magic 108)",
+    "TLF": "TLF — two-leg fade, NAS100+US500 M5 SHORT-ONLY (magics 109/110)",
 }
 
 
@@ -81,9 +83,13 @@ def load_sleeves() -> tuple[pd.DataFrame, pd.Timestamp, pd.Timestamp]:
     idx = pd.date_range(start, end, freq="D")
     b1, b2, b3, b4 = [p.reindex(idx).fillna(0.0) for p in parts]
     hm = run_hma_stoch("NAS100").trades
+    # TLF trade DEUX symboles sous deux magics (109 NAS100, 110 US500), comme la brique 3
+    # avec ses deux coins : on somme leurs R quotidiens en une seule sleeve.
+    tlf = pd.concat([run_two_leg_fade(s_).trades for s_ in ("NAS100", "US500")])
     return pd.DataFrame({
         "b1": b1, "b2": b2, "b3": b3, "b4": b4,
         "HMASTO": _daily(hm["R"], hm["exit_time"], idx),
+        "TLF": _daily(tlf["R"], tlf["exit_time"], idx),
     }), start, end
 
 
@@ -517,7 +523,13 @@ def build(out: Path = OUT) -> Path:
  <section class="warn">
   <h2>Ce que ce rapport ne prouve pas</h2>
   <ul>
-   <li><b>HMASTO n'a jamais été forward-testée.</b> Elle est in-sample, mono-actif
+   <li><b>Ni HMASTO ni TLF n'ont été forward-testées.</b> Ensemble elles pèsent la
+    majorité du R/an du livre AGRESSIF, et aucune n'a jamais tourné hors échantillon.
+    TLF porte en plus quatre réserves mesurées : sans 2020 ET 2022 son t tombe à +1.77,
+    son échelle de détection n'est pas monotone (M5 +3.05, M10 −1.54), elle ne réplique
+    sur aucun actif hors indices US (2/13), et sa direction a été retournée
+    <i>a posteriori</i> sur une surface de 2 709 cellules.</li>
+   <li><b>HMASTO en particulier :</b> Elle est in-sample, mono-actif
     (elle ne réplique sur aucun autre indice) et a été sélectionnée comme meilleure
     cellule par RoMaD d'un criblage de 112 mécanismes. Sans elle, AGRESSIF redevient
     le livre gelé à 4 briques : plus lent, pas cassé.</li>
