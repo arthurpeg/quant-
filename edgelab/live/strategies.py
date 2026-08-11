@@ -221,7 +221,12 @@ class NasOrbStrategy:
             logger.warning("brick1 skip entry on %s: cannot size to 1R (min lot exceeds risk cap)", et_date)
             self._entered_on = et_date
             return
-        close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
+        # ⚠️ lire session_close, JAMAIS un litteral : les trois sleeves intraday
+        # codaient 15:55 en dur alors que leur backtest lit p.session_close. Elles
+        # s'accordaient par coincidence ; changer le parametre aurait forke le live
+        # du backtest en silence. verify_flat_times() garde desormais l'egalite.
+        close_dt = (et.normalize()
+                    + pd.Timedelta(minutes=_mins(self.p.session_close))).tz_convert("UTC")
         broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                             f"brick1_{plan.reason}", plan.sl_dist, ref, now_utc, time_exit_at=close_dt)
         self._entered_on = et_date
@@ -638,7 +643,12 @@ class KaerStrategy:
             logger.warning("kaer skip entry at %s: cannot size to %.2fR on the lot grid",
                            last_ts, self.p.size_R)
             return
-        close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
+        # ⚠️ lire session_close, JAMAIS un litteral : les trois sleeves intraday
+        # codaient 15:55 en dur alors que leur backtest lit p.session_close. Elles
+        # s'accordaient par coincidence ; changer le parametre aurait forke le live
+        # du backtest en silence. verify_flat_times() garde desormais l'egalite.
+        close_dt = (et.normalize()
+                    + pd.Timedelta(minutes=_mins(self.p.session_close))).tz_convert("UTC")
         broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                             f"kaer_{plan.reason}", plan.sl_dist, ref, now_utc,
                             time_exit_at=close_dt)
@@ -741,7 +751,12 @@ class HmaStochStrategy:
             logger.warning("hmasto skip entry at %s: cannot size to %.2fR on the lot grid",
                            last_ts, self.p.size_R)
             return
-        close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
+        # ⚠️ lire session_close, JAMAIS un litteral : les trois sleeves intraday
+        # codaient 15:55 en dur alors que leur backtest lit p.session_close. Elles
+        # s'accordaient par coincidence ; changer le parametre aurait forke le live
+        # du backtest en silence. verify_flat_times() garde desormais l'egalite.
+        close_dt = (et.normalize()
+                    + pd.Timedelta(minutes=_mins(self.p.session_close))).tz_convert("UTC")
         broker.place_market(self.logical, plan.direction, lots, sl, tp, self.magic,
                             f"hmasto_{plan.reason}", plan.sl_dist, ref, now_utc,
                             time_exit_at=close_dt)
@@ -997,7 +1012,12 @@ class TwoLegFadeStrategy:
             logger.warning("tlf %s skip entry at %s: cannot size to %.2fR on the lot grid",
                            self.logical, last_ts, self.p.size_R)
             return
-        close_dt = (et.normalize() + pd.Timedelta(hours=15, minutes=55)).tz_convert("UTC")
+        # ⚠️ lire session_close, JAMAIS un litteral : les trois sleeves intraday
+        # codaient 15:55 en dur alors que leur backtest lit p.session_close. Elles
+        # s'accordaient par coincidence ; changer le parametre aurait forke le live
+        # du backtest en silence. verify_flat_times() garde desormais l'egalite.
+        close_dt = (et.normalize()
+                    + pd.Timedelta(minutes=_mins(self.p.session_close))).tz_convert("UTC")
         broker.place_stop(self.logical, plan.direction, lots, plan.trigger, sl, tp,
                           self.magic, f"tlf_{plan.reason}", plan.sl_dist, now_utc,
                           time_exit_at=close_dt)

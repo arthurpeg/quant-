@@ -62,11 +62,71 @@ def verify_brick1() -> bool:
     mism = [(k, live_entries.get(k), bt_entries.get(k)) for k in sorted(keys)
             if live_entries.get(k) != bt_entries.get(k)]
     n = len(bt_entries)
-    print(f"  BRICK 1 (NAS ORB): backtest {n} entries, live {len(live_entries)} entries, "
+    print(f"  BRICK 1 (NAS ORB) entries: backtest {n}, live {len(live_entries)}, "
           f"{n - len(mism)}/{len(keys)} exact match")
     for k, lv, bv in mism[:5]:
         print(f"    MISMATCH {k}: live={lv} backtest={bv}")
-    return len(mism) == 0
+
+    # ---- EXITS — this brick had NO exit check at all until 2026-08-11 ---------------
+    # Its live exits can only come from three places: the broker's SL, the broker's TP,
+    # and the driver's `time_exit_at`. So every backtest exit must be one of those three,
+    # must land at or before the forced-flat minute, and a time-exit must land exactly ON
+    # it. Brick 2 shipped a dead `is_exit_day` precisely because entries were checked and
+    # exits were not.
+    close_m = _mins(p.session_close)
+    ex = pd.DatetimeIndex(pd.to_datetime(bt["exit_time"], utc=True)).tz_convert(p.tz)
+    mins_ex = (ex.hour * 60 + ex.minute).to_numpy()
+    reasons = set(bt["reason"].unique())
+    allowed = {"stop", "take", "time_exit"}
+    late = int((mins_ex > close_m).sum())
+    stops = bt.loc[bt["reason"] == "stop", "R"].to_numpy()
+    bad_stop = int((stops > -0.99).sum()) if len(stops) else 0
+
+    # A time-exit normally lands ON the forced-flat minute. It legitimately lands EARLIER
+    # on a shortened US session (3 July, 24 Dec, the day after Thanksgiving, Juneteenth,
+    # 31 Dec): the feed simply stops, and the backtest exits on the last bar there is. So
+    # the test is "the flat minute OR that day's last bar", not a fixed clock.
+    # ⚠️ la derniere barre DANS LA FENETRE DE DETENTION, pas de la journee : sur un jour
+    # ferie US le flux CFD REPREND le soir (derniere barre 23:59) alors que la seance cash
+    # s'est arretee a 13:15. Prendre le max de la journee ratait 3 des 6 cas.
+    last_min = {}
+    for day, g in df.groupby(local.index.tz_localize(None).normalize().to_numpy()):
+        gl = pd.DatetimeIndex(g.index).tz_convert(p.tz)
+        mm = (gl.hour * 60 + gl.minute).to_numpy()
+        mm = mm[mm <= close_m]
+        if len(mm):
+            last_min[pd.Timestamp(day).date()] = int(mm.max())
+    te = bt["reason"].to_numpy() == "time_exit"
+    early = []
+    te_off = 0
+    for i in np.flatnonzero(te):
+        d_ = ex[i].date()
+        if mins_ex[i] == close_m:
+            continue
+        if mins_ex[i] >= last_min.get(d_, 10 ** 9) - 1:
+            early.append(d_)          # shortened session -> legitimate
+        else:
+            te_off += 1               # a real fork
+    ok_exit = (not (reasons - allowed)) and late == 0 and te_off == 0 and bad_stop == 0
+    print(f"  BRICK 1 (NAS ORB) exits: {dict(bt['reason'].value_counts())} | "
+          f"apres {p.session_close} ET: {late} | time_exit hors cloture ET hors fin de "
+          f"seance: {te_off} | stops a R > -0.99: {bad_stop} -> {'OK' if ok_exit else 'FAIL'}")
+    if reasons - allowed:
+        print(f"    RAISON INATTENDUE (le live ne peut pas la produire): {reasons - allowed}")
+
+    # ⚠️ ECART LIVE/BACKTEST CONNU ET NON CORRIGE — les demi-seances.
+    # Le backtest sort a la derniere barre de la seance ecourtee. Le driver, lui, attend
+    # que l'horloge atteigne `session_close` : a ce moment le marche est DEJA ferme, la
+    # cloture est refusee (MarketClosed) et la position est PORTEE JUSQU'A LA REOUVERTURE.
+    # Corriger demanderait un calendrier de demi-seances ; en attendant, c'est mesure ici
+    # plutot que decouvert un 24 decembre.
+    print(f"    demi-seances: {len(early)} trade(s) sortent avant {p.session_close} parce "
+          f"que le flux s'arrete ({', '.join(str(x) for x in early[:8])})")
+    if early:
+        print(f"    -> le LIVE ne peut pas les fermer a cette heure-la (marche deja clos) "
+              f"et portera la position a la reouverture : {len(early)}/{len(bt)} trades "
+              f"= {100 * len(early) / len(bt):.1f} %. Concerne aussi HMASTO et TLF.")
+    return len(mism) == 0 and ok_exit
 
 
 def verify_brick2() -> bool:
@@ -205,6 +265,53 @@ def verify_brick3() -> bool:
             tr["en"] = pd.to_datetime(tr["entry_time"]).dt.tz_localize(None)
             rows.append(tr)
         out[cad] = rows
+    # ---- ENTRY PARITY, bar by bar -- until 2026-08-11 this brick only spot-checked
+    # the LAST signalled bar, which proves nothing about the 279 trades it actually took.
+    # Replay `S.crypto_entry` on every bar the backtest entered on and compare direction
+    # and 1R.
+    ent_ok = True
+    for s_, tr in zip(("BTCUSD", "ETHUSD"), out["live"]):
+        d = load_pep(s_)
+        idx = d.index
+        bad = 0
+        checked = 0
+        bad_stop = warm = 0
+        warm_R = 0.0
+        for _, row in tr.iterrows():
+            t_entry = pd.Timestamp(row["entry_time"])
+            j = idx.searchsorted(t_entry)
+            if j <= 0 or j >= len(idx):
+                continue
+            if j < 40:
+                # `crypto_entry` refuse de decider avec moins de 40 barres quotidiennes.
+                # Le moteur de backtest n'a pas cette garde et entre des la barre 13, donc
+                # les toutes premieres entrees de l'echantillon ne sont PAS reproductibles
+                # en live. Ce n'est pas un fork mais une difference DECLAREE : on la compte
+                # a part au lieu de la faire echouer, et en exploitation le driver tire des
+                # centaines de barres, donc la garde ne mord jamais.
+                warm += 1
+                warm_R += float(row["ret"])
+                continue
+            plan = S.crypto_entry(d.iloc[:j], crisk)      # bars up to the SIGNAL bar
+            checked += 1
+            if plan is None or plan.direction != int(row["direction"]):
+                bad += 1
+                continue
+            # 1R : le moteur n'expose PAS sa distance de stop (pas de colonne r_dist), donc
+            # on la lit dans le PRIX DE SORTIE des trades stoppes. Non circulaire, contrai-
+            # rement a une comparaison contre un ATR recalcule ici -- qui ne testerait que
+            # ma propre copie de la formule. Un gap ne peut qu'AGRANDIR l'ecart realise.
+            if row["reason"] == "stop_loss":
+                realised = abs(float(row["exit_price"]) - float(row["entry_price"]))
+                if plan.sl_dist > realised + 1e-6:
+                    bad_stop += 1
+        print(f"  BRICK 3 ({s_}) entry parity: {checked - bad}/{checked} entrees reproduites "
+              f"par le signal live (direction) | 1R plus large que le stop realise sur "
+              f"{bad_stop} trade(s) stoppe(s), doit etre 0 | {warm} entree(s) en periode "
+              f"de chauffe (<40 barres) non reproductibles en live, {warm_R:+.2f} R")
+        ent_ok = ent_ok and bad == 0 and bad_stop == 0
+    ok = ok and ent_ok
+
     reent = sum(int((r.sort_values("en")["en"].dt.normalize()
                      == r.sort_values("en")["ex"].dt.normalize().shift(1)).sum())
                 for r in out["live"])
@@ -676,6 +783,30 @@ def verify_tlf(window: int = 600, sample: int = 4000) -> bool:
     return bool(ok_all)
 
 
+def verify_flat_times() -> bool:
+    """L'heure d'aplat FORCE du driver doit etre celle des parametres du backtest.
+
+    Les trois sleeves intraday passaient `pd.Timedelta(hours=15, minutes=55)` en DUR a
+    `place_market(time_exit_at=...)` pendant que leur backtest lisait `p.session_close`.
+    Les deux valaient 15:55, donc tout allait bien -- par coincidence d'un litteral, pas
+    par construction. Changer le parametre aurait forke le live du backtest en silence,
+    et aucun test ne l'aurait vu. Ce controle rend l'egalite obligatoire."""
+    import inspect
+    from edgelab.live import strategies as St
+    src = inspect.getsource(St)
+    hard = src.count("pd.Timedelta(hours=15, minutes=55)")
+    ok = hard == 0
+    print(f"  FLAT-TIME: heures d'aplat codees en dur dans strategies.py: {hard} "
+          f"(doit etre 0 -- chaque driver lit son propre p.session_close)")
+    from edgelab.intraday.atr_breakout import ATRBreakParams
+    from edgelab.intraday.hma_stoch import HmaStochParams
+    from edgelab.intraday.two_leg_fade import TwoLegFadeParams
+    for nm, prm in (("brick1", ATRBreakParams(regime_mode="low", direction="both")),
+                    ("HMASTO", HmaStochParams()), ("TLF", TwoLegFadeParams())):
+        print(f"    {nm:7s} session_close={prm.session_close} tz={prm.tz}")
+    return ok
+
+
 def verify_time_exits() -> bool:
     """The DRIVER's clock arithmetic — the layer the other checks never touch.
 
@@ -844,16 +975,18 @@ def main():
     rk = verify_kaer()
     rl = verify_keltner()
     rt = verify_time_exits()
+    rft = verify_flat_times()
     print("-" * 70)
     print(f"  brick1={'PASS' if r1 else 'FAIL'}  brick2={'PASS' if r2 else 'FAIL'}  "
           f"brick3={'PASS' if r3 else 'FAIL'}  brick4={'PASS' if r4 else 'FAIL'}  "
           f"HMASTO={'PASS' if rh else 'FAIL'}  TLF={'PASS' if rf else 'FAIL'}  "
           f"KAER={'PASS' if rk else 'FAIL'}  "
-          f"KELT={'PASS' if rl else 'FAIL'}  time-exits={'PASS' if rt else 'FAIL'}")
+          f"KELT={'PASS' if rl else 'FAIL'}  time-exits={'PASS' if rt else 'FAIL'}  "
+          f"flat-times={'PASS' if rft else 'FAIL'}")
     # HMASTO is the sleeve that is LIVE-wired (KAER and KELT are kept for research only),
     # so its result is the one that gates deployment alongside the four bricks.
     print(f"  LIVE-WIRED SET (bricks 1-4 + HMASTO + TLF): "
-          f"{'PASS' if all([r1, r2, r3, r4, rh, rf, rt]) else 'FAIL'}")
+          f"{'PASS' if all([r1, r2, r3, r4, rh, rf, rt, rft]) else 'FAIL'}")
     print("=" * 70)
 
 
