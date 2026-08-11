@@ -955,6 +955,11 @@ class TwoLegFadeStrategy:
         if pos is not None:
             self._order_bar = None
             if pos.ticket is not None and self._anchored != pos.ticket:
+                # premiere fois qu'on voit cette position : l'ordre stop vient de se
+                # remplir. C'est le seul instant ou l'entree peut etre journalisee -- rien
+                # d'autre ne l'ecrit, l'evenement `stop_order` ne portant que le
+                # declencheur, pas le remplissage.
+                broker.journal_fill(pos, now_utc)
                 want = pos.entry_price - pos.direction * pos.sl_dist
                 if abs(want - pos.sl) > 1e-9:
                     broker.modify_sl(pos, want, now_utc)

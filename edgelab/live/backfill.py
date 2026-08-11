@@ -87,26 +87,69 @@ def scan(days: int, magics) -> list:
         mt5.shutdown()
 
 
-def existing_tickets(path: Path) -> tuple[set, set]:
-    """-> (tickets ayant une ligne `enter`, tickets ayant une ligne `exit`)
+def _ticket_of(row: list) -> str:
+    """Le ticket d'une ligne du journal, quelle que soit sa mise en page.
 
-    ⚠️ IL FAUT DISTINGUER LES DEUX. Le trou qu'on rattrape est une ENTRÉE journalisée sans
-    sa SORTIE : le driver a ouvert la position, puis le stop du broker l'a fermée sans que
-    personne ne l'écrive. Chercher le ticket n'importe où déclarait donc « déjà présent »
-    exactement les trades qu'on veut réparer — c'est ce qui s'est produit sur le VPS le
-    2026-08-11 pour TLF (ticket 83515343). Seule l'absence de ligne `exit` fait foi.
+    ⚠️ IL FAUT LIRE PAR POSITION, PAS PAR NOM. Jusqu'au 2026-08-11 `Broker._log_trade`
+    tirait ses colonnes de ``list(row.keys())`` : une entrée en écrivait 10 (…reason,
+    ticket), une sortie 11 (…reason, R, cumR), et l'en-tête était figé par la toute
+    première ligne jamais écrite. Un ``csv.DictReader`` alignait donc les colonnes de
+    travers et lisait le **R d'une sortie dans la colonne `ticket`**. Le schéma est
+    désormais fixe, mais les lignes déjà écrites, elles, ne le sont pas.
+
+    Un ticket est un entier long ; ni un R (« -1.0 ») ni un champ vide ne peuvent être
+    confondus avec lui. On ne cherche qu'à partir de l'indice 9, après ``reason``.
+    """
+    for v in reversed([str(x).strip() for x in row[9:]]):
+        if v.isdigit() and len(v) >= 6:
+            return v
+    return ""
+
+
+def existing(path: Path) -> tuple[set, set, list]:
+    """-> (tickets ayant une `enter`, tickets ayant une `exit`, clés temporelles des exits)
+
+    Le trou qu'on rattrape est une position fermée dont la SORTIE n'a pas été écrite, donc
+    seule l'absence de ligne `exit` fait foi — chercher le ticket n'importe où déclarait
+    « déjà présent » exactement les trades à réparer.
+
+    Les sorties anciennes ne portent aucun ticket (``close`` ne l'écrivait pas), d'où la
+    troisième valeur : (symbole, instant). Une sortie MT5 tombant à moins de trois minutes
+    d'une ligne `exit` du même symbole est considérée comme déjà journalisée.
     """
     if not path.exists():
-        return set(), set()
-    ent, ext = set(), set()
+        return set(), set(), []
+    ent, ext, keys = set(), set(), []
     with open(path, newline="", encoding="utf-8") as fh:
-        for r in csv.DictReader(fh):
-            tk = str(r.get("ticket", "") or "").strip()
-            if not tk:
+        for r in csv.reader(fh):
+            if len(r) < 9 or r[0] == "time":
                 continue
-            (ent if r.get("event") == "enter" else ext if r.get("event") == "exit"
-             else set()).add(tk)
-    return ent, ext
+            tk = _ticket_of(r)
+            if r[1] == "enter":
+                if tk:
+                    ent.add(tk)
+            elif r[1] == "exit":
+                if tk:
+                    ext.add(tk)
+                t = _parse_dt(r[0])
+                if t is not None:
+                    keys.append((r[2], t))
+    return ent, ext, keys
+
+
+def _parse_dt(s: str):
+    try:
+        return datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+
+def _already_closed(sym: str, iso: str, keys: list, tol_s: int = 180) -> bool:
+    """Une ligne `exit` du même symbole existe-t-elle à moins de ``tol_s`` de cet instant ?"""
+    t = _parse_dt(iso)
+    if t is None:
+        return False
+    return any(s == sym and abs((t - k).total_seconds()) <= tol_s for s, k in keys)
 
 
 def main() -> int:
@@ -123,10 +166,12 @@ def main() -> int:
     from edgelab.live.strategies import MAGIC
     magics = set(MAGIC.values())
     path = Path(a.csv)
-    have_enter, have_exit = existing_tickets(path)
+    have_enter, have_exit, exit_keys = existing(path)
     rows = scan(a.days, magics)
 
-    missing = [(pid, ex, en) for pid, ex, en in rows if str(pid) not in have_exit]
+    missing = [(pid, ex, en) for pid, ex, en in rows
+               if str(pid) not in have_exit
+               and not _already_closed(ex["symbol"], ex["time"], exit_keys)]
     print(f"journal   : {path}")
     print(f"positions fermées trouvées sur {a.days} j : {len(rows)}")
     print(f"déjà closes dans le journal               : {len(rows) - len(missing)}")

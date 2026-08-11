@@ -117,6 +117,7 @@ class Broker:
         # sinon chaque sortie du driver serait journalisee deux fois.
         self._closed_by_us: set = set()
         self._open_seen: dict = {}   # ticket -> snapshot, pour la reconciliation
+        self._filled_logged: set = set()   # tickets dont l'entree est deja journalisee
         self.paper_orders: dict[int, PendingOrder] = {}
         self.realized_R: float = 0.0
         self._paper_balance = float(cfg_live.get("paper_balance", 100000.0))
@@ -146,7 +147,26 @@ class Broker:
         tag = str(pos.comment or "").split("_")[0].split(":")[0]
         return f"{tag}:{reason}" if tag else reason
 
+    # Schema FIXE du journal. L'ordre est celui que `edgelab.live.summary` lit par
+    # POSITION (reason en 8, R en 9), il ne doit donc jamais changer -- on n'ajoute qu'a
+    # la fin.
+    LOG_FIELDS = ("time", "event", "symbol", "dir", "lots", "price", "sl", "tp",
+                  "reason", "R", "cumR", "ticket")
+
     def _log_trade(self, row: dict) -> None:
+        """Ecrit une ligne du journal, TOUJOURS avec les memes colonnes dans le meme ordre.
+
+        ⚠️ CORRIGE LE 2026-08-11. Les colonnes venaient de `list(row.keys())`, c'est-a-dire
+        du dict que l'appelant avait construit : une entree en ecrivait 10, une sortie 11,
+        un `stop_order` 10 -- dans des ordres differents. L'en-tete etant fige par la toute
+        premiere ligne jamais ecrite, un lecteur par NOM (`csv.DictReader`) alignait les
+        colonnes de travers et lisait le R d'une sortie dans la colonne `ticket`. C'est ce
+        qui a fait declarer par `backfill` que des sorties etaient presentes alors qu'il
+        n'y en avait aucune.
+
+        Les champs absents sont ecrits vides plutot qu'omis, ce qui rend chaque ligne
+        lisible aussi bien par position que par nom.
+        """
         if not self.trade_log_path:
             return
         import csv
@@ -154,11 +174,14 @@ class Broker:
         p = Path(self.trade_log_path)
         p.parent.mkdir(parents=True, exist_ok=True)
         new = not p.exists()
+        unknown = set(row) - set(self.LOG_FIELDS)
+        if unknown:      # un champ hors schema serait silencieusement perdu
+            raise ValueError(f"_log_trade: champ(s) hors schema {sorted(unknown)}")
         with open(p, "a", newline="", encoding="utf-8") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(row.keys()))
+            w = csv.DictWriter(fh, fieldnames=list(self.LOG_FIELDS))
             if new:
                 w.writeheader()
-            w.writerow(row)
+            w.writerow({k: row.get(k, "") for k in self.LOG_FIELDS})
 
     # ---- connection -------------------------------------------------------
     def connect(self) -> None:
@@ -622,6 +645,7 @@ class Broker:
         self.paper[po.magic] = pos
         logger.info("[DRY-RUN] STOP FILLED %s %s %.2f lots @%.5f SL=%.5f", po.symbol,
                     "LONG" if po.direction > 0 else "SHORT", po.lots, fill, pos.sl)
+        self.journal_fill(pos, now_utc)
         return pos
 
     def modify_sl(self, pos: Position, new_sl: float, now_utc: pd.Timestamp) -> bool:
@@ -714,6 +738,30 @@ class Broker:
                 comment=str(pp.comment or "")))
         return n
 
+    def journal_fill(self, pos: "Position", now_utc: pd.Timestamp) -> bool:
+        """Ecrit la ligne `enter` d'une position nee d'un ORDRE STOP. Idempotent.
+
+        ⚠️ MANQUANT JUSQU'AU 2026-08-11. `place_stop` journalise un evenement
+        `stop_order` au moment ou l'ordre part, mais RIEN n'ecrivait quoi que ce soit
+        quand il se remplissait -- ni en live ni en dry-run. Une entree TLF n'existait
+        donc dans le journal que sous la forme d'un ordre en attente, jamais comme
+        `enter` : `summary` ne la comptait pas dans ses trades et l'appariement
+        entree/sortie etait boiteux. Constate sur le ticket 83515343.
+
+        Le prix journalise est le prix de REMPLISSAGE, pas le declencheur : c'est le
+        seul qui vaut quelque chose pour comparer le live au backtest.
+        """
+        if pos.ticket is not None:
+            if pos.ticket in self._filled_logged:
+                return False
+            self._filled_logged.add(int(pos.ticket))
+        self._log_trade({"time": now_utc.isoformat(), "event": "enter",
+                         "symbol": pos.symbol, "dir": pos.direction, "lots": pos.lots,
+                         "price": round(pos.entry_price, 5), "sl": round(pos.sl, 5),
+                         "tp": round(pos.tp, 5) if pos.tp else "",
+                         "reason": pos.comment, "ticket": pos.ticket or ""})
+        return True
+
     def open_position(self, magic: int) -> Position | None:
         if not self.live:
             return self.paper.get(magic)
@@ -749,7 +797,7 @@ class Broker:
             self._log_trade({"time": now_utc.isoformat(), "event": "exit", "symbol": pos.symbol,
                              "dir": pos.direction, "lots": pos.lots, "price": round(exit_price, 5),
                              "sl": "", "tp": "", "reason": self._tag(pos, reason), "R": round(R, 3),
-                             "cumR": round(self.realized_R, 3)})
+                             "cumR": round(self.realized_R, 3), "ticket": pos.ticket or ""})
             return R
         import MetaTrader5 as mt5
         sym = self.broker_symbol(pos.symbol)
@@ -776,7 +824,9 @@ class Broker:
         self._log_trade({"time": now_utc.isoformat(), "event": "exit", "symbol": pos.symbol,
                          "dir": pos.direction, "lots": pos.lots, "price": round(res.price, 5),
                          "sl": "", "tp": "", "reason": self._tag(pos, reason), "R": round(R, 3),
-                         "cumR": ""})
+                         # sans le ticket, une sortie n'est appariable a rien : c'est ce
+                         # qui empechait `backfill` de voir qu'elle etait deja journalisee.
+                         "cumR": "", "ticket": pos.ticket or ""})
         return R
 
     # ---- dry-run bracket resolution --------------------------------------
