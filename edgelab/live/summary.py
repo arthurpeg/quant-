@@ -27,6 +27,7 @@ BRICK = {
     "XAUUSD": "brick2 (gold ToM)",
     "BTCUSD": "brick3 (crypto)",
     "ETHUSD": "brick3 (crypto)",
+    "US500": "TLF (two-leg fade)",   # only TLF trades US500, so this one is unambiguous
 }
 
 # magic / reason tag -> display label (must match strategies.MAGIC)
@@ -36,6 +37,7 @@ BRICK_LABEL = {
     "brick3": "brick 3 - crypto",
     "brick4": "brick 4 - NAS IBS",
     "hmasto": "HMASTO - NAS M15 HMA/EMA cross + 3 osc (fwd-test, 0.5R)",
+    "tlf": "TLF - two-leg fade, NAS100 + US500 M5 short-only (fwd-test, 0.5R)",
     "kaer": "KAER - NAS M15 ER breakout (RETIRED 2026-08-10, replaced by HMASTO)",
     "kelt": "KELT - BTC H1 Keltner breakout (RETIRED 2026-08-09)",
 }
@@ -44,7 +46,7 @@ BRICK_LABEL = {
 # happened to HMASTO (magic 108) on the day it was wired. The assertion below turns that
 # silent gap into an import-time failure.
 MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "brick4",
-             106: "kaer", 107: "kelt", 108: "hmasto"}
+             106: "kaer", 107: "kelt", 108: "hmasto", 109: "tlf", 110: "tlf"}
 
 
 def _assert_magics_covered() -> None:

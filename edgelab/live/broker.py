@@ -133,9 +133,14 @@ class Broker:
         NAS100 trade could not be attributed to brick 1 or brick 4, which both trade that
         symbol under their own magic. Tagging the reason keeps attribution exact without
         touching the CSV schema (the field is free text; legacy rows just lack the prefix).
+
+        ⚠️ FIXED 2026-08-11: this used to tag ONLY comments starting with "brick", so the
+        forward-test sleeves were silently exempt — an HMASTO exit on NAS100 fell back to
+        the symbol map and was reported as BRICK 1. Any non-empty comment head is now
+        tagged, which is what makes `hmasto:` and `tlf:` exits attributable at all.
         """
-        tag = str(pos.comment or "").split("_")[0]
-        return f"{tag}:{reason}" if tag.startswith("brick") else reason
+        tag = str(pos.comment or "").split("_")[0].split(":")[0]
+        return f"{tag}:{reason}" if tag else reason
 
     def _log_trade(self, row: dict) -> None:
         if not self.trade_log_path:
