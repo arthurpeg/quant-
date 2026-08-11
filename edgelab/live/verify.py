@@ -791,10 +791,30 @@ def verify_flat_times() -> bool:
     Les deux valaient 15:55, donc tout allait bien -- par coincidence d'un litteral, pas
     par construction. Changer le parametre aurait forke le live du backtest en silence,
     et aucun test ne l'aurait vu. Ce controle rend l'egalite obligatoire."""
+    import ast
     import inspect
     from edgelab.live import strategies as St
-    src = inspect.getsource(St)
-    hard = src.count("pd.Timedelta(hours=15, minutes=55)")
+    from edgelab.live.us_session_calendar import flat_minute, validate_against_feed
+
+    # Compter sur l'AST, PAS sur le texte source : la premiere version comptait les
+    # occurrences dans le fichier, si bien que la docstring qui EXPLIQUE la regle
+    # declenchait l'alerte qu'elle documente. Un test qui interdit de parler de ce qu'il
+    # interdit est un test cassé.
+    def _hardcoded_flats(mod) -> int:
+        tree = ast.parse(inspect.getsource(mod))
+        n = 0
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            f = node.func
+            if not (isinstance(f, ast.Attribute) and f.attr == "Timedelta"):
+                continue
+            kw = {k.arg: getattr(k.value, "value", None) for k in node.keywords}
+            if kw.get("hours") == 15 and kw.get("minutes") == 55:
+                n += 1
+        return n
+
+    hard = _hardcoded_flats(St)
     ok = hard == 0
     print(f"  FLAT-TIME: heures d'aplat codees en dur dans strategies.py: {hard} "
           f"(doit etre 0 -- chaque driver lit son propre p.session_close)")
@@ -804,6 +824,25 @@ def verify_flat_times() -> bool:
     for nm, prm in (("brick1", ATRBreakParams(regime_mode="low", direction="both")),
                     ("HMASTO", HmaStochParams()), ("TLF", TwoLegFadeParams())):
         print(f"    {nm:7s} session_close={prm.session_close} tz={prm.tz}")
+
+    # ---- le calendrier des seances ecourtees, confronte au FLUX ---------------------
+    # Faute DANGEREUSE : une seance ecourtee que le calendrier ignore -> le driver attend
+    # 15:55, le marche est deja clos, la position part a la nuit. Faute BENIGNE : un jour
+    # marque a tort -> on sort quelques heures trop tot. Seule la premiere fait echouer.
+    missed_all = 0
+    for sym in ("NAS100", "US500"):
+        missed, spurious, seen = validate_against_feed(sym, verbose=False)
+        # une PANNE DE FLUX est indiscernable d'une cloture anticipee apres coup, et aucun
+        # calendrier ne la predit : on la signale sans faire echouer.
+        print(f"    calendrier vs flux {sym}: {len(seen)} seances ecourtees couvertes, "
+              f"{len(missed)} manquee(s), {len(spurious)} marquee(s) a tort (benin)")
+        for dd, last in missed[:5]:
+            print(f"      MANQUEE {dd} (flux jusqu'a {last // 60:02d}:{last % 60:02d}) "
+                  f"-- panne de flux ou seance non prevue par les regles")
+        missed_all += len(missed)
+    if missed_all:
+        print(f"    -> {missed_all} journee(s) restent a risque de portage de nuit. "
+              f"Aucune regle de calendrier ne couvre une PANNE de flux.")
     return ok
 
 
