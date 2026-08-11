@@ -113,6 +113,10 @@ class Broker:
         self.server = None
         # paper book (dry-run)
         self.paper: dict[int, Position] = {}
+        # tickets que NOUS avons fermes : le reconciliateur doit les ignorer,
+        # sinon chaque sortie du driver serait journalisee deux fois.
+        self._closed_by_us: set = set()
+        self._open_seen: dict = {}   # ticket -> snapshot, pour la reconciliation
         self.paper_orders: dict[int, PendingOrder] = {}
         self.realized_R: float = 0.0
         self._paper_balance = float(cfg_live.get("paper_balance", 100000.0))
@@ -647,6 +651,69 @@ class Broker:
                          pos.ticket, getattr(res, "retcode", None))
         return ok
 
+    # ---- reconciliation des sorties faites par le BROKER -----------------
+    def reconcile_closures(self, magics, now_utc: pd.Timestamp) -> int:
+        """Journalise les positions fermees PAR LE BROKER (SL ou TP touche cote serveur).
+
+        POURQUOI. Le driver n'ecrit une ligne `exit` que lorsqu'il ferme lui-meme. Quand
+        c'est le stop du broker qui part, la position disparait simplement entre deux
+        passes : aucune ligne, aucun R, et le trade est absent du journal, de
+        `edgelab.live.summary` et du rapport Discord. Constate le 2026-08-11 sur TLF
+        (magic 109, stoppee a 15:37 ET pour -301.92 EUR, invisible dans le rapport).
+
+        ⚠️ Le biais n'etait pas neutre : un stop touche vaut TOUJOURS -1 R, donc le
+        journal ne perdait que des PERTES et surestimait la performance realisee.
+
+        Renvoie le nombre de sorties nouvellement journalisees.
+        """
+        if not self.live:
+            return 0
+        import MetaTrader5 as mt5
+        mg = set(int(m) for m in magics)
+        cur = {}
+        for pp in (mt5.positions_get() or []):
+            if pp.magic in mg:
+                cur[int(pp.ticket)] = pp
+        n = 0
+        for tk, snap in list(self._open_seen.items()):
+            if tk in cur:
+                continue                       # toujours ouverte
+            self._open_seen.pop(tk, None)
+            if tk in self._closed_by_us:       # deja journalisee par close()
+                self._closed_by_us.discard(tk)
+                continue
+            try:
+                deals = mt5.history_deals_get(position=tk) or []
+                out = [d for d in deals if d.entry == 1]
+                if not out:
+                    continue
+                o = sorted(out, key=lambda x: x.time)[-1]
+                R = (snap["direction"] * (o.price - snap["entry"]) / snap["sl_dist"]
+                     if snap["sl_dist"] else float("nan"))
+                self.realized_R += R
+                reason = str(o.comment or "broker_exit").strip() or "broker_exit"
+                tag = str(snap.get("comment") or "").split("_")[0].split(":")[0]
+                logger.warning("[LIVE] position %s (magic %s %s) fermee PAR LE BROKER a "
+                               "%.5f (%s) -> %+.3f R", tk, snap["magic"], snap["symbol"],
+                               o.price, reason, R)
+                self._log_trade({"time": server_epoch_to_utc(o.time).isoformat(),
+                                 "event": "exit", "symbol": snap["symbol"],
+                                 "dir": snap["direction"], "lots": o.volume,
+                                 "price": round(float(o.price), 5), "sl": "", "tp": "",
+                                 "reason": f"{tag}:{reason}" if tag else reason,
+                                 "R": round(R, 3), "cumR": round(self.realized_R, 3),
+                                 "ticket": tk})
+                n += 1
+            except Exception:
+                logger.exception("reconcile_closures: echec sur le ticket %s", tk)
+        for tk, pp in cur.items():
+            self._open_seen.setdefault(tk, dict(
+                magic=int(pp.magic), symbol=self._logical_of(pp.symbol),
+                direction=1 if pp.type == 0 else -1, entry=float(pp.price_open),
+                sl_dist=abs(float(pp.price_open) - float(pp.sl)) if pp.sl else 0.0,
+                comment=str(pp.comment or "")))
+        return n
+
     def open_position(self, magic: int) -> Position | None:
         if not self.live:
             return self.paper.get(magic)
@@ -670,6 +737,8 @@ class Broker:
     def close(self, pos: Position, exit_price: float, reason: str,
               now_utc: pd.Timestamp, cost_R: float = 0.0) -> float:
         """Close ``pos`` at ``exit_price``. Returns the realised R (net of ``cost_R``)."""
+        if pos.ticket is not None:
+            self._closed_by_us.add(int(pos.ticket))
         R = pos.direction * (exit_price - pos.entry_price) / pos.sl_dist - cost_R
         if not self.live:
             self.paper.pop(pos.magic, None)

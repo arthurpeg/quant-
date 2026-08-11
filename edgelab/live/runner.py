@@ -434,6 +434,11 @@ def main() -> int:
                     time.sleep(poll); continue
             now = pd.Timestamp.now(tz="UTC")
             one_pass(broker, risk, strategies, now)
+            # Les sorties que le BROKER a executees (stop/target touches cote serveur)
+            # n'apparaissent nulle part sans ceci : le driver ne journalise que ce qu'il
+            # ferme lui-meme. Et comme un stop vaut toujours -1 R, l'oubli ne perdait
+            # que des PERTES.
+            broker.reconcile_closures([s_.magic for s_ in strategies], now)
             _heartbeat(broker, risk, strategies, now)
             _maybe_session_alerts(cfg_live, now)
             _maybe_report(broker, risk, strategies, cfg_live, now)
