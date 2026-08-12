@@ -142,10 +142,14 @@ risk_per_trade: 0.01
 # max_risk_R caps this: the over-risk is always logged; past this many R the entry is SKIPPED
 # (the account is too small to size that stop to 1R). 1.25 = take up to 1.25R, skip beyond.
 max_risk_R: 1.25
-# size_from_account:true (default) bases 1R and the prop floors on the ACTUAL connected
-# balance at startup -> avoids the dangerous mismatch where initial_balance below is 10x
-# the real demo balance. Set false to use propfirm.initial_balance verbatim (a real
-# fixed-size challenge where the nominal account size is known and fixed).
+# size_from_account:true (default) bases 1R on the ACTUAL connected balance at startup
+# -> avoids the dangerous mismatch where initial_balance below is 10x the real demo
+# balance. Set false to use propfirm.initial_balance verbatim (a real fixed-size
+# challenge where the nominal account size is known and fixed).
+# ⚠️ NE CONCERNE QUE LE SIZING depuis le 2026-08-12. Les PLANCHERS prop ne se basent plus
+# la-dessus : ils vivent sur challenge_start_balance ci-dessous (ou, a defaut, sur
+# _out/account_start.json). Avant ce correctif ils suivaient le solde, donc une
+# reconnexion MT5 en plein drawdown reposait le plancher -10 % plus bas.
 size_from_account: true
 propfirm:
   initial_balance: 100000.0     # only used if size_from_account:false
