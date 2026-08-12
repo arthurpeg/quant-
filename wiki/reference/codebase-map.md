@@ -76,6 +76,14 @@ updated: 2026-07-11
   `run_forever.ps1` = supervisor (restart on crash, resolves the real python not the Store
   alias, STOP-file to halt); `install_task.ps1` = auto-start at logon; `summary.py` =
   one-command forward-test readout of `_out/trades.csv` (R total/per-brick/per-month). [[system]]
+- `edgelab/live/summary.py` construit aussi le **rapport Discord quotidien**
+  (`build_report_embed`) : compte, R du jour, **detail trade par trade du jour avec
+  sa sleeve et son R**, progression challenge, positions ouvertes, table par brique.
+  Tout y est en **R DE COMPTE** (une sleeve a 0.5R compte moitie). Le pourcentage de
+  progression se mesure contre une **ancre fixe** — `propfirm.challenge_start_balance`
+  en config, sinon `_out/account_start.json` ecrit une seule fois par
+  `runner._challenge_anchor` — et **jamais** contre `risk.initial_balance`, que
+  `size_from_account:true` recale au solde lu a chaque demarrage. [[system]]
 
 ## External strategies (MQL5)
 - `mql5/IntradayVolatilityBreakout.mq5` — MT5 Expert Advisor, intraday Nasdaq

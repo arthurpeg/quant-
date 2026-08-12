@@ -27,7 +27,19 @@ class LiveRiskManager:
     def __init__(self, rules: PropFirmRules, risk_per_trade: float):
         self.rules = rules
         self.risk_per_trade = float(risk_per_trade)
+        # ⚠️ DEUX BASES DISTINCTES, ET LES CONFONDRE DESARME LE GARDE-FOU.
+        #   * `initial_balance` est la base de SIZING. `runner._sync_account_size` la
+        #     recale sur le solde REEL du compte a chaque demarrage et a chaque
+        #     reconnexion MT5 — c'est voulu : 1R doit valoir 1 % du compte connecte, pas
+        #     1 % d'un nominal de config qui pourrait etre 10x trop grand.
+        #   * `floor_basis` est la base des PLANCHERS PROP : le depart du challenge, pose
+        #     une seule fois (voir `set_floor_basis` / `runner._challenge_anchor`).
+        # Les planchers se calculaient sur `initial_balance`, donc ILS SUIVAIENT LE SOLDE :
+        # apres une reconnexion en plein drawdown, le plancher -10 % repartait de plus bas
+        # et le compte pouvait descendre indefiniment sans jamais declencher le halt.
+        # Trouve le 2026-08-12 en remontant la cause du "%" faux du rapport quotidien.
         self.initial_balance = float(rules.initial_balance)
+        self.floor_basis = float(rules.initial_balance)
         self._day = None
         self.day_start_equity = self.initial_balance
         self.peak_equity = self.initial_balance
@@ -37,11 +49,35 @@ class LiveRiskManager:
         self._last_good = None   # last plausible equity, to detect feed glitches
         self._dd_hits = 0        # consecutive valid readings below the DD floor
 
+    def set_floor_basis(self, value: float) -> None:
+        """Pose la reference FIXE des planchers prop (le solde de depart du challenge).
+
+        A appeler une fois, au demarrage, avec l'ancre du compte. Jamais depuis la boucle :
+        un plancher qui se recale n'est plus un plancher. `peak_equity` n'est aligne que
+        tant qu'aucune lecture live n'est encore arrivee — au-dela, seul `on_equity` le
+        fait monter, jamais redescendre.
+        """
+        v = float(value or 0.0)
+        if v <= 0:
+            logger.warning("base de plancher invalide (%s) — on garde %.2f", value, self.floor_basis)
+            return
+        self.floor_basis = v
+        if self._last_good is None:
+            self.peak_equity = v
+        logger.warning("planchers prop bases sur %.2f (FIXE) | DD total -%.0f%% -> %.2f | "
+                       "perte journaliere -%.0f%% -> %.2f/jour",
+                       v, self.rules.max_total_drawdown_pct * 100,
+                       v - self.rules.max_total_drawdown_pct * v,
+                       self.rules.max_daily_loss_pct * 100, self.rules.max_daily_loss_pct * v)
+
     def _valid_equity(self, equity: float) -> bool:
         """Reject glitched MT5 feeds. A dropped trade-server link returns equity 0/None;
         1%-risk trades cannot move the account >10% in one 20-second tick, so a huge
-        single-tick drop is never real. Never fail the account on a non-sensical reading."""
-        if equity is None or not math.isfinite(equity) or equity <= 0.5 * self.initial_balance:
+        single-tick drop is never real. Never fail the account on a non-sensical reading.
+
+        Le seuil de plausibilite est adosse a `floor_basis` (fixe) et non a la base de
+        sizing : un seuil qui suit le solde se laisse entrainer vers le bas avec lui."""
+        if equity is None or not math.isfinite(equity) or equity <= 0.5 * self.floor_basis:
             logger.warning("ignoring implausible equity reading (%s) — feed glitch; state unchanged", equity)
             return False
         if self._last_good is not None and equity < self._last_good * 0.90:
@@ -64,9 +100,11 @@ class LiveRiskManager:
             self.day_locked = False
         self.peak_equity = max(self.peak_equity, equity)
 
-        floor_basis = self.peak_equity if self.rules.drawdown_basis == "peak" else self.initial_balance
-        dd_floor = floor_basis - self.rules.max_total_drawdown_pct * self.initial_balance
-        daily_floor = self.day_start_equity - self.rules.max_daily_loss_pct * self.initial_balance
+        # REFERENCE DES PLANCHERS = `floor_basis` (le depart du challenge), jamais la base
+        # de sizing : celle-ci suit le solde du compte, donc les planchers auraient suivi.
+        ref = self.peak_equity if self.rules.drawdown_basis == "peak" else self.floor_basis
+        dd_floor = ref - self.rules.max_total_drawdown_pct * self.floor_basis
+        daily_floor = self.day_start_equity - self.rules.max_daily_loss_pct * self.floor_basis
 
         # DD breach must confirm on 2 consecutive valid readings before failing (anti-glitch)
         if equity <= dd_floor:

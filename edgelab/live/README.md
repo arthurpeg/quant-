@@ -61,6 +61,15 @@ is logged to console and appended to `edgelab/live/_out/trades.csv` (your forwar
 record). Sizing = **1R = `risk_per_trade` × `initial_balance`** (fixed-fractional, no
 compounding). Recommended: **1.0%** to pass a static-DD challenge, **0.5%** once funded.
 
+**Deux bases, à ne pas confondre.** `initial_balance` est la base de *sizing* : avec
+`size_from_account:true` le runner la recale sur le solde réel à chaque démarrage et
+à chaque reconnexion MT5, pour que 1R vaille bien 1 % du compte connecté. Les
+**planchers prop** (DD total, perte journalière) vivent sur `risk.floor_basis`, posé
+**une seule fois** au démarrage depuis `propfirm.challenge_start_balance` (ou
+`_out/account_start.json`). Avant le 2026-08-12 les planchers se calculaient sur la
+base de sizing : ils **descendaient avec le solde**, donc une reconnexion en plein
+drawdown reposait le plancher −10 % plus bas et le halt pouvait ne jamais partir.
+
 The live path also: picks a filling mode the symbol supports, widens SL/TP to clear the
 broker's minimum stop distance, clamps lots to the symbol's min/max, and retries on
 requotes.

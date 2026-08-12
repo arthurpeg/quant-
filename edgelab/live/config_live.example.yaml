@@ -149,6 +149,16 @@ max_risk_R: 1.25
 size_from_account: true
 propfirm:
   initial_balance: 100000.0     # only used if size_from_account:false
+  # Solde de DEPART du challenge -> la reference du pourcentage publie par le rapport
+  # Discord quotidien ("+x% de l'objectif +15%"). A NE PAS confondre avec initial_balance
+  # ci-dessus, qui ne sert qu'au sizing : avec size_from_account:true celui-ci est ecrase
+  # par le solde lu AU DEMARRAGE du runner, donc mesurer la progression du challenge
+  # contre lui la mesure depuis le dernier redemarrage (bug signale le 2026-08-12 :
+  # "+0.31% de +15%" alors que le journal etait a -0.14 R).
+  # Laisse commente -> le runner pose l'ancre lui-meme dans _out/account_start.json au
+  # premier passage et n'y retouche jamais ; le rapport publie alors la date de l'ancre.
+  # Renseigne-le des que la vraie valeur nominale du challenge est connue.
+  # challenge_start_balance: 60000.0
   max_daily_loss_pct: 0.05
   max_total_drawdown_pct: 0.10
   profit_target_pct: 0.15

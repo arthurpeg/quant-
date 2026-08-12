@@ -110,24 +110,106 @@ def _equity(broker: Broker, risk: LiveRiskManager) -> float:
     return risk.initial_balance * (1.0 + broker.realized_R * risk.risk_per_trade)
 
 
-def _sync_account_size(broker: Broker, risk: LiveRiskManager, cfg_live: dict) -> None:
-    """Base sizing + prop floors on the ACTUAL connected account balance (default).
+def _arm_floors(broker: Broker, risk: LiveRiskManager, cfg_live: dict) -> None:
+    """Pose la reference FIXE des planchers prop, une fois, au demarrage.
 
-    Prevents the dangerous mismatch where config initial_balance (e.g. 100000) is 10x the
-    real demo balance (e.g. 10000) -> 1R would be 10% of the account instead of 1%.
-    Set size_from_account:false in config_live.yaml to use propfirm.initial_balance verbatim.
+    Repli sur le solde du compte si l'ancre est illisible : sans cela, un compte de
+    60 000 serait juge contre le nominal de config (100 000) et son plancher -10 %
+    (90 000) le declarerait FAILED immediatement.
+    """
+    anchor, since = _challenge_anchor(broker, cfg_live)
+    if anchor:
+        LOG.warning("depart du challenge : %.2f (%s)", anchor, since)
+    else:
+        try:
+            anchor = broker.balance() or risk.initial_balance
+        except Exception:
+            anchor = risk.initial_balance
+        LOG.warning("ancre du challenge indisponible -> planchers bases sur le solde "
+                    "courant %.2f (ils ne bougeront plus de la session)", anchor)
+    risk.set_floor_basis(anchor)
+
+
+def _sync_account_size(broker: Broker, risk: LiveRiskManager, cfg_live: dict) -> None:
+    """Base le SIZING sur le solde reel du compte connecte (defaut).
+
+    Empeche le decalage dangereux ou `initial_balance` de config (p.ex. 100000) vaut 10x
+    le solde reel de la demo (p.ex. 10000) -> 1R ferait 10 % du compte au lieu de 1 %.
+    `size_from_account:false` garde `propfirm.initial_balance` tel quel.
+
+    ⚠️ CETTE FONCTION NE TOUCHE PLUS A L'ETAT DE RISQUE. Elle ecrivait aussi
+    `peak_equity` et `day_start_equity`, et elle est appelee A CHAQUE RECONNEXION MT5 :
+      * les planchers etant calcules sur `initial_balance`, le plancher de DD statique
+        DESCENDAIT AVEC LE SOLDE — une reconnexion en plein drawdown le reposait plus bas
+        et le compte pouvait depasser -10 % sans que le halt parte ;
+      * `day_start_equity` etant remis au solde courant, la perte deja subie dans la
+        journee etait effacee et le verrou journalier ne se declenchait plus.
+    Les planchers vivent desormais sur `risk.floor_basis` (l'ancre du challenge, posee une
+    seule fois par `set_floor_basis`) et `day_start_equity` n'est plus reecrit que par le
+    changement de jour dans `on_equity`. Corrige le 2026-08-12.
     """
     if not cfg_live.get("size_from_account", True):
         return
     bal = broker.balance()
     if bal and bal > 0:
         risk.initial_balance = bal
-        risk.peak_equity = bal
-        risk.day_start_equity = bal
         LOG.warning("sizing base = LIVE account balance %.2f | 1R = %.2f (%.2f%%) | "
-                    "daily floor -%.0f%% total-DD floor -%.0f%% (static)",
+                    "planchers prop bases sur %.2f (FIXE, pas sur ce solde)",
                     bal, risk.risk_per_trade * bal, risk.risk_per_trade * 100,
-                    risk.rules.max_daily_loss_pct * 100, risk.rules.max_total_drawdown_pct * 100)
+                    risk.floor_basis)
+
+
+ANCHOR_FILE = Path(__file__).resolve().parent / "_out" / "account_start.json"
+_ANCHOR: tuple | None = None      # memo: l'ancre est posee une fois, pas relue chaque jour
+
+
+def _challenge_anchor(broker: Broker, cfg_live: dict) -> tuple[float | None, str | None]:
+    """Le solde de DEPART du challenge — une ancre FIXE, et le jour ou elle a ete posee.
+
+    `risk.initial_balance` ne peut pas jouer ce role : `size_from_account: true` y ecrit
+    le solde lu AU DEMARRAGE, et le reecrit a chaque reconnexion MT5. La progression du
+    challenge mesuree contre lui n'est donc pas la progression du challenge mais celle
+    depuis le dernier redemarrage — d'ou le "+0.31 % de +15 %" affiche pendant que le
+    journal etait a -0.14 R (signale par l'utilisateur le 2026-08-12).
+
+    Ordre de priorite :
+      1. `propfirm.challenge_start_balance` dans la config — la valeur nominale du
+         challenge quand elle est connue. C'est la seule source VRAIMENT exacte.
+      2. `_out/account_start.json`, ecrit UNE FOIS au premier passage et jamais reecrit.
+         Le compte etait deja entame quand le fichier est cree ; la date publiee dans le
+         rapport dit donc a partir de quand le pourcentage compte.
+    Retourne (None, None) si le solde n'est pas lisible : le rapport retombe alors sur
+    `initial` en le signalant, plutot que de publier un chiffre qui a l'air d'etre la
+    progression du challenge sans l'etre.
+    """
+    global _ANCHOR
+    import json
+    if _ANCHOR is not None:
+        return _ANCHOR
+    cfgv = (cfg_live.get("propfirm") or {}).get("challenge_start_balance")
+    if cfgv:
+        _ANCHOR = (float(cfgv), "config")
+        return _ANCHOR
+    try:
+        if ANCHOR_FILE.exists():
+            d = json.loads(ANCHOR_FILE.read_text(encoding="utf-8"))
+            _ANCHOR = (float(d["balance"]), str(d.get("since", "?")))
+            return _ANCHOR
+        bal = broker.balance()
+        if not bal or bal <= 0:
+            return None, None
+        since = pd.Timestamp.now(tz="UTC").date().isoformat()
+        ANCHOR_FILE.parent.mkdir(parents=True, exist_ok=True)
+        ANCHOR_FILE.write_text(json.dumps({"balance": float(bal), "since": since}),
+                               encoding="utf-8")
+        LOG.warning("ancre de depart du challenge posee : %.2f au %s (%s) — le %% du "
+                    "rapport quotidien ET les planchers prop comptent a partir de la",
+                    bal, since, ANCHOR_FILE)
+        _ANCHOR = (float(bal), since)
+        return _ANCHOR
+    except Exception as exc:
+        LOG.warning("ancre de depart illisible (%s) — le rapport le signalera", exc)
+        return None, None
 
 
 _LAST_UPDATE_CHECK = 0.0
@@ -213,6 +295,11 @@ def _maybe_report(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: d
         bal = broker.balance()
     except Exception:
         bal = float("nan")
+    try:      # equity = balance + flottant : sans elle le rapport compare du cash REALISE
+        eq = broker.equity()     # a un journal qui, lui, ignore les positions ouvertes
+    except Exception:
+        eq = None
+    anchor, anchor_since = _challenge_anchor(broker, cfg_live)
     # open positions from the BROKER (authoritative — the journal can miss one)
     positions = []
     for strat in strategies:
@@ -225,6 +312,7 @@ def _maybe_report(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: d
                               "entry_price": float(p.entry_price),
                               "days": int((now_utc.normalize() - p.open_time.normalize()).days)})
     ctx = {"balance": bal, "initial": risk.initial_balance, "one_r": risk.risk_budget(),
+           "equity": eq, "challenge_start": anchor, "challenge_start_since": anchor_since,
            "risk_pct": risk.risk_per_trade, "dd_pct": risk.rules.max_total_drawdown_pct,
            "target_pct": risk.rules.profit_target_pct, "now_et": et, "commit": _git_head(),
            "server": broker.server, "alive": True, "open_positions": positions,
@@ -362,6 +450,7 @@ def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Time
 
 def status(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: dict) -> None:
     broker.connect()
+    _arm_floors(broker, risk, cfg_live)
     _sync_account_size(broker, risk, cfg_live)
     LOG.info("mode=%s  balance=%.2f  1R=%.2f  cumR(paper)=%+.2f",
              "LIVE" if broker.live else "DRY-RUN", broker.balance(),
@@ -441,6 +530,11 @@ def main() -> int:
 
     try:
         broker.connect()
+        # ORDRE VOULU : les planchers prop d'abord (ils fixent `floor_basis`), le sizing
+        # ensuite. L'inverse laisserait la premiere lecture d'equity etre jugee contre le
+        # nominal de config -- p.ex. un plancher a 90 000 sur un compte de 60 000, donc un
+        # compte declare FAILED des la premiere passe.
+        _arm_floors(broker, risk, cfg_live)
         _sync_account_size(broker, risk, cfg_live)
         if args.once:
             one_pass(broker, risk, strategies, pd.Timestamp.now(tz="UTC"))

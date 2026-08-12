@@ -249,6 +249,16 @@ def build_report_text(csv_path: Path, header: list[str] | None = None) -> str:
         lines.append("  " + " | ".join(f"{b.split('(')[0].strip()} {v:+.1f}R" for b, v in sorted(byb.items())))
     else:
         lines.append("closed 0 | realised +0.00 R (nothing closed yet)")
+    # Le detail du jour, aussi dans ce repli texte : c'est le message qui part quand
+    # l'embed echoue, et l'information la plus lue du rapport ne doit pas dependre du
+    # format le plus fragile.
+    from datetime import timezone
+    today = _et_date(datetime.now(timezone.utc))
+    t_ex = [r for r in exits if (_dt(r["time"]) and _et_date(_dt(r["time"])) == today)]
+    if t_ex:
+        lines.append("today: " + " | ".join(
+            f"{_et_hm(r['time'])} {r['symbol']} {_side(r['dir'])} "
+            f"{_sleeve_short(r.get('reason', ''), r['symbol'])} {r['aR']:+.2f}R" for r in t_ex))
     if open_syms:
         parts = []
         for s in sorted(open_syms):
@@ -264,14 +274,91 @@ def build_report_text(csv_path: Path, header: list[str] | None = None) -> str:
 GREEN, RED, GREY = 0x3BA55D, 0xED4245, 0x4F545C
 
 
-def _bar(frac: float, width: int = 14) -> str:
-    n = max(0, min(width, int(round(max(0.0, min(1.0, frac)) * width))))
-    return "█" * n + "░" * (width - n)
-
-
 def _et_date(dt: datetime, tz: str = "America/New_York"):
     from zoneinfo import ZoneInfo
     return dt.astimezone(ZoneInfo(tz)).date()
+
+
+def _et_hm(s: str, tz: str = "America/New_York") -> str:
+    """L'horodatage ISO du journal (UTC) en HH:MM ET, l'heure dans laquelle le rapport
+    raisonne (sa date du jour, ses fenetres de session)."""
+    d = _dt(s)
+    if not d:
+        return "??:??"
+    from zoneinfo import ZoneInfo
+    return f"{d.astimezone(ZoneInfo(tz)):%H:%M}"
+
+
+def _side(d) -> str:
+    return "SHORT" if str(d).lstrip("+") == "-1" else "LONG"
+
+
+def _sleeve_short(reason: str, symbol: str) -> str:
+    """Nom COURT de la sleeve, pour la table etroite des trades du jour.
+
+    `_brick` rend le libelle complet ("TLF - two-leg fade, NAS100 + US500 M5 short-only
+    (fwd-test, 0.5R)", 62 caracteres) : il deborde une colonne. On garde la meme source
+    de verite (le tag du champ `reason`), on n'en montre que la tete.
+    """
+    head = str(reason or "").split("_")[0].split(":")[0]
+    if head in BRICK_LABEL:
+        return head if head.startswith("brick") else head.upper()
+    return _brick(symbol, reason).split(" - ")[0].split(" (")[0]
+
+
+def _still_open(row: dict, open_keys: set, open_syms: set) -> bool:
+    """Cette ENTREE du jour correspond-elle a une position encore ouverte ?
+
+    ⚠️ L'appariement se fait sur (symbole, SLEEVE), pas sur le symbole seul : NAS100 est
+    traite par quatre sleeves a la fois (brique 1, brique 4, HMASTO, TLF). Si la brique 1
+    a ferme son NAS100 aujourd'hui pendant qu'HMASTO tient encore le sien, l'appariement
+    par symbole afficherait le trade FERME de la brique 1 comme "open".
+    Les lignes anciennes, ecrites avant le tag de `reason`, n'ont pas de sleeve lisible :
+    pour elles seulement, on retombe sur le symbole.
+    """
+    head = str(row.get("reason", "")).split("_")[0].split(":")[0]
+    if head in BRICK_LABEL:
+        return (row["symbol"], head) in open_keys
+    return row["symbol"] in open_syms
+
+
+def _today_trades_field(t_exits: list, t_entries: list, open_keys: set,
+                        one_r: float | None) -> dict:
+    """Le DETAIL des trades du jour : un par ligne, avec sa sleeve et ce qu'il a rendu.
+
+    Le rapport ne publiait que l'agregat ("+0.00 R - 2 closed - 1 opened") : impossible
+    de savoir QUELS trades avaient tourne, ni a quelle brique/sleeve ils appartenaient,
+    alors que c'est precisement ce qu'on veut lire le soir. Demande de l'utilisateur,
+    2026-08-12.
+
+    Les SORTIES portent leur R (realise a la sortie, en R DE COMPTE comme tout le reste
+    du rapport) ; les ENTREES du jour encore ouvertes sont listees avec "open" a la place
+    du R, parce qu'un trade ouvert n'a rien rendu tant qu'il n'est pas ferme -- afficher
+    son flottant comme un rendement melangerait deux choses.
+    """
+    fmt = "{:<6}{:<9}{:<6}{:<8}{:>7}{:>9}"
+    rows = [fmt.format("ET", "symbol", "side", "sleeve", "R", "~cash")]
+    for r in sorted(t_exits, key=lambda x: x["time"]):
+        cash = f"{r['aR'] * one_r:+,.0f}" if one_r else "-"
+        rows.append(fmt.format(_et_hm(r["time"]), r["symbol"][:8], _side(r["dir"]),
+                               _sleeve_short(r.get("reason", ""), r["symbol"])[:7],
+                               f"{r['aR']:+.2f}", cash))
+    open_syms = {s for s, _ in open_keys}
+    for r in sorted((e for e in t_entries if _still_open(e, open_keys, open_syms)),
+                    key=lambda x: x["time"]):
+        rows.append(fmt.format(_et_hm(r["time"]), r["symbol"][:8], _side(r["dir"]),
+                               _sleeve_short(r.get("reason", ""), r["symbol"])[:7],
+                               "open", "-"))
+    if len(rows) == 1:
+        return {"name": "\U0001F9FE Trades du jour", "inline": False,
+                "value": "aucun trade aujourd'hui (ni entree ni sortie)."}
+    n_shown, extra = 14, len(rows) - 1 - 14
+    if extra > 0:                      # 1024 car. max par champ Discord
+        rows = rows[:n_shown + 1] + [f"... +{extra} autre(s)"]
+    rows.append("R de COMPTE - ~cash = R x 1R. 'open' = entree du jour non encore fermee.")
+    return {"name": f"\U0001F9FE Trades du jour ({len(t_exits)} ferme(s), "
+                    f"{len(t_entries)} ouvert(s))",
+            "inline": False, "value": "```\n" + "\n".join(rows)[:1000] + "\n```"}
 
 
 def build_report_embed(csv_path: Path, ctx: dict) -> dict:
@@ -306,30 +393,22 @@ def build_report_embed(csv_path: Path, ctx: dict) -> dict:
     wins = [r["aR"] for r in exits if r["aR"] > 0]
     losses = [r["aR"] for r in exits if r["aR"] <= 0]
 
-    bal, init = ctx.get("balance"), ctx.get("initial")
-    pnl_pct = ((bal / init - 1.0) * 100.0) if (bal and init) else 0.0
+    bal, init, eq = ctx.get("balance"), ctx.get("initial"), ctx.get("equity")
+    # ⚠️ REFERENCE DU POURCENTAGE. `initial` N'EST PAS le depart du challenge : avec
+    # `size_from_account: true` (le defaut), le runner y ecrit LE SOLDE LU AU DEMARRAGE
+    # (`runner._sync_account_size`), et le reecrit a chaque reconnexion MT5. Mesurer la
+    # progression du challenge contre lui revient a la mesurer depuis le dernier
+    # redemarrage du runner — c'est ce qui affichait "+0.31 % de +15 %" alors que le
+    # journal etait a -0.14 R. La reference est `challenge_start`, l'ancre FIXE du compte
+    # ecrite une seule fois (voir `runner._challenge_anchor`). Signale par l'utilisateur
+    # le 2026-08-12.
+    ref = ctx.get("challenge_start") or init
+    pnl_pct = ((bal / ref - 1.0) * 100.0) if (bal and ref) else 0.0
     colour = GREEN if (t_R > 0 or (not t_exits and pnl_pct > 0)) else RED if (t_R < 0 or pnl_pct < 0) else GREY
 
-    fields = []
-    fields.append({"name": "\U0001F4B0 Account", "inline": True,
-                   "value": f"**{bal:,.2f}**\n1R {ctx.get('one_r', 0):,.2f} · "
-                            f"{ctx.get('risk_pct', 0) * 100:.2f}%" if bal else "**n/a**"})
-    fields.append({"name": "\U0001F4C5 Today", "inline": True,
-                   "value": f"**{t_R:+.2f} R**\n{len(t_exits)} closed · {len(t_entries)} opened"})
-    win_txt = f"win {100 * len(wins) / len(exits):.0f}%" if exits else "win —"
-    fields.append({"name": "\U0001F4C8 Since start", "inline": True,
-                   "value": f"**{tot:+.2f} R**\n{len(exits)} closed · {win_txt}"})
-
-    # prop challenge progress: where the balance sits between the -10% floor and +15% target
-    tgt, dd = ctx.get("target_pct"), ctx.get("dd_pct")
-    if bal and init and tgt and dd:
-        floor_cash, target_cash = init * (1 - dd), init * (1 + tgt)
-        fields.append({"name": "\U0001F3AF Challenge", "inline": False,
-                       "value": f"`{_bar(max(pnl_pct, 0) / (tgt * 100))}`  **{pnl_pct:+.2f}%** "
-                                f"of +{tgt * 100:.0f}%\nfloor −{dd * 100:.0f}% at "
-                                f"`{floor_cash:,.0f}` · target `{target_cash:,.0f}`"})
-
-    # open positions — from the broker, not the journal
+    # Positions ouvertes — depuis le BROKER, pas le journal. Resolues ICI, avant les
+    # champs : la table des trades du jour doit savoir quelles entrees du jour sont
+    # ENCORE ouvertes (elles n'ont pas de R tant qu'elles ne sont pas fermees).
     pos = ctx.get("open_positions")
     if pos is None:                    # no broker view (CLI preview) -> derive from the journal
         net, last = defaultdict(int), {}
@@ -342,6 +421,45 @@ def build_report_embed(csv_path: Path, ctx: dict) -> dict:
                 "magic": next((m for m, t in MAGIC_TAG.items()
                                if t == str(last[s]["reason"]).split("_")[0]), None)}
                for s, n in net.items() if n > 0]
+    # (symbole, sleeve) et non le symbole seul : quatre sleeves se partagent NAS100.
+    open_keys = {(p["symbol"], MAGIC_TAG.get(p.get("magic"), "?")) for p in pos}
+
+    fields = []
+    float_txt = f"\nflottant {eq - bal:+,.0f}" if (bal and eq) else ""
+    fields.append({"name": "\U0001F4B0 Account", "inline": True,
+                   "value": f"**{bal:,.2f}**\n1R {ctx.get('one_r', 0):,.2f} · "
+                            f"{ctx.get('risk_pct', 0) * 100:.2f}%{float_txt}" if bal else "**n/a**"})
+    fields.append({"name": "\U0001F4C5 Today", "inline": True,
+                   "value": f"**{t_R:+.2f} R**\n{len(t_exits)} closed · {len(t_entries)} opened"})
+    win_txt = f"win {100 * len(wins) / len(exits):.0f}%" if exits else "win —"
+    fields.append({"name": "\U0001F4C8 Since start", "inline": True,
+                   "value": f"**{tot:+.2f} R**\n{len(exits)} closed · {win_txt}"})
+
+    fields.append(_today_trades_field(t_exits, t_entries, open_keys, ctx.get("one_r")))
+
+    # prop challenge progress: where the balance sits between the -10% floor and +15% target
+    tgt, dd = ctx.get("target_pct"), ctx.get("dd_pct")
+    if bal and ref and tgt and dd:
+        floor_cash, target_cash = ref * (1 - dd), ref * (1 + tgt)
+        # Le journal converti en % DE COMPTE (1 R = `risk_per_trade` du capital) est le
+        # seul chiffre comparable au cash. On publie les deux ET leur ecart : cet ecart
+        # n'est pas du bruit, c'est exactement ce que le journal ne voit pas (swap,
+        # commissions, trades non journalises, flottant des positions ouvertes).
+        jr_pct = tot * float(ctx.get("risk_pct") or 0.0) * 100.0
+        gap = pnl_pct - jr_pct
+        val = [f"**{pnl_pct:+.2f}%** de l'objectif **+{tgt * 100:.0f}%** · "
+               f"floor −{dd * 100:.0f}% a `{floor_cash:,.0f}` · cible `{target_cash:,.0f}`"]
+        since = ctx.get("challenge_start_since")
+        src = ("" if not since else " (fixee en config)" if since == "config"
+               else f" (ancre du {since})")
+        val.append(f"reference `{ref:,.0f}`" + (src if since else
+                   " ⚠️ solde au dernier demarrage du runner, PAS le depart du challenge"))
+        val.append(f"cash {pnl_pct:+.2f}% · journal {tot:+.2f} R = {jr_pct:+.2f}%"
+                   + (f" · ecart {gap:+.2f}% (swap/commissions, trades hors journal, flottant)"
+                      if abs(gap) >= 0.02 else ""))
+        fields.append({"name": "\U0001F3AF Challenge", "inline": False,
+                       "value": "\n".join(val)})
+
     if pos:
         lines = []
         for p in sorted(pos, key=lambda x: x["symbol"]):
@@ -433,7 +551,25 @@ def _cli_ctx() -> dict:
     prop = cfg.get("propfirm") or {}
     init = float(prop.get("initial_balance", 100000.0))
     rp = float(cfg.get("risk_per_trade", 0.01))
+    # meme ancre que le runner : la config si elle la fixe, sinon le fichier qu'il a
+    # ecrit sur la machine qui trade (absent ici -> le rapport dira que la reference
+    # n'est pas le depart du challenge, au lieu de le laisser croire).
+    anchor, since = prop.get("challenge_start_balance"), "config"
+    if not anchor:
+        try:
+            import json
+            d = json.loads((Path(__file__).resolve().parent / "_out" /
+                            "account_start.json").read_text(encoding="utf-8"))
+            anchor, since = float(d["balance"]), str(d.get("since", "?"))
+        except Exception:
+            anchor, since = None, None
+    # Sans MT5 il n'y a pas de solde reel : on prend l'ancre comme solde fictif, sinon
+    # l'apercu compare le nominal de config a l'ancre et affiche une progression inventee.
+    if anchor:
+        init = float(anchor)
     return {"balance": init, "initial": init, "one_r": init * rp, "risk_pct": rp,
+            "challenge_start": float(anchor) if anchor else None,
+            "challenge_start_since": since,
             "dd_pct": prop.get("max_total_drawdown_pct"), "target_pct": prop.get("profit_target_pct"),
             "now_et": datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York")),
             "alive": True, "n_bricks": 4}
