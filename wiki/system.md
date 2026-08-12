@@ -128,6 +128,15 @@ across the whole 4×4 matrix is **0.03**.
 | maxDD / RoMaD / Sharpe | — | **14.3 R / 2.24 / 2.57** |
 | Profit factor (pooled trades) | — | **1.44** (1446 trades, 53% win); per brick NAS 1.27 / gold 1.86 / crypto 1.65 / IBS 2.21 |
 | Activity | — | **~180 trades/yr**: NAS ~95, crypto ~35, IBS ~35, gold 12 |
+
+> ⚠️ **The Activity row above is the FOUR-BRICK book.** The book actually deployed
+> (AGRESSIF = 4 bricks + HMASTO@0.5R, magic 108) runs at **~436 entries/yr**, because
+> HMASTO alone fires **~256/yr** — 59 % of the book's trade count for half the risk per
+> trade. Per calendar day **1.19 entries**, per weekday **1.64**, 36 % of calendar days
+> are flat; time-weighted concurrency **2.27 positions open**, max 6. And **91 % of the
+> weekday entries are NAS100** (b1 0.37 + b4 0.14 + HMASTO 0.98 of 1.64). Measured
+> 2026-08-10 by [`scratchpad/book_activity.py`](../scratchpad/book_activity.py) on
+> 2018-07 → 2026-07, from the same canonical modules the runner trades.
 | worst day | −4.15 R | **−3.07 R** (crypto no longer books 4 same-day stops) |
 | MC median R/yr, P(profit) | — | **+31.6, 97.2%** |
 | MC 5th-pct year, median maxDD | — | **+4.3 R, 9.5 R** |
@@ -494,8 +503,9 @@ stop is never sized off a stale close. No config change was needed to deploy it
 
 **Time exits — the driver owns them, and they are the part `verify` used to skip.**
 Every sleeve has one: b1/KAER flat at 15:55 ET (wall clock), b2 on a count of the month's
-completed D1 bars, b3 at 30 D1 bars, b4 at 30 D1 bars or `IBS>0.8`, KELT at 96 H1 bars.
-Two rules, both learned the hard way on 2026-08-09 (see [[log]]):
+completed D1 bars, b3 at 30 D1 bars, b4 at 30 D1 bars or `IBS>0.8`, KELT at 96 H1 bars,
+**TLF at 15:55 ET *or* 60 M5 bars — whichever comes first**. Three rules, the first two
+learned the hard way on 2026-08-09 and the third on 2026-08-12 (see [[log]]):
 
 1. **Count BARS in the broker's own frame, never calendar dates or elapsed hours.** MT5
    returns `position.time` on the **server** clock (Athens) but labelled UTC —
@@ -519,6 +529,57 @@ Two rules, both learned the hard way on 2026-08-09 (see [[log]]):
 3. **A refused exit must be retried on the very next poll — see the incident below.**
    Retrying it once per broker day is not "on every pass", and the difference is days of
    unwanted exposure.
+4. **An exit the backtest has and the driver does not is invisible in every live metric.**
+   TLF shipped on 2026-08-10 with its 60-bar cap (`TwoLegFadeParams.maxbars`) implemented
+   *only* in the backtest; live, the position simply rode to the 15:55 flat. Nothing
+   flagged it — trade counts, entry prices and 1R all matched, because the cap changes
+   only *where a trade ends*. Its own source comment said the flat "almost always binds
+   first", which is what stopped anyone looking: measured, the cap is the exit on
+   **58/468 US500 trades (12.4 %)** and **106/914 NAS100 (11.6 %)**, worth ~4 % of E[R]
+   (US500 +0.1615 without it vs +0.1677 with). Wired live 2026-08-12; `verify_tlf` check
+   (7) now tests both the arithmetic (the driver's bar counter must equal `maxbars` on
+   every bar the backtest caps on — 164/164 exact) and the wiring (`step` must read
+   `self.p.maxbars`). **Every parameter that ends a trade needs a live test that fails
+   when it is unplugged.**
+
+### ⚠️ Where the code actually runs — the deployment boundary (learned 2026-08-12)
+
+The runner does **not** run on the workstation: it runs on the **VPS**, whose supervisor
+([run_forever.ps1](../edgelab/live/run_forever.ps1)) does `git reset --hard origin/main`
+before every launch, and which self-updates within `update_check_min` when `auto_update`
+is on. Four things are routinely mistaken for one another, and on 2026-08-12 three of the
+four disagreed:
+
+| what | where it actually runs |
+|------|------------------------|
+| the working tree | the workstation only — executed nowhere else |
+| a local commit | reaches nothing until it is **pushed** |
+| `origin/main` | **this is what the VPS runs** |
+| `edgelab/live/config_live.yaml` | gitignored → **one per machine**; which sleeves are enabled on the VPS cannot be read from here |
+
+Three consequences, all observed the same day:
+
+* TLF's 60-bar cap (point 4 above) was written, tested, and **documented here as "wired
+  live"** while sitting *uncommitted* in the working tree. Both TLF trades of 2026-08-12
+  exited on the 15:55 flat, **25 min and 10 min after their cap should have fired** — the
+  broker's own deal history is what proved the VPS did not have the code. Committed
+  `0558352`. The wiki claimed a deployment that no deployed process had.
+* [`edgelab/live/_out/`](../edgelab/live/) — heartbeat, `runner.log`, `trades.csv` — is
+  **local to whichever machine ran the runner**. The workstation's copies were 1 and 3
+  days stale while the VPS traded normally, which reads exactly like a dead runner. They
+  are not evidence about the live process; only the VPS's own copies are.
+* Which sleeves are actually instantiated live is readable only from the **VPS's**
+  heartbeat `magics=` line. From the workstation, "HMASTO has never traded" and "HMASTO
+  is not enabled there" are indistinguishable.
+
+And the heartbeat's own failure used to be the one thing it could not report: its write
+was wrapped in a silent `LOG.debug`, so a frozen date could mean a dead loop *or* a failed
+write, with nothing to separate them. It now warns (throttled, with a recovery line that
+dates the outage) — commit `45703c8`. Note the honest limit stated in the code: if `_out/`
+is locked, `runner.log` is in the same directory and will be just as mute.
+
+**Rule: a live fix is not deployed when it is written, nor when it is committed — only
+when it is on `origin/main`.**
 
 ### ⚠️ Incident 2026-08-07→09 — brick 4 could not get out, and the log said it had
 
