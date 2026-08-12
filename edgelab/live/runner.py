@@ -248,6 +248,9 @@ _MARKET_CLOSED_SINCE: dict[str, pd.Timestamp] = {}   # strat name -> when it fir
 _LAST_FAILURE: dict = {}          # strat name -> (signature, first seen, last logged)
 FAIL_REPEAT_MIN = 15.0            # re-log an UNCHANGED, still-repeating failure this often
 
+_HB_FAIL: dict = {}               # streak d'echecs d'ecriture du heartbeat
+HB_REPEAT_MIN = 30.0              # re-log un echec de heartbeat INCHANGE a ce rythme
+
 
 def _log_failure(name: str, exc: Exception, now_utc: pd.Timestamp) -> None:
     """Full traceback the first time a brick fails, then one throttled line while the SAME
@@ -305,8 +308,29 @@ def _heartbeat(broker, risk, strategies, now_utc: pd.Timestamp) -> None:
             f"last_scanned_bar_utc={' '.join(scanned) if scanned else '(aucune)'}\n"
             f"realized_R={getattr(broker, 'realized_R', 0.0):.3f}\n",
             encoding="utf-8")
-    except Exception:                    # un disque qui hoquette ne doit JAMAIS tuer la boucle
-        LOG.debug("heartbeat write failed", exc_info=True)
+        if _HB_FAIL:                     # on n'ecrivait plus, on ecrit de nouveau
+            LOG.warning("heartbeat: ecriture retablie apres %s d'echecs",
+                        now_utc - _HB_FAIL["since"])
+            _HB_FAIL.clear()
+    except Exception as exc:             # un disque qui hoquette ne doit JAMAIS tuer la boucle
+        # ...mais il ne doit PAS non plus etre SILENCIEUX. C'etait un LOG.debug, donc
+        # invisible : le 2026-08-12 ce fichier datait de la veille alors que le runner
+        # (sur le VPS) tradait normalement, et rien ne permettait de dire si la date
+        # etait vieille parce que la BOUCLE etait morte ou parce que l'ECRITURE
+        # echouait. Les deux se ressemblent exactement -- et c'est precisement la
+        # question a laquelle ce fichier existe pour repondre.
+        # ATTENTION : ce WARNING peut lui-meme ne jamais atterrir. Si `_out/` est
+        # verrouille (OneDrive, permissions), runner.log est dans le MEME dossier et
+        # sera muet aussi ; seule la console (StreamHandler) le verra a coup sur.
+        sig = f"{type(exc).__name__}: {exc}"
+        if _HB_FAIL.get("sig") != sig:               # echec neuf -> l'histoire complete
+            LOG.warning("heartbeat: ECRITURE IMPOSSIBLE dans %s (%s) -- la preuve de vie est GELEE ; ne pas conclure que le runner est mort sur la seule date de ce fichier",
+                        Path(__file__).resolve().parent / "_out", sig, exc_info=True)
+            _HB_FAIL.update(sig=sig, since=now_utc, last=now_utc)
+        elif (now_utc - _HB_FAIL["last"]) >= pd.Timedelta(minutes=HB_REPEAT_MIN):
+            LOG.warning("heartbeat: TOUJOURS impossible a ecrire (depuis %s) : %s",
+                        now_utc - _HB_FAIL["since"], sig)
+            _HB_FAIL["last"] = now_utc
 
 
 def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Timestamp) -> None:
