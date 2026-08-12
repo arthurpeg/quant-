@@ -918,6 +918,12 @@ class TwoLegFadeStrategy:
     gapped through the trigger the backtest measures 1R from the FILL, so the live stop is
     moved to match. Without that, a stop-out would not be −1.00 R.
 
+    THREE EXITS, AND NO TARGET. `tp_R` is None on purpose — a target takes the sleeve's
+    cost stress negative — so the position leaves on: the broker-side stop at 1R = 3 ×
+    ATR14; the forced flat at `session_close` (advanced by `us_session_calendar` on a
+    shortened session); or the `maxbars` cap, 60 M5 bars after the entry bar. The cap was
+    MISSING live until 2026-08-12 while the backtest always had it — see `step`.
+
     ⚠️ The reserves are in the module docstring and they are serious (ex-2020-AND-2022
     t=+1.77; M10 = −1.54 while M5 = +3.05; 2/13 assets; direction flipped a posteriori on
     a 2 709-cell surface). Do not size it up.
@@ -942,6 +948,32 @@ class TwoLegFadeStrategy:
         step_ = pd.Timedelta(minutes=5)
         bars = bars_all.iloc[:-1] if (bars_all.index[-1] + step_) > now_utc else bars_all
         return bars if len(bars) else None
+
+    @staticmethod
+    def _held(bars: pd.DataFrame, open_time: pd.Timestamp) -> int:
+        """Barres M5 COMPLETEES de la position, comptees dans la trame du broker.
+
+        Meme construction que le compteur de Keltner, et pour les memes raisons : le fill
+        tombe QUELQUES SECONDES DANS sa barre d'entree (l'ordre stop se declenche en
+        intrabarre), donc un ecart brut tronque une barre -- d'ou le `floor` ; et
+        `run_two_leg_fade` plafonne sur `end - m`, une distance d'INDEX, pas un nombre de
+        minutes ecoulees, donc un trou de flux doit compter pour zero barre et non pour
+        les minutes qu'il couvre.
+
+        `bars` ne contient que des barres completees ; le resultat est `maxbars` sur la
+        barre ou le backtest sort. `method="ffill"` degrade proprement si la barre
+        d'entree elle-meme manque de la trame.
+        """
+        entry_bar = pd.Timestamp(open_time).floor(pd.Timedelta(minutes=5))
+        loc = int(bars.index.get_indexer([entry_bar], method="ffill")[0])
+        if loc < 0:
+            # 600 barres M5 couvrent ~2 seances et le cap en vaut 60 : inatteignable en
+            # pratique. Si ca arrive, le repli surcompte (il lit des minutes, pas des
+            # barres) et fait sortir tout de suite -- le bon sens du risque.
+            logger.warning("tlf: barre d'entree %s hors de la fenetre de %d barres -> "
+                           "repli en minutes ecoulees pour le cap", entry_bar, len(bars))
+            return int((bars.index[-1] - entry_bar) / pd.Timedelta(minutes=5)) + 1
+        return len(bars) - loc                  # barres loc..derniere, incluses
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
         et = now_utc.tz_convert(self.p.tz)
@@ -973,6 +1005,26 @@ class TwoLegFadeStrategy:
             if minute >= flat_m:
                 px = float(broker.get_bars(self.logical, "M5", 2).iloc[-1]["close"])
                 broker.close(pos, px, "time_exit", now_utc)
+                return
+            # LE CAP DE 60 BARRES -- ajoute le 2026-08-12, le live ne l'avait pas.
+            # `run_two_leg_fade` sort a `min(m + maxbars - 1, deadline)` : l'aplat de
+            # seance passe D'ABORD (au-dessus, egalite comprise) et ce cap prend le relais
+            # quand il tombe plus tot. Le commentaire du module disait "the session flat
+            # almost always binds first" -- c'est FAUX : le cap mord sur 58/468 trades
+            # US500 (12,4 %) et 106/914 NAS100 (11,6 %). Le driver tenait donc ces
+            # positions jusqu'a 15:55 alors que le backtest les sortait 5 h apres
+            # l'entree : E[R] +0.1615 au lieu de +0.1677 sur US500, +0.0945 au lieu de
+            # +0.0989 sur NAS100 (~4 % de l'edge).
+            # NOM : le backtest appelle ce cap "time_exit" et l'aplat "session_close" ; le
+            # live nomme l'aplat "time_exit" comme la brique 1 et HMASTO, donc ce cap
+            # s'appelle "maxbars" -- sinon les deux sorties seraient indistinguables dans
+            # le journal.
+            bars = self._completed(broker, now_utc)
+            if bars is None:
+                return
+            held = self._held(bars, pos.open_time)
+            if held >= self.p.maxbars:
+                broker.close(pos, float(bars["close"].iloc[-1]), "maxbars", now_utc)
             return
 
         bars = self._completed(broker, now_utc)

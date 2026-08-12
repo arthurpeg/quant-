@@ -99,7 +99,12 @@ class TwoLegFadeParams:
     max_cost_R: float = 0.20         # friction gate: 1R must be >= 5 round trips
     k_stop: float = 3.0              # 1R = 3 x ATR14 at the decision bar
     tp_R: float | None = None        # NO target (a target takes the cost stress negative)
-    maxbars: int = 60                # hard cap; the session flat almost always binds first
+    # 60 bars = 5 h. ⚠️ This used to be commented "the session flat almost always binds
+    # first" — it does NOT: the cap is the exit on 58/468 US500 trades (12.4 %) and
+    # 106/914 NAS100 (11.6 %). The live driver had no cap at all until 2026-08-12,
+    # which cost ~4 % of E[R] (US500 +0.1615 vs +0.1677). Whatever this value is, the
+    # driver must read it — `verify_tlf` check (7) is what makes that binding.
+    maxbars: int = 60
     bar_minutes: int = 5             # bar spacing; used to clock the NEXT bar
     slippage_points: float = SLIP_POINTS
     size_R: float = 0.5              # fraction of 1R actually risked when deployed

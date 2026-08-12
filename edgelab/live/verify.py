@@ -699,10 +699,20 @@ def verify_tlf(window: int = 600, sample: int = 4000) -> bool:
     (5) NO TARGET. tp_R must stay None.
     (6) POINT SIZE. A missing point size once priced US500 ten times too cheap and let
         through 688 trades instead of 460. `point_size` must RAISE on an unknown symbol.
+    (7) LE CAP DE `maxbars`. Le backtest sort a `min(m + maxbars - 1, deadline)`. Le
+        driver n'avait AUCUN cap jusqu'au 2026-08-12 : il tenait la position jusqu'a
+        l'aplat de 15:55 sur les 12 % de trades ou le cap mord en premier. Deux controles
+        ici, parce qu'ils echouent pour des raisons differentes : l'ARITHMETIQUE
+        (`TwoLegFadeStrategy._held` doit valoir exactement `maxbars` sur la barre de
+        sortie de chaque trade que le backtest ferme au cap) et le CABLAGE (le driver doit
+        lire `self.p.maxbars`, pas un litteral, pas rien -- meme esprit que
+        `verify_flat_times`). Un cap juste mais debranche ne se voit dans aucune metrique.
     """
+    import inspect
     from edgelab.intraday.two_leg_fade import (TwoLegFadeParams, run_two_leg_fade,
                                                load_m5, armed_bars, point_size)
     from edgelab.live.signals import tlf_scan
+    from edgelab.live.strategies import TwoLegFadeStrategy
 
     p = TwoLegFadeParams()
     if p.tp_R is not None:                                            # ---- (5)
@@ -718,6 +728,11 @@ def verify_tlf(window: int = 600, sample: int = 4000) -> bool:
         return False
     except KeyError:
         pass
+    src = inspect.getsource(TwoLegFadeStrategy.step)                  # ---- (7) cablage
+    if "self.p.maxbars" not in src:
+        print("  TLF: le driver ne lit pas self.p.maxbars -- le cap de duree est "
+              "debranche ou code en dur. FAIL")
+        return False
 
     ok_all = True
     for sym in ("NAS100", "US500"):
@@ -778,6 +793,36 @@ def verify_tlf(window: int = 600, sample: int = 4000) -> bool:
               f"{len(taken)} entries, identical: {same} "
               f"({fill_rate:.0f} % of armed orders ever fill; the rest expire)")
         ok_all &= bool(same)
+
+        # ---- (7) arithmetique du cap: _held doit valoir maxbars sur la barre de sortie -
+        cap = bt[bt["reason"] == "time_exit"]
+        bad_cap = 0
+        for _, r in cap.iterrows():
+            m = int(bars.index.get_indexer([r["entry_time"]])[0])
+            xi = int(bars.index.get_indexer([r["exit_time"]])[0])
+            if m < 0 or xi < 0:
+                bad_cap += 1
+                continue
+            # `open_time` live = l'instant du FILL, dans la barre m ; on lui passe donc
+            # l'horodatage de la barre m, que le `floor` du driver reproduit.
+            if TwoLegFadeStrategy._held(bars.iloc[:xi + 1], bars.index[m]) != p.maxbars:
+                bad_cap += 1
+        # les sorties a la cloture ne doivent JAMAIS depasser le cap: le min() du backtest
+        # veut dire que le cap aurait mordu avant.
+        flat = bt[bt["reason"] == "session_close"]
+        over = 0
+        for _, r in flat.iterrows():
+            m = int(bars.index.get_indexer([r["entry_time"]])[0])
+            xi = int(bars.index.get_indexer([r["exit_time"]])[0])
+            if m >= 0 and xi >= 0 and TwoLegFadeStrategy._held(bars.iloc[:xi + 1],
+                                                              bars.index[m]) > p.maxbars:
+                over += 1
+        print(f"  TLF {sym} cap de duree ({p.maxbars} barres): {len(cap)}/{len(bt)} trades "
+              f"({100 * len(cap) / len(bt):.1f} %) sortent AU CAP et non a l'aplat -- "
+              f"{bad_cap} desaccord(s) sur le compteur du driver, {over} sortie(s) a la "
+              f"cloture au-dela du cap")
+        ok_all &= (bad_cap == 0 and over == 0)
+
         print(f"  TLF {sym} ({len(bt)} entries, STOP entry, sized {p.size_R:.2f}R live): "
               f"{'PASS' if ok_all else 'FAIL'}")
     return bool(ok_all)
