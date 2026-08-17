@@ -314,9 +314,11 @@ def _us_session_minutes(now_utc: pd.Timestamp, tz: str = "America/New_York") -> 
 
 
 _LAST_LIVENESS_ALERT = None
+_STARTED_AT: pd.Timestamp | None = None
 
 
-def _maybe_liveness_alert(cfg_live: dict, strategies, now_utc: pd.Timestamp) -> None:
+def _maybe_liveness_alert(broker: Broker, cfg_live: dict, strategies,
+                          now_utc: pd.Timestamp) -> None:
     """Alert when a bar-scanning sleeve STOPS SCANNING while the US session is open.
 
     LE TROU QUE CE CONTROLE BOUCHE (2026-08-17). Le rapport quotidien de
@@ -331,12 +333,27 @@ def _maybe_liveness_alert(cfg_live: dict, strategies, now_utc: pd.Timestamp) -> 
     heartbeat. On le LIT, pendant la seance, et on crie s'il prend du retard. Une sleeve
     qui scanne sans rien trouver met quand meme `_acted_bar` a jour (le skip pour barre
     perimee le fait aussi), donc ce retard mesure bien la BOUCLE, pas le signal.
+
+    DEUX FAUX POSITIFS ATTRAPES AU DEPLOIEMENT (2026-08-17, premiere mise en service) et
+    que la logique doit exclure par construction :
+
+    * **Une sleeve qui PORTE une position ne scanne pas, et c'est voulu.** Son `step()`
+      part par la branche de gestion de position et ne touche jamais `_acted_bar` : le
+      controle accusait donc HMASTO pendant toute la duree de son trade (« pas scanne
+      depuis 212 min » sur un runner parfaitement sain qui venait d'ouvrir la position
+      lui-meme). On saute donc les sleeves en position. Angle mort assume : si TOUTES les
+      sleeves scannantes sont en position, le controle se taît — mais alors le runner
+      vient de prouver qu'il fonctionne en les ouvrant, et leur risque est cote broker.
+    * **Un processus qui vient de demarrer a legitimement `_acted_bar = None`.** La grace
+      se compte donc depuis LE DEMARRAGE (`_STARTED_AT`), jamais depuis l'ouverture de la
+      seance : sans ca, toute relance passe la 20e minute de seance declenchait l'alerte
+      instantanement. Le trou laisse par une relance est deja le sujet de `_startup_alert`.
     """
     global _LAST_LIVENESS_ALERT
     sess = _us_session_minutes(now_utc)
     if sess is None:
         return
-    minute, open_min, _flat = sess
+    _minute, _open_min, _flat = sess       # la porte de seance suffit ici
     floor_min = float(cfg_live.get("liveness_lag_alert_min", 20))
     margin = float(cfg_live.get("liveness_margin_min", 5))
     cooldown = float(cfg_live.get("liveness_alert_cooldown_min", 60))
@@ -352,15 +369,23 @@ def _maybe_liveness_alert(cfg_live: dict, strategies, now_utc: pd.Timestamp) -> 
         tf = getattr(s_, "bar_minutes", None)
         if not tf:
             continue                      # sleeve non scannante (rollover, 1 trade/jour)
+        try:
+            if broker.open_position(s_.magic) is not None:
+                continue                  # en position -> ne scanne pas, par conception
+        except Exception:
+            pass                          # un broker qui hoquette ne doit pas taire l'alerte
         thr = max(floor_min, float(tf) + margin)
         bar = getattr(s_, "_acted_bar", None)
         if bar is None:
-            # jamais scanne depuis le demarrage : anormal seulement si la seance est deja
-            # engagee (au demarrage, la sleeve attend legitimement sa premiere cloture).
-            since_open = float(minute - open_min)
-            if since_open <= max(grace, thr):
+            # jamais scanne DEPUIS LE DEMARRAGE de ce processus (pas depuis l'ouverture de
+            # la seance) : une relance a legitimement `_acted_bar = None` et attend sa
+            # premiere cloture de barre.
+            if _STARTED_AT is None:
                 continue
-            lag = since_open
+            since_start = (now_utc - _STARTED_AT).total_seconds() / 60.0
+            if since_start <= max(grace, thr):
+                continue
+            lag = since_start
         else:
             lag = (now_utc - (pd.Timestamp(bar) + pd.Timedelta(minutes=tf))).total_seconds() / 60.0
         if lag <= thr:
@@ -399,9 +424,17 @@ def _startup_alert(cfg_live: dict, now_utc: pd.Timestamp) -> None:
             prev = pd.Timestamp(hb.read_text(encoding="utf-8").splitlines()[0])
     except Exception:
         prev = None
-    gap = f"{(now_utc - prev).total_seconds() / 60.0:.0f} min" if prev is not None else "inconnu"
+    gap_min = (now_utc - prev).total_seconds() / 60.0 if prev is not None else None
+    gap = f"{gap_min:.0f} min" if gap_min is not None else "inconnu"
     sup = "sous superviseur" if _is_supervised() else "**SANS superviseur**"
     LOG.warning("demarrage EN SEANCE US (%s) — dernier heartbeat il y a %s", sup, gap)
+    # UNE RELANCE SANS TROU N'EST PAS UN INCIDENT. Un arret/relance immediat (mise a jour
+    # de code, redemarrage volontaire) laisse un ecart de quelques secondes et ne coute
+    # rien de plus que la barre en cours : l'annoncer sur Discord apprend a ignorer
+    # l'alerte, ce qui est exactement le defaut qu'on corrige. On journalise, on se taît.
+    quiet = float(cfg_live.get("startup_alert_min_gap_min", 2))
+    if gap_min is not None and gap_min < quiet:
+        return
     _alert(cfg_live, f":arrows_counterclockwise: **runner redemarre EN PLEINE SEANCE** ({sup}) — "
                      f"dernier heartbeat il y a **{gap}**. Les entrees de cet intervalle sont "
                      f"perdues (les sleeves ne courent pas apres une barre passee).")
@@ -707,6 +740,10 @@ def main() -> int:
         # et c'est la seule mesure du trou qu'on vient de laisser. `_heartbeat` l'ecrase des
         # le premier cycle, donc l'alerte se lit ici ou jamais.
         _startup_alert(cfg_live, pd.Timestamp.now(tz="UTC"))
+        # L'ancre de grace de l'alerte de liveness : une sleeve qui n'a JAMAIS scanne se
+        # juge par rapport a CE moment, pas a l'ouverture de la seance.
+        global _STARTED_AT
+        _STARTED_AT = pd.Timestamp.now(tz="UTC")
         poll = float(cfg_live.get("poll_seconds", 20))
         while True:
             # self-heal a dropped MT5 connection before trading
@@ -728,7 +765,7 @@ def main() -> int:
             # ORDRE VOULU : l'alerte de liveness lit `_acted_bar` APRES `one_pass` (donc
             # apres le scan de ce cycle) mais AVANT le heartbeat n'ait plus d'importance —
             # ce qui compte est qu'elle ne juge jamais un etat d'avant le scan.
-            _maybe_liveness_alert(cfg_live, strategies, now)
+            _maybe_liveness_alert(broker, cfg_live, strategies, now)
             _heartbeat(broker, risk, strategies, now)
             _maybe_session_alerts(cfg_live, now)
             _maybe_report(broker, risk, strategies, cfg_live, now)

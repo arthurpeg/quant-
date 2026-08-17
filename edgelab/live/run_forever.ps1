@@ -45,6 +45,15 @@ if (Test-Path $stop) { Remove-Item $stop -Force }   # clear a stale stop flag
 $env:EDGELAB_SUPERVISED = "1"
 
 $hasGit = [bool](Get-Command git -ErrorAction SilentlyContinue)
+# Empreinte de CE script au moment ou PowerShell l'a parse. Le `git reset --hard` ci-dessous
+# peut mettre a jour run_forever.ps1 SUR LE DISQUE, mais PowerShell ne relit jamais un script
+# en cours d'execution : le superviseur continuerait donc de tourner sur l'ancienne version
+# en croyant etre a jour. C'est exactement ce qui s'est passe le 2026-08-17 -- la ligne
+# EDGELAB_SUPERVISED est arrivee sur le disque et le processus vivant ne la posait pas, donc
+# le runner se croyait non supervise. On ne peut pas se relancer sans risquer une boucle de
+# spawn sur un VPS de trading, alors on le DIT, fort.
+$selfHash = (Get-FileHash $PSCommandPath -Algorithm SHA256).Hash
+$selfWarned = $false
 Log "supervisor started (repo: $repo) | python: $PYEXE $($PYPRE -join ' ') | git: $hasGit"
 while ($true) {
   if (Test-Path $stop) { Log "STOP file found -> supervisor exiting"; Remove-Item $stop -Force; break }
@@ -62,6 +71,17 @@ while ($true) {
       git -C $repo reset --hard $prev 2>$null | Out-Null
     } else {
       Log "on commit $(git -C $repo rev-parse --short HEAD 2>$null)"
+    }
+    if (-not $selfWarned) {
+      $nowHash = (Get-FileHash $PSCommandPath -Algorithm SHA256).Hash
+      if ($nowHash -ne $selfHash) {
+        $selfWarned = $true
+        Log "*** run_forever.ps1 A CHANGE sur le disque et CE processus tourne encore sur"
+        Log "*** l'ancienne version (PowerShell ne relit pas un script en cours). Le runner"
+        Log "*** peut donc voir un environnement perime -- p.ex. EDGELAB_SUPERVISED absent,"
+        Log "*** ce qui lui fait desactiver auto_update. RELANCER CE SCRIPT une fois de plus"
+        Log "*** pour appliquer sa propre mise a jour (le fichier a jour est deja la)."
+      }
     }
   }
 

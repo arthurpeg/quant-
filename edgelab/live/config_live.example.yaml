@@ -230,14 +230,21 @@ daily_report_et: "17:00"       # time of day (ET) to send the report
 #     BOUCLE, pas le signal. Le seuil suit l'UT de la sleeve — `max(liveness_lag_alert_min,
 #     UT + liveness_margin_min)` — parce que l'age de la derniere barre close cycle
 #     naturellement de 0 a UT : un seuil fixe hurlerait en continu sur une sleeve H1.
+#     Deux faux positifs sont exclus par construction, tous deux vus a la premiere mise en
+#     service le 2026-08-17 : une sleeve qui PORTE une position ne scanne pas (son step()
+#     part par la gestion de position et ne touche pas `_acted_bar`), et un processus qui
+#     vient de demarrer a legitimement `_acted_bar = None` -- la grace se compte donc
+#     depuis le DEMARRAGE, pas depuis l'ouverture de la seance.
 #  2. REDEMARRAGE EN PLEINE SEANCE, avec la duree du trou lue dans le heartbeat de
 #     l'instance precedente. Un demarrage est le seul evenement qu'un processus est SUR de
 #     pouvoir signaler : les cinq morts du 13 au 17/08 n'ont laisse aucune ligne d'arret,
-#     ni cote runner ni cote superviseur.
+#     ni cote runner ni cote superviseur. Une relance SANS trou (< startup_alert_min_gap_min)
+#     n'est pas un incident et reste dans le log, sans Discord.
 liveness_lag_alert_min: 20     # plancher du seuil de retard de scan (minutes)
 liveness_margin_min: 5         # marge ajoutee a l'UT de la sleeve pour former le seuil
 liveness_alert_cooldown_min: 60  # pas plus d'une alerte de retard par heure
-liveness_grace_min: 20         # tolerance en debut de seance avant de juger un "jamais scanne"
+liveness_grace_min: 20         # tolerance APRES LE DEMARRAGE avant de juger un "jamais scanne"
+startup_alert_min_gap_min: 2   # en dessous de ce trou, la relance n'est pas annoncee
 
 # Pre-session heads-up pings (~1h before the bricks trade). All 3 bricks act in the US
 # morning window: brick 1 at the 09:30 ET open, bricks 2 & 3 at the 09:45 ET decision.
