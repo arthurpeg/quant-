@@ -16,7 +16,11 @@ Pepperstone bars, logs the orders it *would* place, and paper-tallies realised R
 Bricks 1 and 4 share the NAS100 instrument but are different mechanisms (intraday
 breakout vs daily-close reversion, daily-R corr ≈ 0) and different magics, so they hold
 **separate positions** and never interfere. Brick 4 is long-only with no TP: it exits on
-the broker-managed stop, on `IBS > 0.8` at a close, or after 30 D1 bars.
+the broker-managed stop, on `IBS > 0.8`, or after 30 D1 bars. Both non-stop exits fire in
+the **pre-close lead window (23:50 server = 22:50 Paris)**, on the bar that is closing —
+an exit sent at the 00:00 rollover lands in the 00:00-01:00 break, fills at the reopen and
+pays a swap night (Friday: the whole weekend). Worth **+0.19 R/yr net**; see the exit block
+in `strategies.py`. The rollover test on the last closed bar remains as the fallback.
 
 ## Before anything: verify live == backtest
 ```bash

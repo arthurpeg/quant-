@@ -65,6 +65,15 @@ def _at_rollover_lead(now_utc: pd.Timestamp, lead_min: float = ROLLOVER_LEAD_MIN
     return (srv.hour * 60 + srv.minute) >= (24 * 60 - lead_min)
 
 
+def _forming_ibs(bar) -> float:
+    """IBS of a bar that is STILL FORMING — its ``close`` is the last traded price.
+
+    NaN on a zero-range bar, so every ``> ibs_high`` test on it is False by construction.
+    """
+    rng = float(bar["high"]) - float(bar["low"])
+    return (float(bar["close"]) - float(bar["low"])) / rng if rng > 0 else float("nan")
+
+
 class _EntryRetryGuard:
     """Bounds how long a rollover brick keeps retrying an entry that fails **on an open
     market**, without ever bounding the wait for a *closed* one.
@@ -455,10 +464,13 @@ class CryptoMacdStrategy(_RolloverBrick):
 class NasIbsStrategy(_RolloverBrick):
     """Brick 4 — NAS100 IBS reversion. Daily, long-only; holds up to `max_hold` bars.
 
-    Same cadence as bricks 2 & 3: decide ONCE per broker day at the daily-bar rollover
-    (00:00 server time), which is where the backtest fills (the next bar's open). No TP —
-    the exits are the broker-managed stop, ``IBS > ibs_high`` at a close, and the
-    ``max_hold``-bar timeout, both acted on at the following open.
+    ENTRY is once per broker day at the daily-bar rollover (00:00 server), which is where
+    the backtest fills (the next bar's open). No TP. The EXITS — ``IBS > ibs_high`` and the
+    ``max_hold``-bar timeout — are anticipated to the pre-close LEAD window (23:50 server
+    = 22:50 Paris) and leave on the bar that is closing, judging the IBS on that still-
+    forming bar; the rollover test on the last CLOSED bar remains as the fallback. That
+    trades −0.03 R/yr of gross for +0.21 R/yr of swap never paid — see the exit block.
+    The stop is broker-managed and unaffected.
 
     ``bars_held`` is counted in **D1 BARS** (trading days), not calendar days, by locating
     the entry bar in the broker's own D1 frame — NAS100 does not print a bar at weekends,
@@ -528,16 +540,25 @@ class NasIbsStrategy(_RolloverBrick):
                 if closed:
                     broker.close(pos, px, why, now_utc); self._managed_day = bday; return
             timed = held is not None and held >= self.p.max_hold
-            # The bar closing right now is the one that would tip the count at the next
-            # rollover -> leave on it rather than into the 00:00-01:00 break / the weekend.
-            # ⚠️ ONLY the TIME exit is anticipated. The ``IBS > 0.8`` exit keeps the rollover
-            # fill because it must be judged on a fully CLOSED bar; anticipating it would
-            # read an IBS that is still 10 minutes from final. (Measured cost of moving it
-            # too: +4.81 -> +4.78 R/yr — cheap, but it is a rule change, not a fix. And the
-            # time exit itself has fired 0 times in 287 trades, so this branch is dormant.)
+            # BOTH exits leave on the bar that is closing, not at its rollover. An exit
+            # fired AT 00:00 is sent into the 00:00-01:00 break, so it fills at the REOPEN
+            # — one rollover later, and on a Friday that reopen is Monday. The position
+            # therefore pays a swap night it never agreed to: 3.20 units per trade against
+            # 1.93 leaving on the bar (FTMO NAS100 long −7.52 %/yr, see ftmo_costs).
+            # Measured 2018-07..2026-07 on M1 (`scratchpad/ibs_exit_lead.py`):
+            #   gross  −0.03 R/yr (+4.80 -> +4.77) — per-trade delta t = −1.05, noise;
+            #   swap   +0.21 R/yr saved, deterministic;
+            #   NET    +4.27 -> +4.46 R/yr, t 4.57 -> 4.74, maxDD 3.26 -> 3.10 R.
+            # The price of reading `IBS > 0.8` 10 minutes from final IS that −0.03 R/yr.
+            # ⚠️ The rollover test on the last CLOSED bar stays, as the FALLBACK: if the lead
+            # pass is missed (runner down) or the session shut early and quotes nothing at
+            # 23:50 (6 of 288 exit days), the next rollover still leaves. The time exit has
+            # fired 0/287 times, so `timed*` remains dormant.
             timed_next = held is not None and (held + 1) >= self.p.max_hold
-            if st.exit_signal or timed or (timed_next and in_lead):
-                why = "ibs_high" if st.exit_signal else "time_exit"
+            lead_ibs = bool(in_lead and forming
+                            and _forming_ibs(daily_all.iloc[-1]) > self.p.ibs_high)
+            if st.exit_signal or timed or ((timed_next or lead_ibs) and in_lead):
+                why = "ibs_high" if (st.exit_signal or lead_ibs) else "time_exit"
                 px = float(daily_all.iloc[-1]["close"])    # current price = the new bar's open
                 broker.close(pos, px, why, now_utc)
             # reached only if the close went through (or none was due): a refusal raises

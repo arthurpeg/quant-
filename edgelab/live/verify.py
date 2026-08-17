@@ -1042,6 +1042,22 @@ def verify_time_exits() -> bool:
     print(f"  TIME-EXIT (e) brick 4: on {n4} synthetic entries the rollover exit lands at "
           f"entry+{ip.max_hold}+1 bars and the lead exactly one bar earlier, mismatches {bad4} "
           f"(NB: this branch is DORMANT — the 30-bar cap has fired 0/287 times live)")
+
+    # ---- (f) brick 4: the LEAD IBS exit reads the same number as the signal layer ---
+    # The driver now leaves on `_forming_ibs(forming bar) > 0.8` at 23:50 instead of on
+    # `ibs_state(closed bars).ibs` at the rollover. The two must be the SAME formula — the
+    # only intended difference is WHEN it is read (the 10-minute cost is measured in the
+    # exit block, not here). Fed a bar that has already closed, they must agree exactly.
+    from edgelab.live.strategies import _forming_ibs
+    fi = [(_forming_ibs(nd.iloc[k]), S.ibs_state(nd.iloc[: k + 1], ip).ibs)
+          for k in range(60, len(nd), 29)]
+    badf = sum(1 for a, b in fi
+               if not ((np.isnan(a) and np.isnan(b)) or abs(a - b) < 1e-12))
+    f4_ok = badf == 0 and len(fi) > 0
+    ok = ok and f4_ok
+    print(f"  TIME-EXIT (f) brick 4: the lead's forming-bar IBS == the signal layer's IBS on "
+          f"{len(fi) - badf}/{len(fi)} closed bars, mismatches {badf} — same formula, read "
+          f"10 min earlier")
     print(f"  TIME-EXIT: {'PASS' if ok else 'FAIL'}")
     return ok
 
