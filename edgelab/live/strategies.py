@@ -617,6 +617,7 @@ class KaerStrategy:
         self.magic = MAGIC["nas_kaer"]
         self.bars_needed = int(cfg_live.get("kaer_bars", 2600))
         self.max_bar_age_min = float(cfg_live.get("kaer_max_bar_age_min", 5))
+        self.bar_minutes = 15         # cf. HmaStochStrategy: lue par l'alerte de liveness
         self._acted_bar = None        # timestamp of the last completed bar we acted on
         self._skip_logged = None
 
@@ -720,6 +721,10 @@ class HmaStochStrategy:
         self.magic = MAGIC["nas_hmasto"]
         self.bars_needed = int(cfg_live.get("hmasto_bars", 400))
         self.max_bar_age_min = float(cfg_live.get("hmasto_max_bar_age_min", 5))
+        # UT de la sleeve, en minutes. Lue par `runner._maybe_liveness_alert` pour
+        # convertir `_acted_bar` en RETARD DE SCAN : sans elle, on ne peut pas dire si une
+        # barre de 16:00 est fraiche (M15) ou vieille de trois barres (M5).
+        self.bar_minutes = 15
         self._acted_bar = None
         self._skip_logged = None
 
@@ -817,6 +822,7 @@ class KeltnerStrategy:
         self.magic = MAGIC["btc_kelt"]
         self.bars_needed = int(cfg_live.get("kelt_bars", 600))
         self.max_bar_age_min = float(cfg_live.get("kelt_max_bar_age_min", 20))
+        self.bar_minutes = 60         # cf. HmaStochStrategy: lue par l'alerte de liveness
         self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
         self._acted_bar = None
         self._skip_logged = None
@@ -957,6 +963,7 @@ class TwoLegFadeStrategy:
         self.magic = MAGIC["nas_tlf"] if "NAS" in logical.upper() else MAGIC["spx_tlf"]
         self.bars_needed = int(cfg_live.get("tlf_bars", 600))
         self.max_bar_age_min = float(cfg_live.get("tlf_max_bar_age_min", 2))
+        self.bar_minutes = 5        # cf. HmaStochStrategy: lue par l'alerte de liveness
         self._acted_bar = None      # last bar we scanned
         self._order_bar = None      # bar whose close armed the working order
         self._anchored = None       # ticket whose SL we already re-anchored on the fill

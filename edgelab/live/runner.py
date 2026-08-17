@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 import time
 from logging.handlers import RotatingFileHandler
@@ -213,13 +214,51 @@ def _challenge_anchor(broker: Broker, cfg_live: dict) -> tuple[float | None, str
 
 
 _LAST_UPDATE_CHECK = 0.0
+_UNSUPERVISED_WARNED = False
+
+
+def _is_supervised() -> bool:
+    """True when this process was launched by ``run_forever.ps1`` (which exports
+    ``EDGELAB_SUPERVISED=1``).
+
+    Il n'existe aucun autre moyen fiable de le savoir de l'interieur : le parent d'un
+    `python -m` lance a la main est un `powershell.exe`, exactement comme celui du
+    superviseur. La variable d'environnement est posee par le seul script qui sait
+    RELANCER, donc sa presence est la definition meme de « supervise ».
+    """
+    return os.environ.get("EDGELAB_SUPERVISED") == "1"
 
 
 def _check_update(cfg_live: dict) -> bool:
     """If ``auto_update`` is on, every ``update_check_min`` min compare local HEAD to
     origin/main; return True when a newer commit exists so the runner can exit and let
-    the supervisor git-pull + relaunch. Degrades silently if git is missing/offline."""
+    the supervisor git-pull + relaunch. Degrades silently if git is missing/offline.
+
+    ⚠️ NE REND JAMAIS True SANS SUPERVISEUR. La sortie 75 est un contrat a deux : le
+    runner sort, le superviseur `git pull` + relance. Sans superviseur, la moitie du
+    contrat manque et la sortie est DEFINITIVE — le mecanisme cense propager le code
+    devient celui qui eteint le live, silencieusement et sans borne de duree. C'est
+    exactement ce qui menacait le 2026-08-17 : superviseur mort depuis le 12/08 a 23:41,
+    runner relance a la main, `auto_update: true`, et « le VPS suit origin/main » comme
+    procedure de deploiement — le prochain push aurait arrete le book. On prefere donc
+    TOUJOURS un runner en retard de code a un runner mort : on journalise, on alerte une
+    fois, et on continue de trader.
+    """
     if not cfg_live.get("auto_update", False):
+        return False
+    if not _is_supervised():
+        global _UNSUPERVISED_WARNED
+        if not _UNSUPERVISED_WARNED:
+            _UNSUPERVISED_WARNED = True
+            LOG.warning("auto-update DESACTIVE a chaud : aucun superviseur detecte "
+                        "(EDGELAB_SUPERVISED absent). Sortir en %d serait definitif -> on "
+                        "continue de trader sur le commit actuel. Relancer via "
+                        "run_forever.ps1 pour retablir la mise a jour automatique.",
+                        EXIT_UPDATE)
+            _alert(cfg_live, ":warning: **runner NON SUPERVISE** — `auto_update` neutralise "
+                             "pour ne pas mourir sur un push. Le book trade toujours, mais sur "
+                             "le commit actuel, et rien ne le relancera s'il tombe. "
+                             "Relancer via `run_forever.ps1`.")
         return False
     global _LAST_UPDATE_CHECK
     import subprocess
@@ -241,6 +280,131 @@ def _check_update(cfg_live: dict) -> bool:
     except Exception as exc:
         LOG.warning("auto-update check skipped: %s", exc)
     return False
+
+
+def _alert(cfg_live: dict, msg: str) -> None:
+    """Push one ad-hoc Discord line (health alerts). Never raises: an alert that fails
+    must not kill the loop it is watching."""
+    url = cfg_live.get("discord_webhook_url")
+    if not url:
+        return
+    try:
+        from edgelab.live.summary import send_discord
+        send_discord(url, msg, code=False)
+    except Exception as exc:
+        LOG.warning("alerte Discord non envoyee (%s) : %s", exc, msg)
+
+
+def _us_session_minutes(now_utc: pd.Timestamp, tz: str = "America/New_York") -> tuple:
+    """``(minute_of_day_ET, open_min, flat_min)`` or ``None`` outside a US cash session.
+
+    Le calendrier de `us_session_calendar` est reutilise tel quel, donc les feries et les
+    demi-seances (ou le flux CFD ferme plus tot) ne declenchent pas de fausse alerte.
+    """
+    from edgelab.live.us_session_calendar import flat_minute
+    et = now_utc.tz_convert(tz)
+    if et.weekday() >= 5:
+        return None
+    open_min = 9 * 60 + 30
+    flat = flat_minute(et.date(), 15 * 60 + 55)
+    minute = et.hour * 60 + et.minute
+    if not (open_min <= minute <= flat):
+        return None
+    return minute, open_min, flat
+
+
+_LAST_LIVENESS_ALERT = None
+
+
+def _maybe_liveness_alert(cfg_live: dict, strategies, now_utc: pd.Timestamp) -> None:
+    """Alert when a bar-scanning sleeve STOPS SCANNING while the US session is open.
+
+    LE TROU QUE CE CONTROLE BOUCHE (2026-08-17). Le rapport quotidien de
+    `daily_report_et` prouve la vie **a 17:00 ET, une heure APRES la cloture** : les
+    rapports du 15 et du 16/08 sont partis normalement alors que le runner avait manque
+    toute la seance du 14/08, puis la premiere heure de celle du 17/08. La liveness AU
+    REPOS et la liveness EN SEANCE sont deux proprietes distinctes, et une seule etait
+    surveillee. Un runner qui meurt a l'ouverture et qu'on relance a 17:01 envoie un
+    rapport parfaitement rassurant.
+
+    Rien de neuf n'est mesure ici : `_acted_bar` existe deja et alimente deja le
+    heartbeat. On le LIT, pendant la seance, et on crie s'il prend du retard. Une sleeve
+    qui scanne sans rien trouver met quand meme `_acted_bar` a jour (le skip pour barre
+    perimee le fait aussi), donc ce retard mesure bien la BOUCLE, pas le signal.
+    """
+    global _LAST_LIVENESS_ALERT
+    sess = _us_session_minutes(now_utc)
+    if sess is None:
+        return
+    minute, open_min, _flat = sess
+    floor_min = float(cfg_live.get("liveness_lag_alert_min", 20))
+    margin = float(cfg_live.get("liveness_margin_min", 5))
+    cooldown = float(cfg_live.get("liveness_alert_cooldown_min", 60))
+    grace = float(cfg_live.get("liveness_grace_min", 20))   # laisse le warmup d'ouverture
+
+    # LE SEUIL DOIT SUIVRE L'UT DE LA SLEEVE. `_acted_bar` pointe la derniere barre CLOSE,
+    # donc son age cycle mecaniquement de 0 a `tf` sur un runner parfaitement sain : un
+    # seuil fixe a 20 min hurlerait en continu sur une sleeve H1 (age normal jusqu'a 60)
+    # et ne servirait a rien au-dela. On garde donc un plancher (pour les petites UT, ou
+    # 5+5 serait trop nerveux) et on prend le max avec `tf + marge`.
+    worst, worst_name, worst_thr = None, None, None
+    for s_ in strategies:
+        tf = getattr(s_, "bar_minutes", None)
+        if not tf:
+            continue                      # sleeve non scannante (rollover, 1 trade/jour)
+        thr = max(floor_min, float(tf) + margin)
+        bar = getattr(s_, "_acted_bar", None)
+        if bar is None:
+            # jamais scanne depuis le demarrage : anormal seulement si la seance est deja
+            # engagee (au demarrage, la sleeve attend legitimement sa premiere cloture).
+            since_open = float(minute - open_min)
+            if since_open <= max(grace, thr):
+                continue
+            lag = since_open
+        else:
+            lag = (now_utc - (pd.Timestamp(bar) + pd.Timedelta(minutes=tf))).total_seconds() / 60.0
+        if lag <= thr:
+            continue
+        if worst is None or lag - thr > worst - worst_thr:
+            worst, worst_name, worst_thr = lag, f"{type(s_).__name__}/{s_.magic}", thr
+
+    if worst is None:
+        return
+    if _LAST_LIVENESS_ALERT is not None and \
+            (now_utc - _LAST_LIVENESS_ALERT).total_seconds() / 60.0 < cooldown:
+        return
+    _LAST_LIVENESS_ALERT = now_utc
+    LOG.warning("LIVENESS: %s n'a pas scanne depuis %.0f min alors que la seance US est "
+                "ouverte (seuil %.0f)", worst_name, worst, worst_thr)
+    _alert(cfg_live, f":rotating_light: **SCAN EN RETARD EN SEANCE** — `{worst_name}` sans "
+                     f"barre scannee depuis **{worst:.0f} min** (seuil {worst_thr:.0f}). "
+                     f"Le book peut etre en train de manquer des entrees. "
+                     f"Verifier le runner, le terminal MT5 et le flux.")
+
+
+def _startup_alert(cfg_live: dict, now_utc: pd.Timestamp) -> None:
+    """Alert on a restart that lands INSIDE an open US session, with the gap length.
+
+    Le 2026-08-17 le runner est mort et a redemarre deux fois (14/08 et 17/08) sans
+    qu'aucune ligne d'arret ne soit ecrite nulle part — ni cote runner, ni cote
+    superviseur. Un demarrage est le seul evenement que le processus est SUR de pouvoir
+    signaler, et le heartbeat precedent donne la duree du trou. On les publie ensemble.
+    """
+    if _us_session_minutes(now_utc) is None:
+        return
+    prev = None
+    try:
+        hb = Path(__file__).resolve().parent / "_out" / "heartbeat.txt"
+        if hb.exists():
+            prev = pd.Timestamp(hb.read_text(encoding="utf-8").splitlines()[0])
+    except Exception:
+        prev = None
+    gap = f"{(now_utc - prev).total_seconds() / 60.0:.0f} min" if prev is not None else "inconnu"
+    sup = "sous superviseur" if _is_supervised() else "**SANS superviseur**"
+    LOG.warning("demarrage EN SEANCE US (%s) — dernier heartbeat il y a %s", sup, gap)
+    _alert(cfg_live, f":arrows_counterclockwise: **runner redemarre EN PLEINE SEANCE** ({sup}) — "
+                     f"dernier heartbeat il y a **{gap}**. Les entrees de cet intervalle sont "
+                     f"perdues (les sleeves ne courent pas apres une barre passee).")
 
 
 _LAST_ALERT_DAY: dict = {}
@@ -539,6 +703,10 @@ def main() -> int:
         if args.once:
             one_pass(broker, risk, strategies, pd.Timestamp.now(tz="UTC"))
             return 0
+        # AVANT la boucle : le heartbeat de l'instance PRECEDENTE est encore sur le disque,
+        # et c'est la seule mesure du trou qu'on vient de laisser. `_heartbeat` l'ecrase des
+        # le premier cycle, donc l'alerte se lit ici ou jamais.
+        _startup_alert(cfg_live, pd.Timestamp.now(tz="UTC"))
         poll = float(cfg_live.get("poll_seconds", 20))
         while True:
             # self-heal a dropped MT5 connection before trading
@@ -557,6 +725,10 @@ def main() -> int:
             # ferme lui-meme. Et comme un stop vaut toujours -1 R, l'oubli ne perdait
             # que des PERTES.
             broker.reconcile_closures([s_.magic for s_ in strategies], now)
+            # ORDRE VOULU : l'alerte de liveness lit `_acted_bar` APRES `one_pass` (donc
+            # apres le scan de ce cycle) mais AVANT le heartbeat n'ait plus d'importance —
+            # ce qui compte est qu'elle ne juge jamais un etat d'avant le scan.
+            _maybe_liveness_alert(cfg_live, strategies, now)
             _heartbeat(broker, risk, strategies, now)
             _maybe_session_alerts(cfg_live, now)
             _maybe_report(broker, risk, strategies, cfg_live, now)

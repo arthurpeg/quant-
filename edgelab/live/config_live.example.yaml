@@ -206,11 +206,38 @@ auto_update: true
 update_check_min: 30           # how often (minutes) to check GitHub for a new commit
 
 # ---- daily Discord heartbeat report ----------------------------------------
-# The runner posts a summary once a day. Its ABSENCE is the alert: no report today
-# => the runner is down. Paste your Discord webhook URL to enable (empty = off).
-# Create one in Discord: Server Settings > Integrations > Webhooks > New Webhook > Copy URL.
+# The runner posts a summary once a day. Paste your Discord webhook URL to enable
+# (empty = off). Create one in Discord: Server Settings > Integrations > Webhooks.
+#
+# ⚠️ CE RAPPORT NE PROUVE PAS LA VIE EN SEANCE, et c'est un piege verifie le 2026-08-17 :
+# il tombe a `daily_report_et` (17:00 ET), soit UNE HEURE APRES la cloture US. Les
+# rapports du 15 et du 16/08 sont partis normalement alors que le runner avait manque
+# TOUTE la seance du 14/08 puis la premiere heure de celle du 17/08. Un runner qui meurt
+# a l'ouverture et qu'on relance a 17:01 envoie un rapport parfaitement rassurant.
+# La liveness AU REPOS et la liveness EN SEANCE sont deux proprietes distinctes ->
+# voir le bloc `liveness_*` ci-dessous, qui surveille la seconde.
 discord_webhook_url: ""        # e.g. https://discord.com/api/webhooks/XXXX/YYYY
 daily_report_et: "17:00"       # time of day (ET) to send the report
+
+# ---- alertes de sante EN SEANCE (ajoutees 2026-08-17) -----------------------
+# Toutes ces cles ont un defaut dans le code (runner.py), donc ce bloc est OPTIONNEL :
+# ne le renseigner que pour changer les seuils. Deux alertes, sur le meme webhook :
+#
+#  1. SCAN EN RETARD. Pendant la seance US seulement (calendrier `us_session_calendar`,
+#     donc feries et demi-seances exclus), le runner compare `_acted_bar` de chaque sleeve
+#     scannante a l'heure courante. `_acted_bar` est mis a jour meme quand le scan ne
+#     trouve rien (et meme sur un skip pour barre perimee), donc ce retard mesure LA
+#     BOUCLE, pas le signal. Le seuil suit l'UT de la sleeve — `max(liveness_lag_alert_min,
+#     UT + liveness_margin_min)` — parce que l'age de la derniere barre close cycle
+#     naturellement de 0 a UT : un seuil fixe hurlerait en continu sur une sleeve H1.
+#  2. REDEMARRAGE EN PLEINE SEANCE, avec la duree du trou lue dans le heartbeat de
+#     l'instance precedente. Un demarrage est le seul evenement qu'un processus est SUR de
+#     pouvoir signaler : les cinq morts du 13 au 17/08 n'ont laisse aucune ligne d'arret,
+#     ni cote runner ni cote superviseur.
+liveness_lag_alert_min: 20     # plancher du seuil de retard de scan (minutes)
+liveness_margin_min: 5         # marge ajoutee a l'UT de la sleeve pour former le seuil
+liveness_alert_cooldown_min: 60  # pas plus d'une alerte de retard par heure
+liveness_grace_min: 20         # tolerance en debut de seance avant de juger un "jamais scanne"
 
 # Pre-session heads-up pings (~1h before the bricks trade). All 3 bricks act in the US
 # morning window: brick 1 at the 09:30 ET open, bricks 2 & 3 at the 09:45 ET decision.

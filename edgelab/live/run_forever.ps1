@@ -34,6 +34,16 @@ function Log($m) {
 }
 
 if (Test-Path $stop) { Remove-Item $stop -Force }   # clear a stale stop flag
+
+# CONTRAT AVEC LE RUNNER (ajoute 2026-08-17). La sortie 75 (UPDATE) est un contrat a deux :
+# le runner sort, NOUS faisons le git pull + la relance. Sans nous, cette sortie est
+# DEFINITIVE. Le runner ne peut pas deviner s'il a un superviseur -- son parent est un
+# powershell.exe dans les deux cas -- donc on le lui DIT ici. `_check_update` refuse de
+# sortir en 75 quand cette variable est absente et continue de trader sur le commit
+# courant. Contexte : superviseur mort le 12/08 a 23:41, runner relance a la main pendant
+# 5 jours, `auto_update: true` -> le prochain push aurait eteint le book en silence.
+$env:EDGELAB_SUPERVISED = "1"
+
 $hasGit = [bool](Get-Command git -ErrorAction SilentlyContinue)
 Log "supervisor started (repo: $repo) | python: $PYEXE $($PYPRE -join ' ') | git: $hasGit"
 while ($true) {
