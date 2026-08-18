@@ -462,3 +462,31 @@ def tlf_scan(m5: pd.DataFrame, p: "TwoLegFadeParams | None" = None,
     trigger = float(m5["low"].iloc[i]) - point_size(symbol)
     return i, StopEntryPlan(-1, trigger, dist, p.tp_R * dist if p.tp_R else None,
                             "two_leg_fade", float(m5["close"].iloc[i]))
+
+
+# ===========================================================================
+# FORWARD-TEST SLEEVES — RVWAP (GER40 H1) et RSKEW (US30 H4), issues de research/
+# ===========================================================================
+def research_scan(bars: pd.DataFrame, p) -> tuple[int, EntryPlan] | None:
+    """Decide sur la DERNIERE barre de `bars`, qui doit deja EXCLURE la barre en cours.
+
+    La regle ET la distance de stop viennent de
+    :mod:`edgelab.intraday.research_sleeves` -- les MEMES fonctions que le
+    backtest appelle -- donc la decision live ne peut pas forker. C'est la seule
+    garantie de parite qui ne demande pas d'etre re-verifiee a chaque edition :
+    il n'y a qu'une definition.
+
+    ⚠️ `bars` doit contenir au moins `rank_win` OCCURRENCES du signal, pas
+    `rank_win` barres : le VWAP de session n'existe qu'aux heures de la session
+    NY. Le dimensionnement de la fenetre tiree est fait par la strategie
+    (`*_bars` dans la config) et verifie par `check_live_parity_research.py`.
+    """
+    from edgelab.intraday.research_sleeves import decide
+    got = decide(bars, p)
+    if got is None:
+        return None
+    side, dist = got
+    i = len(bars) - 1
+    return i, EntryPlan(side, dist, None,
+                        f"{p.name.lower()}_{'up' if side > 0 else 'dn'}",
+                        float(bars["close"].iloc[i]))

@@ -29,6 +29,8 @@ expect_server: Pepperstone          # server name must contain this, else refuse
 symbol_map:
   NAS100: NAS100
   XAUUSD: XAUUSD
+  GER40: GER40          # ajoute 2026-08-18 pour RVWAP
+  US30: US30            # ajoute 2026-08-18 pour RSKEW
   BTCUSD: BTCUSD
   ETHUSD: ETHUSD
   US500: US500          # 2e symbole de TLF
@@ -37,6 +39,13 @@ symbol_map:
 nas_symbol: NAS100
 gold_symbol: XAUUSD
 crypto_symbols: [BTCUSD, ETHUSD]
+# ⚠️ METTRE `crypto_symbols: []` POUR RETIRER LA BRIQUE 3. C'est un RETRAIT (le runner
+# n'instancie plus aucune CryptoMacdStrategy, magics 103/104 non pilotes), pas un
+# dimensionnement a zero. Mesure du 2026-08-18 : nette des couts FTMO sur 2018-07 ->
+# 2026-07 la brique 3 rend +0.2 R/an pour 21.3 R de drawdown (RoMaD 0.01, le plus bas
+# des six sleeves). La retirer coute -0.3 R/an et rend maxDD 19.0 -> 18.6 R, pire mois
+# -13.5 -> -10.4 R, P(valider)@1 % 89.0 -> 90.2 %, ruine funded@0,5 % 5.4 -> 4.1 %.
+# ⚠️ Les positions BTC/ETH deja ouvertes ne sont PAS fermees par ce changement.
 
 # Fraction de 1R risquee par trade de la BRIQUE 3 (crypto). Defaut du code = 1.0.
 # Ramenee a 0.5 le 2026-08-10 : le swap FTMO sur BTCUSD/ETHUSD vaut -30 %/an sur LES DEUX
@@ -257,3 +266,38 @@ pre_session_alerts:
 deviation_points: 20
 filling: ORDER_FILLING_IOC
 paper_balance: 100000.0        # dry-run starting balance for the P&L log
+
+# ---- RVWAP / RSKEW : les deux sleeves issues de research/ (2026-08-18) -------
+#   RVWAP  GER40 H1, magic 111 : distance au VWAP ancre a la session NY, en ATR.
+#          L'IC mesure est NEGATIF, donc la sleeve SUIT l'ecart au lieu de le fader.
+#          Sortie a 24 barres H1 ou au stop ; 1R = 3.0 x ATR14.
+#   RSKEW  US30 H4, magic 112 : asymetrie des 50 derniers log-rendements, IC POSITIF.
+#          Sortie a 5 barres H4 ou au stop ; 1R = 4.0 x ATR14.
+#
+# PARITE PROUVEE le 2026-08-18 (`python check_live_parity_research.py`) : le rejeu en
+# fenetre tronquee, comme MT5 sert les barres, contre le backtest complet donne **0 ecart**
+# sur les dates d'entree, les dates de sortie, le sens, 1R et R -- 400 trades chacune,
+# ecart maximal 0.000e+00. La parite tient parce que le scan live et le backtest appellent
+# LA MEME fonction (`research_sleeves.decide`).
+#
+# ⚠️ LA TAILLE DE FENETRE N'EST PAS UN DETAIL. Le rang causal d'entree porte sur les 1 000
+# dernieres OCCURRENCES du signal. Le VWAP n'existant qu'aux ~6,5 h de session NY, il faut
+# ~3 700 barres H1 pour en reunir 1 000 : d'ou 5 000. Une fenetre trop courte ne leve
+# AUCUNE erreur -- elle rend un rang DIFFERENT, donc des entrees differentes du backtest.
+# Le harnais de parite mesure la marge (1.47x pour RVWAP, 1.45x pour RSKEW au 2026-08-18)
+# et echoue sous 1.0x.
+#
+# ⚠️⚠️ IN-SAMPLE, SANS AUCUN FORWARD-TEST. Tirees d'une grille de 28 300 cellules d'IC puis
+# d'un balayage de 2 595 geometries de sortie. KAER, HMASTO et TLF sont toutes entrees a
+# 0,5R AVANT d'etre jugees, et HMASTO a ete retiree de FUNDED pour avoir echoue son seul
+# hors-echantillon. Le 1R ci-dessous est une INSTRUCTION UTILISATEUR du 2026-08-18, pas une
+# conclusion de mesure. Juger sur le journal de trades, pas sur le P&L.
+enable_research_sleeves: false   # true sur la demo ; false par defaut
+rvwap_symbol: GER40
+rvwap_size_R: 1.0
+rvwap_bars: 5000             # ~1 470 occurrences du signal, pour 1 000 requises
+rvwap_max_bar_age_min: 20
+rskew_symbol: US30
+rskew_size_R: 1.0
+rskew_bars: 1500             # ~1 450 occurrences, pour 1 000 requises
+rskew_max_bar_age_min: 60

@@ -31,7 +31,11 @@ logger = logging.getLogger("edgelab.live.strategies")
 
 MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas_ibs": 105,
          "nas_kaer": 106, "btc_kelt": 107, "nas_hmasto": 108,
-         "nas_tlf": 109, "spx_tlf": 110}
+         "nas_tlf": 109, "spx_tlf": 110,
+         # 2026-08-18 : les deux sleeves issues de research/. 111 et 112 sont
+         # libres ; a ne pas confondre avec le magic 111111 de l EA etranger
+         # [LONNY] mis en quarantaine le 2026-08-10.
+         "ger40_rvwap": 111, "us30_rskew": 112}
 
 SERVER_TZ = "Europe/Athens"     # the broker's clock: a D1 bar's date IS its server date
 ROLLOVER_LEAD_MIN = 10.0        # send a D-rollover time-exit this many minutes EARLY
@@ -1113,3 +1117,139 @@ class TwoLegFadeStrategy:
                           self.magic, f"tlf_{plan.reason}", plan.sl_dist, now_utc,
                           time_exit_at=close_dt)
         self._order_bar = last_ts
+
+
+class ResearchSleeveStrategy:
+    """FORWARD-TEST SLEEVE — RVWAP (GER40 H1) et RSKEW (US30 H4), issues de `research/`.
+
+    Une instance par sleeve, comme brique 3 pour ses deux coins et TLF pour ses deux
+    symboles. Deployees le 2026-08-18 a ``size_R`` sur instruction explicite de
+    l'utilisateur.
+
+    CE QU'ELLES TRADENT.
+      RVWAP : GER40 H1. Distance au VWAP ancre a l'ouverture de la session NY, en ATR.
+              Le signe de l'IC mesure etant NEGATIF, la sleeve SUIT l'ecart au lieu de le
+              fader. Sortie a 24 barres H1 ou au stop ; 1R = 3.0 x ATR14.
+      RSKEW : US30 H4. Asymetrie des 50 derniers log-rendements, IC POSITIF.
+              Sortie a 5 barres H4 ou au stop ; 1R = 4.0 x ATR14.
+
+    PARITE. `S.research_scan` appelle `research_sleeves.decide`, la MEME fonction que
+    `run_research_sleeve`. Il n'y a pas deux definitions a garder d'accord.
+    `check_live_parity_research.py` rejoue l'historique en TRONQUANT les frames comme MT5
+    les sert et exige 0 ecart sur la date d'entree, la date de sortie, la distance de stop
+    et le R.
+
+    ⚠️ LA FENETRE TIREE DOIT CONTENIR ASSEZ D'OCCURRENCES, PAS ASSEZ DE BARRES. Le rang
+    causal se calcule sur les 1 000 dernieres OCCURRENCES du signal ; le VWAP n'existant
+    qu'aux ~6,5 heures de session NY, il faut ~3 700 barres H1 pour en reunir 1 000. C'est
+    pourquoi `rvwap_bars` vaut 5 000 et non 600. Une fenetre trop courte ne casse pas
+    bruyamment : elle rend un rang DIFFERENT, donc des entrees differentes du backtest.
+
+    ⚠️ IN-SAMPLE, SANS FORWARD-TEST. Tirees d'une grille de 28 300 cellules. KAER, HMASTO
+    et TLF sont toutes entrees a 0,5R avant d'etre jugees, et HMASTO a ete retiree de
+    FUNDED pour avoir echoue son seul hors-echantillon. Le 1R est une instruction, pas une
+    conclusion de mesure.
+
+    Cadence : une passe par barre COMPLETE. La barre en formation est ecartee
+    explicitement, et une barre plus vieille que ``max_bar_age_min`` est SAUTEE plutot que
+    chassee -- si le runner etait tombe, le fill ne serait plus l'ouverture suivante que le
+    backtest mesure.
+    """
+
+    def __init__(self, cfg_live: dict, sleeve: str):
+        import dataclasses as _dc
+
+        from edgelab.intraday.research_sleeves import SLEEVES as _SL
+        base = _SL[sleeve]
+        key = sleeve.lower()
+        self.p = _dc.replace(base, size_R=float(cfg_live.get(key + "_size_R", 1.0)))
+        self.sleeve = sleeve
+        self.logical = cfg_live.get(key + "_symbol", base.symbol)
+        self.magic = MAGIC["ger40_rvwap" if sleeve == "RVWAP" else "us30_rskew"]
+        self.tf = base.timeframe
+        self.bar_minutes = base.bar_minutes
+        self.bars_needed = int(cfg_live.get(key + "_bars",
+                                            5000 if sleeve == "RVWAP" else 1500))
+        self.max_bar_age_min = float(cfg_live.get(key + "_max_bar_age_min",
+                                                  20 if sleeve == "RVWAP" else 60))
+        self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
+        self._acted_bar = None
+        self._skip_logged = None
+
+    def _held(self, bars: pd.DataFrame, open_time: pd.Timestamp) -> int:
+        """Barres COMPLETES du trade, comptees DANS LE CADRE DU BROKER.
+
+        Un index, jamais des heures d'horloge : les flux ont des trous et
+        `run_research_sleeve` plafonne sur une distance d'INDEX. Compter des heures
+        divergeait sur 155 des 200 premieres sorties au temps de KELT.
+        """
+        step = pd.Timedelta(minutes=self.bar_minutes)
+        entry_bar = pd.Timestamp(open_time).floor(step)
+        loc = int(bars.index.get_indexer([entry_bar], method="ffill")[0])
+        if loc < 0:
+            logger.warning("%s: barre d'entree %s hors de la fenetre de %d barres",
+                           self.sleeve, entry_bar, len(bars))
+            return int((bars.index[-1] - entry_bar) / step) + 1
+        return len(bars) - loc
+
+    def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
+        step_ = pd.Timedelta(minutes=self.bar_minutes)
+        bars_all = broker.get_bars(self.logical, self.tf, self.bars_needed)
+        if len(bars_all) < 3:
+            return
+        # ON JETTE LA BARRE EN FORMATION : une barre estampillee t n'est complete qu'a t+UT.
+        bars = bars_all.iloc[:-1] if (bars_all.index[-1] + step_) > now_utc else bars_all
+        if not len(bars):
+            return
+        last_ts = bars.index[-1]
+
+        pos = broker.open_position(self.magic)
+
+        # (1) gestion de la position : le broker tient le stop, nous tenons la barriere
+        if pos is not None:
+            held = self._held(bars, pos.open_time)
+            if not broker.live:
+                closed, px, why = broker.resolve_paper(pos, bars.iloc[-1], now_utc,
+                                                       bars_held=held)
+                if closed:
+                    broker.close(pos, px, why, now_utc)
+                    return
+            if held >= self.p.max_bars or ((held + 1) >= self.p.max_bars
+                                           and _at_rollover_lead(now_utc, self.lead_min)):
+                broker.close(pos, float(bars["close"].iloc[-1]), "time_exit", now_utc)
+            return
+
+        # (2) entree, une fois par barre complete
+        if self._acted_bar is not None and last_ts <= self._acted_bar:
+            return
+        age_min = (now_utc - (last_ts + step_)).total_seconds() / 60.0
+        if age_min > self.max_bar_age_min:
+            self._acted_bar = last_ts
+            logger.info("%s barre perimee %s (%.0f min) -> saut", self.sleeve,
+                        last_ts, age_min)
+            return
+
+        res = S.research_scan(bars, self.p)
+        self._acted_bar = last_ts
+        if res is None:
+            return
+        _, plan = res
+        ok, why = risk.can_enter()
+        if not ok:
+            day = now_utc.date()
+            if self._skip_logged != day:
+                logger.info("%s entree refusee : %s", self.sleeve, why)
+                self._skip_logged = day
+            return
+
+        ref = float(bars["close"].iloc[-1])
+        sl = ref - plan.direction * plan.sl_dist
+        budget = risk.risk_budget() * self.p.size_R
+        lots = broker.lots_for_risk(self.logical, plan.direction, ref, sl, budget)
+        if lots <= 0:
+            logger.warning("%s entree impossible a %s : %.2fR non dimensionnable sur la "
+                           "grille de lots", self.sleeve, last_ts, self.p.size_R)
+            return
+        broker.place_market(self.logical, plan.direction, lots, sl, None, self.magic,
+                            plan.reason, plan.sl_dist, ref, now_utc,
+                            bars_held_limit=self.p.max_bars)

@@ -31,6 +31,7 @@ from edgelab.risk.propfirm import PropFirmRules
 from edgelab.live.broker import Broker, MarketClosed
 from edgelab.live.risk import LiveRiskManager
 from edgelab.live.strategies import (NasOrbStrategy, GoldTomStrategy, CryptoMacdStrategy,
+                                    ResearchSleeveStrategy,
                                      NasIbsStrategy, HmaStochStrategy,
                                      TwoLegFadeStrategy)
 # KaerStrategy is deliberately NOT imported: KAER was replaced by HMASTO in the live
@@ -76,6 +77,16 @@ def build(cfg_live: dict):
     if cfg_live.get("enable_tlf", False):
         for sym in cfg_live.get("tlf_symbols", ["NAS100", "US500"]):
             strategies.append(TwoLegFadeStrategy(cfg_live, sym))
+    # FORWARD-TEST SLEEVES, not bricks: RVWAP (GER40 H1, magic 111) et RSKEW (US30 H4,
+    # magic 112), issues de la chaine `research/`. Deployees le 2026-08-18 a 1R CHACUNE
+    # sur instruction explicite de l'utilisateur. Par defaut OFF, comme les autres, pour
+    # qu'un checkout nu continue de trader le book fige.
+    # PARITE PROUVEE (`check_live_parity_research.py`, 0 ecart sur 400 trades chacune) :
+    # le scan live et le backtest appellent LA MEME fonction `research_sleeves.decide`.
+    # ⚠️ IN-SAMPLE, sans forward-test. Voir edgelab/intraday/research_sleeves.py.
+    if cfg_live.get("enable_research_sleeves", False):
+        for sleeve in ("RVWAP", "RSKEW"):
+            strategies.append(ResearchSleeveStrategy(cfg_live, sleeve))
     # KAER (NAS100 M15 Kaufman ER breakout) was REPLACED by HMASTO in the forward-test
     # slot, 2026-08-10 — user decision. The two are the SAME family (corr +0.335 monthly,
     # same asset, same timeframe), so they are alternatives, never a pair: stacking them
