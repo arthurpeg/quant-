@@ -42,18 +42,31 @@ import pandas as pd
 BANK_YEAR = 360.0
 
 # commission FTMO, fraction du notionnel PAR CÔTÉ (confirmée par FTMO)
-COMMISSION = {"NAS100": 0.0, "US500": 0.0, "XAUUSD": 0.000007,
+COMMISSION = {"NAS100": 0.0, "US500": 0.0, "GER40": 0.0, "US30": 0.0, "XAUUSD": 0.000007,
               "BTCUSD": 0.000325, "ETHUSD": 0.000325}
 
 # swap en % ANNUEL du prix. Mesuré le 2026-08-10 (cf. en-tête).
+# ⚠️ RELEVE DU 2026-08-18 (`research/scripts/13_ftmo_read_specs.py`, lecture seule sur
+# FTMO-Demo 1514326725). Deux faits a retenir :
+#   * les taux DERIVENT : NAS100 long mesure 8.82 %/an contre 7.52 au releve du
+#     2026-08-10, XAUUSD 7.93 contre 7.65. Les valeurs ci-dessous restent celles du
+#     2026-08-10 pour les symboles deja presents, afin de ne pas rejouer tout
+#     l'historique du book sur un changement de 8 jours -- mais l'ecart est reel.
+#   * les cotes long/court d'US30 se sont INVERSES en huit jours : long 7.82 -> 0.77
+#     et court -0.33 -> 7.52. C'est pourquoi RSKEW, qui trade les deux sens, porte les
+#     deux taux tels que mesures le 2026-08-18 et non ceux d'avant.
 SWAP_ANNUAL_PCT = {
+    # ajoutes le 2026-08-18 pour RVWAP (GER40) et RSKEW (US30)
+    ("GER40", +1): 6.62, ("GER40", -1): 0.42,
+    ("US30", +1): 0.77, ("US30", -1): 7.52,
     ("BTCUSD", +1): 30.0, ("BTCUSD", -1): 30.0,
     ("ETHUSD", +1): 30.0, ("ETHUSD", -1): 30.0,
     ("NAS100", +1): 7.52, ("NAS100", -1): -0.04,     # court NÉGATIF = on est payé
     ("XAUUSD", +1): 7.65, ("XAUUSD", -1): 1.24,
 }
 # jour du triple swap : 4 = vendredi, 2 = mercredi (lundi = 0)
-TRIPLE_DAY = {"BTCUSD": 4, "ETHUSD": 4, "NAS100": 4, "US500": 4, "XAUUSD": 2}
+TRIPLE_DAY = {"BTCUSD": 4, "ETHUSD": 4, "NAS100": 4, "US500": 4, "XAUUSD": 2,
+              "GER40": 4, "US30": 4}
 
 
 def swap_units(entry, exit_, triple_day: int) -> np.ndarray:

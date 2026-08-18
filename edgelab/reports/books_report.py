@@ -1,13 +1,17 @@
 """Self-contained HTML backtest report for the two named books, NET of FTMO cost.
 
-    book AGRESSIF = b1 + b2 + b4 @1R + b3@0.5R + HMASTO@0.5R + TLF@0.5R (live)
-                    b3 halved 2026-08-10: the verified FTMO crypto swap
-                    (-30 %/yr BOTH sides) costs it 5.71 R/yr against 5.72 R/yr
-                    of gross since 2022 -> net +0.01 R/yr over 4 years.
-                    KAER@0.5R held that slot until 2026-08-10; HMASTO (magic 108)
-                    replaced it and the runner has traded HMASTO ever since. This
-                    module was still building KAER until 2026-08-10 — fixed.
-    book FUNDED   = b1 + b2 + b3@0.5R + b4 @1R
+    book AGRESSIF = b1 + b2 + b4 @1R + HMASTO@0.5R + TLF@0.5R   (live, SANS crypto)
+                    ⚠️ b3 RETIRÉE le 2026-08-18 sur instruction utilisateur. Halvée
+                    le 2026-08-10 (swap FTMO -30 %/an des DEUX côtés = 5.71 R/an
+                    contre 5.72 de brut), puis retirée : mesurée sur 2018-07→2026-07
+                    nette de frais elle rend +0.2 R/an pour 21.3 R de drawdown
+                    (RoMaD 0.01, le plus bas des six sleeves). `crypto_symbols: []`
+                    dans config_live.yaml — les magics 103/104 ne sont plus pilotés.
+                    KAER@0.5R tenait ce créneau jusqu'au 2026-08-10 ; HMASTO (magic
+                    108) l'a remplacée.
+    book FUNDED   = b1 + b2 + b4 @1R + b3@0.5R + TLF@0.5R   (HMASTO retirée 2026-08-12,
+                    elle a échoué son seul hors-échantillon : NAS100 juin→déc 2017,
+                    n=118, t=−2.61, sur une fenêtre où la brique 1 tenait à +23.6 R/an)
 
 KELT (BTCUSD H1 Keltner) was RETIRED from both books on 2026-08-09: FTMO charges -30 %/yr
 on BOTH sides of BTCUSD, which takes the sleeve to +5.00 R/yr at t=0.87 and made removing
@@ -41,6 +45,7 @@ import numpy as np
 import pandas as pd
 
 from edgelab.intraday.hma_stoch import run_hma_stoch
+from edgelab.intraday.research_sleeves import run_research_sleeve
 from edgelab.intraday.two_leg_fade import run_two_leg_fade
 from edgelab.reports.ftmo_costs import daily_cost, trade_cost_R
 from edgelab.reports.monte_carlo_static import build_daily_R, simulate
@@ -53,17 +58,85 @@ COPIES = (HERE / "_out" / "books_backtest.html",
 RISKS = (0.005, 0.0075, 0.01)
 
 BOOKS = {
-    "AGRESSIF": dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, HMASTO=0.5, TLF=0.5),
+    "AGRESSIF": dict(w=dict(b1=1.0, b2=1.0, b3=0.0, b4=1.0, HMASTO=0.5, TLF=0.5,
+                             RVWAP=1.0, RSKEW=1.0),
                      use="CHALLENGE — 1.00 %/trade",
-                     note="Déployé en live sur la démo : magics 101→105, 108 (HMASTO) et 109/110 (TLF). Brique 3 ramenée à 0.5R le 2026-08-10 (swap FTMO crypto −30 %/an des DEUX côtés). KAER/106 et KELT/107 retirées."),
-    "FUNDED":   dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, HMASTO=0.0, TLF=0.0),
+                     note="Déployé en live sur la démo : magics 101, 102, 105, 108 (HMASTO) et 109/110 (TLF). "
+                          "⚠️ BRIQUE 3 RETIRÉE le 2026-08-18 (magics 103/104 non pilotés) : nette des coûts FTMO "
+                          "sur 2018-07→2026-07 elle rendait +0.2 R/an pour 21.3 R de drawdown (RoMaD 0.01). "
+                          "Halvée le 2026-08-10, retirée le 2026-08-18. KAER/106 et KELT/107 retirées. "
+                          "➕ RVWAP (GER40 H1, magic 111) et RSKEW (US30 H4, magic 112) AJOUTÉES le "
+                          "2026-08-18 à 1R chacune, sur instruction utilisateur. Parité backtest↔live "
+                          "prouvée (0 écart sur 400 trades chacune). ⚠️ IN-SAMPLE, sans forward-test."),
+    # 2026-08-12 : composition revue (voir wiki/log.md, deux entrées du jour). L'ancienne
+    # — b1@1R sans HMASTO ni TLF — est DOMINÉE : elle rendait 11.78 % de retrait annuel
+    # médian pour 0.97 % de ruine, quand b1@0.5 + HMASTO@0.5 + TLF@0.5 rend 23.98 % pour
+    # 1.66 %, à drawdown annuel moyen quasi identique (4.73 % contre 4.55 % du capital).
+    # Le levier est la BRIQUE 1. ⚠️ La première justification écrite ici — « les trois
+    # sleeves intraday US cassent ENSEMBLE » — était une sur-lecture d'UN épisode
+    # (2025 T2) et la mesure l'a RÉFUTÉE le même jour (`scratchpad/lib_tail.py`) : au pire
+    # décile mensuel, b1-HMASTO, b1-TLF et HMASTO-TLF co-occurrent 0 % du temps
+    # (multiplicateur 0.00) ; au pire quintile 1.50x/0.75x, p >= 0.175. Aucune dépendance
+    # de queue détectable.
+    # LA VRAIE RAISON est une PERSISTANCE, pas une synchronisation : sur les 30 épisodes
+    # de drawdown >= 5 R du livre, b1 PERD DANS 28 et en porte 46.9 % de la profondeur en
+    # médiane (HMASTO 39.3 %, TLF 19.3 %). Réduire b1 de moitié rend +1.40 R d'expected
+    # shortfall et -2.77 R sur la moyenne des 5 pires drawdowns, pour -6.46 R/an : c'est
+    # 0.429 R de drawdown évité par R/an sacrifié, contre 0.178 pour HMASTO et 0.126 pour
+    # TLF — le levier le plus efficace du livre par un facteur 2.4.
+    # COROLLAIRE, et il verrouille deux poids pour une raison mesurée : b4 ne perd que dans
+    # 5 épisodes sur 30 et porte une contribution MÉDIANE NÉGATIVE (-3.3 %) — c'est un
+    # AMORTISSEUR. La réduire empire strictement la queue (ES -0.24, 5 pires DD +0.76), et
+    # b2 de même (ES -0.05, +0.33). b2 et b4 restent donc à 1.0R.
+    # 2026-08-12, RÉVISION DU SOIR (wiki/log.md). Deux faits nouveaux, tous deux
+    # EXTÉRIEURS au backtest — la seule justification qu'accepte le test de stabilité :
+    #  (a) HMASTO a ÉCHOUÉ le seul hors-échantillon qu'elle ait jamais subi (NAS100
+    #      juin→déc 2017, contiguïté stricte : n=118, E[R] −0.191, t=−2.61, PF 0.53),
+    #      sur une fenêtre où la BRIQUE 1 tenait (n=46, E[R] +0.291, +23.6 R/an) — donc
+    #      la donnée n'est pas en cause. Et 7 de ses 9 années in-sample sont
+    #      indiscernables de zéro : 2021 (+98) et 2024 (+102) portent tout.
+    #      → HMASTO passe de 0.5R à 0.
+    #  (b) b1 était à 0.5R parce qu'HMASTO couvrait déjà les indices US intraday.
+    #      Cette justification tombe avec HMASTO. → b1 revient à 1.0R.
+    # TLF reste à 0.5R sur SES DEUX JAMBES : leur corrélation mensuelle n'est que
+    # +0.267 (deux sleeves, pas une), et la jambe US500 contribue MOINS aux drawdowns
+    # du livre (part médiane 7.1 % contre 12.9 % pour NAS100) tout en ayant le meilleur
+    # RoMaD standalone (0.89 contre 0.44). Sa réserve — le mouvement brut après signal
+    # est tombé à −0.021 R (t=−0.15) sur la moitié récente contre −0.109 (t=−1.56) sur
+    # NAS100 — est réelle mais ne justifie pas de retirer la meilleure des deux jambes.
+    # À SURVEILLER, pas à couper.
+    "FUNDED":   dict(w=dict(b1=1.0, b2=1.0, b3=0.5, b4=1.0, HMASTO=0.0, TLF=0.5,
+                             RVWAP=0.0, RSKEW=0.0),
                      use="FUNDED — 0.50 %/trade",
-                     note="Bascule à la validation du challenge. Pas encore déployé."),
+                     note="Bascule à la validation du challenge. PAS ENCORE DÉPLOYÉ. "
+                          "Composition révisée le 2026-08-12 au soir : HMASTO RETIRÉE "
+                          "(elle a échoué le seul hors-échantillon qu'elle ait subi : "
+                          "NAS100 juin→déc 2017, n=118, t=−2.61, PF 0.53, sur une fenêtre "
+                          "où la brique 1 tenait à +23.6 R/an), brique 1 REMISE à 1.0R "
+                          "puisqu'elle n'était réduite que parce qu'HMASTO couvrait déjà "
+                          "les indices US intraday, TLF maintenue à 0.5R sur ses deux "
+                          "jambes. ⚠️ CETTE COMPOSITION SORT D'UN "
+                          "BACKTEST, ET AUCUNE SLEEVE DU LIVRE N'A DE RÉSULTAT EN FORWARD "
+                          "TEST — le live compte 0 à 3 allers-retours par sleeve depuis le "
+                          "déploiement (HMASTO n'a jamais déclenché). Rien n'est "
+                          "concluable dans un sens ni dans l'autre. La seule hiérarchie "
+                          "réelle est celle du BACKTEST : b1 à b4 ont passé la batterie "
+                          "complète du projet (nulls, demi-échantillons, stress de coût, "
+                          "décorrélation, réplication) et sont inscrites comme briques ; "
+                          "HMASTO et TLF sont des candidates IN-SAMPLE déployées à 0.5R "
+                          "pour observation, avec leurs réserves documentées. Réduire une "
+                          "brique qui a passé cette batterie au profit de deux sleeves qui "
+                          "ne l'ont pas passée est une décision de gouvernance, pas "
+                          "d'optimisation — et si HMASTO/TLF sont abandonnées, la brique 1 "
+                          "doit revenir à 1.0R, car elle ne paraît coûteuse QUE parce "
+                          "qu'elles couvrent déjà les indices US intraday."),
 }
-SLEEVES = ["b1", "b2", "b3", "b4", "HMASTO", "TLF"]
+SLEEVES = ["b1", "b2", "b3", "b4", "HMASTO", "TLF", "RVWAP", "RSKEW"]
 SLEEVE_LABEL = {
     "b1": "brique 1 — NAS100 ORB (régime bas)", "b2": "brique 2 — XAUUSD turn-of-month",
     "b3": "brique 3 — BTC+ETH MACD+RSI", "b4": "brique 4 — NAS100 IBS",
+    "RVWAP": "RVWAP — GER40 H1 VWAP de session NY",
+    "RSKEW": "RSKEW — US30 H4 asymétrie 50",
     "HMASTO": "HMASTO — NAS100 M15 croisement HMA/EMA + RSI/Stoch (magic 108)",
     "TLF": "TLF — two-leg fade, NAS100+US500 M5 SHORT-ONLY (magics 109/110)",
 }
@@ -87,10 +160,17 @@ def load_sleeves() -> tuple[pd.DataFrame, pd.Timestamp, pd.Timestamp]:
     # TLF trade DEUX symboles sous deux magics (109 NAS100, 110 US500), comme la brique 3
     # avec ses deux coins : on somme leurs R quotidiens en une seule sleeve.
     tlf = pd.concat([run_two_leg_fade(s_).trades for s_ in ("NAS100", "US500")])
+    # RVWAP / RSKEW : les deux sleeves de `research/`, deployees le 2026-08-18. Le
+    # backtest appele ici est celui-la meme que le scan live utilise
+    # (`research_sleeves.decide`), et `check_live_parity_research.py` le prouve.
+    rv = run_research_sleeve("RVWAP").trades
+    rs = run_research_sleeve("RSKEW").trades
     M = pd.DataFrame({
         "b1": b1, "b2": b2, "b3": b3, "b4": b4,
         "HMASTO": _daily(hm["R"], hm["exit_time"], idx),
         "TLF": _daily(tlf["R"], tlf["exit_time"], idx),
+        "RVWAP": _daily(rv["R"], rv["exit_time"], idx),
+        "RSKEW": _daily(rs["R"], rs["exit_time"], idx),
     })
     for k, c in _ftmo_costs(idx).items():
         M[k] = M[k] - c
@@ -153,6 +233,20 @@ def _ftmo_costs(idx: pd.DatetimeIndex) -> dict:
                                     tr["entry_price"].to_numpy(), sl), idx)
         tot = c if tot is None else tot + c
     out["b3"] = tot
+
+    # --- RVWAP / RSKEW : indices sans commission chez ce broker. Elles tiennent la
+    # nuit (24 barres H1 et 5 barres H4), donc elles PAIENT le swap -- contrairement a
+    # b1/HMASTO/TLF qui sont intraday pures. Taux releves sur le terminal FTMO le
+    # 2026-08-18 (`research/scripts/13_ftmo_read_specs.py`) : GER40 long 6.62 %/an et
+    # court 0.42 ; US30 long 0.77 et court 7.52 -- les deux cotes d'US30 se sont
+    # INVERSES depuis le releve du 2026-08-10, ce qui est mesure et non suppose.
+    for _name, _sym in (("RVWAP", "GER40"), ("RSKEW", "US30")):
+        _t = run_research_sleeve(_name).trades
+        out[_name] = daily_cost(
+            _t["exit_time"],
+            trade_cost_R(_sym, _t["entry_time"], _t["exit_time"],
+                         _t["entry"].to_numpy(), _t["sl_dist"].to_numpy(),
+                         direction=_t["direction"].to_numpy()), idx)
     return out
 
 
@@ -586,8 +680,16 @@ def build(out: Path = OUT) -> Path:
  <section class="warn">
   <h2>Ce que ce rapport ne prouve pas</h2>
   <ul>
-   <li><b>Ni HMASTO ni TLF n'ont été forward-testées.</b> Ensemble elles pèsent la
-    majorité du R/an du livre AGRESSIF, et aucune n'a jamais tourné hors échantillon.
+   <li><b>AUCUNE sleeve de ce livre n'a de résultat en forward test — pas seulement
+    HMASTO et TLF.</b> Relevé sur le terminal le 2026-08-12 : depuis le déploiement, b1
+    a fait <b>1</b> aller-retour, b2 <b>1</b>, b3 <b>2 positions encore ouvertes</b>,
+    b4 <b>~2</b>, TLF <b>1</b>, et <b>HMASTO n'a jamais déclenché</b>. À ce nombre de
+    trades rien n'est concluable, dans un sens ni dans l'autre : <b>tout ce qui est
+    montré sur cette page est du backtest.</b> La seule hiérarchie réelle entre les
+    sleeves est celle du backtest — b1 à b4 ont passé la batterie complète du projet
+    (nulls A et B, demi-échantillons, stress de coût, décorrélation, réplication
+    cross-actifs) et sont inscrites comme briques ; HMASTO et TLF sont des candidates
+    <b>in-sample</b> déployées à 0.5R pour observation, jamais promues.
     TLF porte en plus quatre réserves mesurées : sans 2020 ET 2022 son t tombe à +1.77,
     son échelle de détection n'est pas monotone (M5 +3.05, M10 −1.54), elle ne réplique
     sur aucun actif hors indices US (2/13), et sa direction a été retournée
@@ -604,14 +706,20 @@ def build(out: Path = OUT) -> Path:
     zéro nuit portée, zéro swap, et les indices sont sans commission ici. Ordre de
     grandeur : sur la brique 3 le swap vaut <b>5,71 R/an contre 5,72 R/an de brut encore
     gagné depuis juillet 2022</b> — il l'annule exactement, ce qui a motivé son passage à
-    0.5R.</li>
+    0.5R le 2026-08-10, puis son <b>retrait complet d'AGRESSIF le 2026-08-18</b>
+    (+0.2 R/an pour 21.3 R de drawdown sur la fenêtre complète nette).</li>
    <li><b>Les sleeves ne décroissent pas au même rythme.</b> Entre la première et la
     seconde moitié de l'échantillon : brique 1 ×2.19, brique 2 ×1.68, brique 4 ×0.88,
-    HMASTO ×1.45, <b>brique 3 ×0.32</b>. C'est pourquoi FUNDED réduit la brique 3 de
-    moitié.</li>
+    HMASTO ×1.45, <b>brique 3 ×0.32</b>. C'est ce qui a fait halver la brique 3 le
+    2026-08-10 puis la <b>retirer d'AGRESSIF le 2026-08-18</b> ; FUNDED la porte
+    encore à 0.5R. ⚠️ Le ×1.45 d'HMASTO est une décroissance mesurée
+    <i>à l'intérieur</i> de l'échantillon de construction : hors de lui, sur la seule
+    fenêtre jamais vue (NAS100 juin→déc 2017), la sleeve rend <b>−40.5 R/an à t=−2.61</b>.
+    C'est ce qui l'a fait sortir de FUNDED le 2026-08-12.</li>
    <li><b>Le maximum théorique d'un jour dépasse la règle quotidienne.</b> AGRESSIF peut
-    tenir 6 positions simultanées = 5,5R ; à 1 %/trade une journée où tout part au stop
-    coûterait −6 % contre une limite de −5 %. Ce n'est jamais arrivé (pire journée réelle
+    tenir 4 positions simultanées = 4,0R depuis le retrait de b3 (6 = 5,5R avant) ;
+    à 1 %/trade une journée où tout part au stop coûterait −4 % contre une limite
+    de −5 %, donc la règle quotidienne <b>ne peut plus être franchie par construction</b>. Ce n'est jamais arrivé (pire journée réelle
     −3,58 R) — la protection vient de la décorrélation, pas de la construction.</li>
    <li>Le block-bootstrap <b>sous-estime les régimes baissiers crypto prolongés</b> ;
     la ruine réelle est vraisemblablement au-dessus des chiffres ci-dessus.</li>
