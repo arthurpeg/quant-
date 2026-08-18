@@ -13,6 +13,7 @@ unit-tests fine on a machine without the terminal. Bars are returned on a TRUE-U
 """
 from __future__ import annotations
 
+import datetime as _dt
 import logging
 import math
 from dataclasses import dataclass, field
@@ -103,6 +104,83 @@ class SymbolSpec:
     filling_mode: int = 0               # SYMBOL_FILLING_MODE bitmask
 
 
+# --------------------------------------------------------------------- journal legacy
+# LES DISPOSITIONS D'AVANT LE 2026-08-11 (commit 7ce79cf), retrouvees dans git et non
+# devinees. `_log_trade` prenait alors ses colonnes de `list(row.keys())`, donc CHAQUE
+# TYPE DE LIGNE avait sa propre largeur et son propre ordre, tandis que l'en-tete du
+# fichier etait fige par la toute premiere ligne jamais ecrite. Le correctif de 7ce79cf a
+# fixe l'ECRITURE mais n'a jamais reecrit l'en-tete d'un fichier DEJA OUVERT
+# (`new = not p.exists()`), si bien que le journal de production, ne le 2026-07-29, porte
+# encore 10 noms pour des lignes qui en comptent 12 : un lecteur par NOM y lit le `R`
+# d'une sortie dans la colonne `ticket`, et le VRAI ticket, hors en-tete, est perdu.
+# Constate en production le 2026-08-19. La migration ci-dessous re-etiquette chaque ligne
+# selon SA disposition d'origine ; elle ne devine jamais.
+_LEGACY_PREFIX9 = ("time", "event", "symbol", "dir", "lots", "price", "sl", "tp", "reason")
+_LEGACY_LAYOUTS = {
+    ("enter", 9): _LEGACY_PREFIX9,
+    ("enter", 10): _LEGACY_PREFIX9 + ("ticket",),
+    ("stop_order", 9): _LEGACY_PREFIX9,
+    ("stop_order", 10): _LEGACY_PREFIX9 + ("ticket",),
+    ("cancel", 5): ("time", "event", "symbol", "reason", "ticket"),
+    ("exit", 11): _LEGACY_PREFIX9 + ("R", "cumR"),
+    ("exit", 12): _LEGACY_PREFIX9 + ("R", "cumR", "ticket"),
+}
+
+
+def migrate_trade_log(path, fields) -> str | None:
+    """Re-ecrit un journal dont l'EN-TETE ne correspond plus au schema. Idempotent.
+
+    Rend le chemin de la sauvegarde si une migration a eu lieu, `None` s'il n'y avait
+    rien a faire. Une ligne dont la disposition n'est pas reconnue fait ECHOUER la
+    migration sans toucher au fichier : mieux vaut un journal illisible qu'un journal
+    silencieusement re-etiquete de travers -- c'est la piece qui sert a juger les sleeves.
+
+    Les lignes deja ecrites au schema courant (meme largeur que `fields`) sont reprises
+    telles quelles : la migration ne les reinterprete pas.
+    """
+    import csv
+    import os
+    from pathlib import Path as _P
+    p = _P(path)
+    if not p.exists():
+        return None
+    with open(p, "r", newline="", encoding="utf-8") as fh:
+        rows = list(csv.reader(fh))
+    if not rows:
+        return None
+    if tuple(rows[0]) == tuple(fields):
+        return None                      # deja au schema : rien a faire
+    out = []
+    for n, row in enumerate(rows[1:], start=2):
+        if not row:
+            continue
+        if len(row) == len(fields):
+            out.append(dict(zip(fields, row)))       # ecrite APRES le correctif
+            continue
+        layout = _LEGACY_LAYOUTS.get((row[1] if len(row) > 1 else "", len(row)))
+        if layout is None:
+            raise ValueError(
+                f"migrate_trade_log: ligne {n} de {p} illisible "
+                f"(event={row[1] if len(row) > 1 else '?'!r}, {len(row)} champs). "
+                f"Aucune disposition connue ne correspond -- migration ABANDONNEE, "
+                f"le fichier n'a pas ete touche.")
+        out.append(dict(zip(layout, row)))
+    stamp = _dt.datetime.now().strftime("%Y%m%dT%H%M%S")
+    bak = p.with_suffix(p.suffix + f".legacy-{stamp}.bak")
+    tmp = p.with_suffix(p.suffix + ".migrating")
+    with open(tmp, "w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(fields))
+        w.writeheader()
+        for r in out:
+            w.writerow({k: r.get(k, "") for k in fields})
+    os.replace(p, bak)                   # l'original d'abord, jamais detruit
+    os.replace(tmp, p)
+    logger.warning("journal de trades MIGRE vers le schema courant (%d lignes) : "
+                   "l'en-tete declarait %d colonnes pour un schema de %d. "
+                   "Original conserve dans %s", len(out), len(rows[0]), len(fields), bak.name)
+    return str(bak)
+
+
 class Broker:
     def __init__(self, cfg_live: dict):
         self.cfg = cfg_live
@@ -117,12 +195,31 @@ class Broker:
         # sinon chaque sortie du driver serait journalisee deux fois.
         self._closed_by_us: set = set()
         self._open_seen: dict = {}   # ticket -> snapshot, pour la reconciliation
-        self._filled_logged: set = set()   # tickets dont l'entree est deja journalisee
+        # TICKETS DONT L'ENTREE EST DEJA JOURNALISEE. Amorce depuis LE JOURNAL, pas
+        # depuis rien : un `set` vide au demarrage rendait `journal_fill` idempotent
+        # DANS UN PROCESSUS seulement, or `TwoLegFadeStrategy` le rappelle des qu'elle
+        # revoit une position dont le ticket differe de `_anchored` -- et `_anchored`
+        # repart lui aussi a None. Un redemarrage sur position ouverte reecrivait donc
+        # une ligne `enter`, horodatee du REDEMARRAGE et non du remplissage. Mesure du
+        # 2026-08-18 : le trade TLF du jour porte TROIS lignes `enter` pour un seul
+        # remplissage (15:35:28Z le vrai, puis 15:39:20Z et 16:09:43Z, deux relances
+        # d'`auto_update`), donc `summary` comptait 3 entrees pour 1 sortie.
+        self._filled_logged: set = set()
         self.paper_orders: dict[int, PendingOrder] = {}
         self.realized_R: float = 0.0
         self._paper_balance = float(cfg_live.get("paper_balance", 100000.0))
         # trade journal (both dry-run and live) — one CSV row per entry & exit
         self.trade_log_path = cfg_live.get("trade_log_csv")
+        # ORDRE VOULU : migrer AVANT de relire les tickets. Sur un journal reste au vieil
+        # en-tete, une lecture par nom rendrait le `R` pour `ticket` et l'amorcage serait
+        # non seulement vide mais FAUX.
+        if self.trade_log_path:
+            try:
+                migrate_trade_log(self.trade_log_path, self.LOG_FIELDS)
+            except Exception:
+                logger.exception("migration du journal impossible -- il reste tel quel ; "
+                                 "les lectures par NOM y sont desalignees")
+            self._filled_logged = self._journalled_tickets()
         # Monotonic count of orders this broker actually EXECUTED (entries + exits, live
         # and paper). The runner diffs it across a `step()` to tell "an order went out"
         # from "the pass merely returned", which a return value alone cannot say — a
@@ -152,6 +249,35 @@ class Broker:
     # la fin.
     LOG_FIELDS = ("time", "event", "symbol", "dir", "lots", "price", "sl", "tp",
                   "reason", "R", "cumR", "ticket")
+
+    def _journalled_tickets(self) -> set:
+        """Tickets portant deja une ligne `enter` dans le journal (idempotence durable).
+
+        Le journal EST l'etat : rien de nouveau a tenir d'accord, et un doublon efface a
+        la main disparait vraiment. Une lecture illisible rend un ensemble vide -- on
+        prefere un doublon a un `enter` manquant, qui lui n'est pas rattrapable.
+        """
+        import csv
+        from pathlib import Path
+        out: set = set()
+        try:
+            p = Path(self.trade_log_path)
+            if not p.exists():
+                return out
+            with open(p, "r", newline="", encoding="utf-8") as fh:
+                for row in csv.DictReader(fh):
+                    if (row.get("event") or "") != "enter":
+                        continue
+                    tk = (row.get("ticket") or "").strip()
+                    if tk:
+                        out.add(int(float(tk)))
+        except Exception as exc:
+            logger.warning("journal illisible pour l'amorcage des tickets (%s) -- "
+                           "`journal_fill` repart d'un ensemble vide", exc)
+            return set()
+        if out:
+            logger.info("journal : %d ticket(s) deja marques comme journalises", len(out))
+        return out
 
     def _log_trade(self, row: dict) -> None:
         """Ecrit une ligne du journal, TOUJOURS avec les memes colonnes dans le meme ordre.

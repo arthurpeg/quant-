@@ -326,6 +326,35 @@ def _us_session_minutes(now_utc: pd.Timestamp, tz: str = "America/New_York") -> 
 
 _LAST_LIVENESS_ALERT = None
 _STARTED_AT: pd.Timestamp | None = None
+# Dernier instant ou chaque sleeve a ete VUE en position. C'est la piece qui manquait :
+# `_acted_bar` ne bouge pas pendant une detention (et vaut meme None si le processus a
+# demarre position ouverte), donc a la seconde ou la sleeve redevient plate, l'exclusion
+# "en position" tombait et la fraicheur se mesurait sur TOUTE LA DUREE DU TRADE.
+_SEEN_IN_POSITION: dict = {}
+
+
+def _scan_window_open(strat, now_utc: pd.Timestamp) -> bool:
+    """La sleeve a-t-elle le DROIT de scanner maintenant, selon SA fenetre de signal ?
+
+    Copie exacte de la garde que les sleeves s'appliquent a elles-memes
+    (`open_m <= minute <= cut_m + bar_minutes`, cf. TLF / HMASTO / KAER). Sans elle, la
+    porte de seance US du controle (jusqu'a `flat_minute`, 15:55 ET) est PLUS LARGE que
+    la fenetre d'entree de TLF (`entry_cutoff` 15:30, + 5 min) : entre 15:35 et 15:55 la
+    sleeve sort sur sa propre garde sans toucher `_acted_bar`, le retard atteint 20-21 min
+    contre un seuil de 20, et l'alerte partait TOUS LES JOURS vers 15:55:30 sans le
+    moindre incident (mesure du 2026-08-19 : silence a 15:55:00, alerte a 15:55:30).
+    Une sleeve sans fenetre declaree (RVWAP/RSKEW scannent toute barre) rend True.
+    """
+    p_ = getattr(strat, "p", None)
+    tf = getattr(strat, "bar_minutes", None)
+    if p_ is None or not tf:
+        return True
+    o, c = getattr(p_, "session_open", None), getattr(p_, "entry_cutoff", None)
+    if not o or not c:
+        return True
+    et = now_utc.tz_convert(getattr(p_, "tz", "America/New_York"))
+    minute = et.hour * 60 + et.minute
+    return (int(o[:2]) * 60 + int(o[3:])) <= minute <= (int(c[:2]) * 60 + int(c[3:])) + int(tf)
 
 
 def _maybe_liveness_alert(broker: Broker, cfg_live: dict, strategies,
@@ -382,27 +411,40 @@ def _maybe_liveness_alert(broker: Broker, cfg_live: dict, strategies,
             continue                      # sleeve non scannante (rollover, 1 trade/jour)
         try:
             if broker.open_position(s_.magic) is not None:
+                _SEEN_IN_POSITION[s_.magic] = now_utc
                 continue                  # en position -> ne scanne pas, par conception
         except Exception:
             pass                          # un broker qui hoquette ne doit pas taire l'alerte
+        if not _scan_window_open(s_, now_utc):
+            continue                      # hors de SA fenetre de signal -> silence normal
         thr = max(floor_min, float(tf) + margin)
         bar = getattr(s_, "_acted_bar", None)
-        if bar is None:
-            # jamais scanne DEPUIS LE DEMARRAGE de ce processus (pas depuis l'ouverture de
-            # la seance) : une relance a legitimement `_acted_bar = None` et attend sa
-            # premiere cloture de barre.
-            if _STARTED_AT is None:
-                continue
-            since_start = (now_utc - _STARTED_AT).total_seconds() / 60.0
-            if since_start <= max(grace, thr):
-                continue
-            lag = since_start
-        else:
-            lag = (now_utc - (pd.Timestamp(bar) + pd.Timedelta(minutes=tf))).total_seconds() / 60.0
-        if lag <= thr:
+        # DEPUIS QUAND A-T-ON LE DROIT D'ATTENDRE UN SCAN ? Le plus TARDIF de : la
+        # cloture de la derniere barre scannee, l'instant ou la sleeve a quitte sa
+        # position, et le demarrage du processus. Ne lire que `_acted_bar` etait le
+        # defaut : le 2026-08-18 le runner a redemarre a 16:09:19Z alors que TLF/NAS100
+        # portait son short, donc `_acted_bar` valait None ; la position s'est fermee sur
+        # l'aplat de seance a 19:55:19.548Z et l'alerte est partie 179 ms plus tard, dans
+        # LE MEME CYCLE, en annoncant "pas scanne depuis 226 min" -- soit exactement
+        # l'age du processus, c'est-a-dire la duree pendant laquelle il tenait le trade.
+        refs = []
+        if bar is not None:
+            refs.append(pd.Timestamp(bar) + pd.Timedelta(minutes=tf))
+        seen = _SEEN_IN_POSITION.get(s_.magic)
+        if seen is not None:
+            refs.append(seen)
+        if _STARTED_AT is not None:
+            refs.append(_STARTED_AT)
+        if not refs:
+            continue                      # rien de mesurable (ni barre, ni ancre)
+        lag = (now_utc - max(refs)).total_seconds() / 60.0
+        # une sleeve qui n'a JAMAIS scanne attend sa premiere cloture de barre : on lui
+        # laisse la grace, comme avant, en plus du seuil d'UT.
+        eff = thr if bar is not None else max(thr, grace)
+        if lag <= eff:
             continue
-        if worst is None or lag - thr > worst - worst_thr:
-            worst, worst_name, worst_thr = lag, f"{type(s_).__name__}/{s_.magic}", thr
+        if worst is None or lag - eff > worst - worst_thr:
+            worst, worst_name, worst_thr = lag, f"{type(s_).__name__}/{s_.magic}", eff
 
     if worst is None:
         return
@@ -633,12 +675,19 @@ def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Time
     risk.on_equity(_equity(broker, risk), now_utc)
     for strat in strategies:
         name = type(strat).__name__
+        # LA CLE EST LE MAGIC, PAS LA CLASSE. Deux instances d'une meme sleeve (TLF x2,
+        # research x2, crypto x2 autrefois) partageaient la cle : si l'une echouait et
+        # que sa jumelle reussissait dans la MEME passe, le `pop` de la reussite effacait
+        # la streak, et l'echec suivant etait relu comme NEUF -> traceback complet toutes
+        # les 20 s, c'est-a-dire exactement le regime que `_log_failure` dit vouloir
+        # eviter ("thousands a day, and rotate the useful history out of runner.log").
+        key = f"{name}/{strat.magic}"
         try:
             sent_before = broker.orders_sent
             strat.step(broker, risk, now_utc)
-            _LAST_FAILURE.pop(name, None)      # a clean pass ends any failure streak
-            if name in _MARKET_CLOSED_SINCE:   # a prior pass was waiting -> it just went through
-                waited = now_utc - _MARKET_CLOSED_SINCE.pop(name)
+            _LAST_FAILURE.pop(key, None)       # a clean pass ends any failure streak
+            if key in _MARKET_CLOSED_SINCE:    # a prior pass was waiting -> it just went through
+                waited = now_utc - _MARKET_CLOSED_SINCE.pop(key)
                 # `step()` returns nothing, and half a dozen of its exits are legitimately
                 # silent (no signal, day already handled, bar not printed yet). Only the
                 # broker's own counter can say an order really went out — claiming one on a
@@ -649,11 +698,11 @@ def one_pass(broker: Broker, risk: LiveRiskManager, strategies, now_utc: pd.Time
                     LOG.info("%s: market reopened, NO order sent on this pass (waited %s)",
                              name, waited)
         except MarketClosed as exc:            # expected daily break -> log once, keep retrying quietly
-            if name not in _MARKET_CLOSED_SINCE:
-                _MARKET_CLOSED_SINCE[name] = now_utc
-                LOG.info("%s: %s -> market closed, will retry until it opens (no error)", name, exc)
+            if key not in _MARKET_CLOSED_SINCE:
+                _MARKET_CLOSED_SINCE[key] = now_utc
+                LOG.info("%s: %s -> market closed, will retry until it opens (no error)", key, exc)
         except Exception as exc:               # never let one brick kill the loop
-            _log_failure(name, exc, now_utc)
+            _log_failure(key, exc, now_utc)
 
 
 def status(broker: Broker, risk: LiveRiskManager, strategies, cfg_live: dict) -> None:
