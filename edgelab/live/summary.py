@@ -28,6 +28,8 @@ BRICK = {
     "BTCUSD": "brick3 (crypto)",
     "ETHUSD": "brick3 (crypto)",
     "US500": "TLF (two-leg fade)",   # only TLF trades US500, so this one is unambiguous
+    "GER40": "RVWAP (GER40 H1 VWAP NY)",   # seule sleeve sur GER40 -> non ambigu
+    "US30": "RSKEW (US30 H4 skew 50)",     # seule sleeve sur US30  -> non ambigu
 }
 
 # magic / reason tag -> display label (must match strategies.MAGIC)
@@ -40,13 +42,16 @@ BRICK_LABEL = {
     "tlf": "TLF - two-leg fade, NAS100 + US500 M5 short-only (fwd-test, 0.5R)",
     "kaer": "KAER - NAS M15 ER breakout (RETIRED 2026-08-10, replaced by HMASTO)",
     "kelt": "KELT - BTC H1 Keltner breakout (RETIRED 2026-08-09)",
+    "rvwap": "RVWAP - GER40 H1 VWAP de session NY (fwd-test, 1R)",
+    "rskew": "RSKEW - US30 H4 asymetrie 50 (fwd-test, 1R)",
 }
 # ⚠️ THIS MAP MUST TRACK `strategies.MAGIC`. It is a SECOND, hand-maintained copy, so a
 # new sleeve shows up as "?" in the journal until it is added here — which is exactly what
 # happened to HMASTO (magic 108) on the day it was wired. The assertion below turns that
 # silent gap into an import-time failure.
 MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "brick4",
-             106: "kaer", 107: "kelt", 108: "hmasto", 109: "tlf", 110: "tlf"}
+             106: "kaer", 107: "kelt", 108: "hmasto", 109: "tlf", 110: "tlf",
+             111: "rvwap", 112: "rskew"}
 
 # ⚠️ DEUX UNITES DE R COEXISTENT, ET LES CONFONDRE FAUSSE LE TOTAL.
 #   * le JOURNAL enregistre le R DE LA SLEEVE : un stop plein vaut -1.00 quelle que soit
@@ -59,7 +64,11 @@ MAGIC_TAG = {101: "brick1", 102: "brick2", 103: "brick3", 104: "brick3", 105: "b
 # Ce facteur DOIT rester egal aux poids de `books_report.BOOKS['AGRESSIF']['w']` et aux
 # `*_size_R` de config_live.yaml.
 SIZE_R = {"brick1": 1.0, "brick2": 1.0, "brick3": 0.5, "brick4": 1.0,
-          "hmasto": 0.5, "tlf": 0.5, "kaer": 0.5, "kelt": 0.5}
+          "hmasto": 0.5, "tlf": 0.5, "kaer": 0.5, "kelt": 0.5,
+          # RVWAP et RSKEW sont deployees a 1R (instruction du 2026-08-18), donc
+          # leur R de sleeve EST leur R de compte. Si la taille change dans
+          # config_live.yaml, elle doit changer ICI aussi.
+          "rvwap": 1.0, "rskew": 1.0}
 
 
 def account_R(reason: str, symbol: str, R: float) -> float:
