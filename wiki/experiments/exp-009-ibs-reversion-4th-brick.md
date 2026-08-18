@@ -110,6 +110,34 @@ metric, and it is **deployed live**. **Caveats:**
    live cadence** (2026-07-31): +38.2→**+37.3 R/yr**. `run_ibs(cadence="live")` is now the
    default; `cadence="literal"` survives only for the `verify` parity proof.
 
+**Result 6 — la sortie part 10 min avant la cloture, pas au rollover** (2026-08-13,
+question de l'utilisateur). La sortie signal remplissait a l'ouverture de la barre
+suivante, c'est-a-dire au **reopen 01:00 serveur** : NAS100 est ferme 00:00-01:00, donc un
+ordre envoye au rollover est rejete 10018 et attend la reouverture — apres que le swap de
+la nuit a ete preleve, et un vendredi apres le **week-end entier** (59 des 285 sorties
+remplissaient un lundi). La position payait **3,20 unites de swap par trade contre 1,93**
+en quittant sur la barre. Mesure sur M1, 2018-07..2026-07, 287 vs 288 trades
+(`scratchpad/ibs_exit_lead.py`) :
+
+| | brut | swap paye | **net** | t (net) | maxDD |
+|---|---|---|---|---|---|
+| sortie au rollover (01:00) | +4,80 R/an | 0,53 R/an | **+4,27** | 4,57 | 3,26 R |
+| **sortie a 23:50 serveur (22:50 Paris)** | +4,77 | 0,31 | **+4,46** | **4,74** | **3,10 R** |
+
+Le prix a payer est de lire `IBS > 0,8` dix minutes avant la fin : il vaut **−0,03 R/an**,
+soit un delta par trade de −0,0035 R a t = **−1,05** — du bruit. Il est petit parce que le
+verdict `IBS > 0,8` est deja stable a 23:50 : **98,66 % des 2 086 jours donnent le meme
+verdict** qu'a la cloture, et les 28 desaccords sont **symetriques** (14 dans chaque sens).
+Sur le sous-ensemble vendredi, supprimer le gap du week-end est un **wash en esperance**
+(+0,0004 R, t=0,03 sur 59 obs) mais divise la dispersion par 3 (sd 0,103 → 0,036 hors
+week-end). Le gain net, lui, est **deterministe** : +0,21 R/an de swap jamais paye. 6 des
+288 jours de sortie ne cotent rien a 23:50 (cloture anticipee) — le test au rollover sur la
+barre CLOSE reste en **repli**.
+
+⚠️ **Seul le driver est modifie** ([`edgelab/live/strategies.py`](../../edgelab/live/strategies.py)
+`NasIbsStrategy`). `run_ibs` et donc les rapports / le Monte-Carlo mesurent toujours la
+sortie au rollover : le livre publie **sous-estime** b4 de ~0,19 R/an net. Recut a decider.
+
 **Code.** [`edgelab/edges/ibs.py`](../../edgelab/edges/ibs.py) (the rule, R-based, canonical)
 and [`edgelab/reports/build_reports.py`](../../edgelab/reports/build_reports.py) (rebuilds
 the 4-brick backtest + MC + both HTML reports in one command). Exploratory originals:

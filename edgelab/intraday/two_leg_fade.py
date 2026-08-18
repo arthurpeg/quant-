@@ -98,7 +98,13 @@ class TwoLegFadeParams:
     max_risk_atr: float = 2.0        # skip a setup whose signal bar is too tall
     max_cost_R: float = 0.20         # friction gate: 1R must be >= 5 round trips
     k_stop: float = 3.0              # 1R = 3 x ATR14 at the decision bar
-    tp_R: float | None = None        # NO target (a target takes the cost stress negative)
+    # NO target. Swept over 11 values (0.5 -> 6 R) on 2026-08-17 (wiki/log.md), pooled
+    # NAS100+US500: none beats None (+19.9 R/yr vs +18.2 at the best target, +5.5 at 1 R),
+    # and the curve is MONOTONE in tp_R -- it converges to None from below. Same cause as
+    # HMASTO: 26 trades above +4 R (1.9 % of the flow) carry +147 R of the 171 R total, so
+    # capping the tail throws away what pays for the stops. A target does raise the hit
+    # rate (64.6 % at 0.5 R) -- and returns +1.8 R/yr. Do not re-sweep this finer.
+    tp_R: float | None = None
     # 60 bars = 5 h. ⚠️ This used to be commented "the session flat almost always binds
     # first" — it does NOT: the cap is the exit on 58/468 US500 trades (12.4 %) and
     # 106/914 NAS100 (11.6 %). The live driver had no cap at all until 2026-08-12,

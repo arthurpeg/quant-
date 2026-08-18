@@ -89,7 +89,15 @@ class HmaStochParams:
     atr_p: int = 14
     k_stop: float = 1.0             # 1R = k_stop * ATR14 at the signal bar...
     spread_floor: float = 25.0      # ...floored at this many spreads (KELT lesson)
-    tp_R: float | None = None       # NO target: with TP=1R the cost stress goes negative
+    # NO target. Swept over 11 values (0.5 -> 6 R) against this None on 2026-08-17
+    # (wiki/log.md): not one of them beats it, on any metric, and the curve is MONOTONE
+    # in tp_R -- it converges to None FROM BELOW, so there is no interior optimum. The
+    # cause is the shape of the distribution, not the level: 117 trades above +4 R
+    # (5.3 % of the flow) make +768 R while the other 2082 make -440 R, so a target is
+    # precisely the instrument that cuts the tail that pays for every stop. Watch the
+    # trap it documents: TP=0.5R RAISES the hit rate to 64.2 % (from 35.2 %) and returns
+    # -15.2 R/yr. Do not re-sweep this finer.
+    tp_R: float | None = None
     slippage_points: float = SLIP_POINTS
     size_R: float = 0.5             # fraction of 1R actually risked when deployed
 
