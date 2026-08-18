@@ -100,10 +100,18 @@ def check_config() -> dict:
             f"| expect_server={cfg.get('expect_server')!r}")
 
     # quelles sleeves sont censées tourner, et sous quels magics
+    # ⚠️ `on` doit dire ce que le RUNNER INSTANCIE, jamais ce que le livre contenait :
+    # la brique 3 se retire par `crypto_symbols: []` (2026-08-18), et ce tableau la
+    # declarait ACTIVE quoi qu il arrive -- donc il aurait affiche vert une brique que
+    # le runner ne pilote plus, exactement le genre de desaccord que ce fichier existe
+    # pour attraper.
+    coins = [str(c).upper() for c in cfg.get("crypto_symbols", ["BTCUSD", "ETHUSD"])]
     want = {"brick1 NAS ORB": (MAGIC["nas_orb"], True, 1.0),
             "brick2 gold ToM": (MAGIC["gold_tom"], True, 1.0),
-            "brick3 BTC": (MAGIC["btc_macd"], True, float(cfg.get("crypto_size_R", 1.0))),
-            "brick3 ETH": (MAGIC["eth_macd"], True, float(cfg.get("crypto_size_R", 1.0))),
+            "brick3 BTC": (MAGIC["btc_macd"], "BTCUSD" in coins,
+                           float(cfg.get("crypto_size_R", 1.0))),
+            "brick3 ETH": (MAGIC["eth_macd"], "ETHUSD" in coins,
+                           float(cfg.get("crypto_size_R", 1.0))),
             "brick4 NAS IBS": (MAGIC["nas_ibs"], bool(cfg.get("enable_ibs", True)), 1.0),
             "HMASTO": (MAGIC["nas_hmasto"], bool(cfg.get("enable_hmasto", False)),
                        float(cfg.get("hmasto_size_R", 0.5)))}
@@ -111,6 +119,14 @@ def check_config() -> dict:
         for sym in cfg.get("tlf_symbols", ["NAS100", "US500"]):
             m = MAGIC["nas_tlf"] if "NAS" in sym.upper() else MAGIC["spx_tlf"]
             want[f"TLF {sym}"] = (m, True, float(cfg.get("tlf_size_R", 0.5)))
+    # RVWAP (111) / RSKEW (112). Sans elles ici, une position ouverte par une sleeve
+    # bien vivante etait rapportee « MAGIC INCONNU ... <- ETRANGER AU LIVRE » par le
+    # controle des positions -- l alerte qui doit signaler un EA etranger.
+    if cfg.get("enable_research_sleeves", False):
+        want[f"RVWAP {cfg.get('rvwap_symbol', 'GER40')}"] = (
+            MAGIC["ger40_rvwap"], True, float(cfg.get("rvwap_size_R", 1.0)))
+        want[f"RSKEW {cfg.get('rskew_symbol', 'US30')}"] = (
+            MAGIC["us30_rskew"], True, float(cfg.get("rskew_size_R", 1.0)))
     print()
     for name, (m, on, size) in want.items():
         say(OK if on else WARN, f"{name:16s} magic {m:>3}  {'ACTIVE' if on else 'désactivée'}"
@@ -128,6 +144,9 @@ def check_config() -> dict:
         need.add(cfg.get("hmasto_symbol", "NAS100"))
     if cfg.get("enable_tlf"):
         need |= set(cfg.get("tlf_symbols", []))
+    if cfg.get("enable_research_sleeves"):
+        need.add(cfg.get("rvwap_symbol", "GER40"))
+        need.add(cfg.get("rskew_symbol", "US30"))
     missing = sorted(need - set(smap))
     say(BAD if missing else OK,
         f"symbol_map couvre les actifs actifs : {sorted(need)}"

@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 
+import numpy as np
 import pandas as pd
 
 from edgelab.intraday.atr_breakout import ATRBreakParams
@@ -39,6 +40,29 @@ MAGIC = {"nas_orb": 101, "gold_tom": 102, "btc_macd": 103, "eth_macd": 104, "nas
 
 SERVER_TZ = "Europe/Athens"     # the broker's clock: a D1 bar's date IS its server date
 ROLLOVER_LEAD_MIN = 10.0        # send a D-rollover time-exit this many minutes EARLY
+
+
+def _research_signal(bars: pd.DataFrame, p):
+    """S_t de la sleeve research, importe paresseusement (comme partout ici)."""
+    from edgelab.intraday.research_sleeves import signal_series
+    return signal_series(bars, p)
+
+
+def _push_alert(cfg: dict, msg: str) -> None:
+    """Une ligne Discord ad hoc, depuis une strategie. Ne leve JAMAIS.
+
+    Jumeau de `runner._alert` plutot que son import : `runner` importe `strategies`, et
+    faire remonter la dependance dans l'autre sens pour six lignes inverserait les
+    couches. `summary` est une feuille (aucun import edgelab), donc ce chemin-ci est sur.
+    """
+    url = cfg.get("discord_webhook_url")
+    if not url:
+        return
+    try:
+        from edgelab.live.summary import send_discord
+        send_discord(url, msg, code=False)
+    except Exception as exc:
+        logger.warning("alerte Discord non envoyee (%s) : %s", exc, msg)
 
 
 def _mins(hhmm: str) -> int:
@@ -1173,8 +1197,10 @@ class ResearchSleeveStrategy:
         self.max_bar_age_min = float(cfg_live.get(key + "_max_bar_age_min",
                                                   20 if sleeve == "RVWAP" else 60))
         self.lead_min = float(cfg_live.get("rollover_lead_min", ROLLOVER_LEAD_MIN))
+        self.cfg = cfg_live          # pour l'alerte de fenetre (webhook Discord)
         self._acted_bar = None
         self._skip_logged = None
+        self._win_alerted = None     # jour de la derniere alerte de fenetre courte
 
     def _held(self, bars: pd.DataFrame, open_time: pd.Timestamp) -> int:
         """Barres COMPLETES du trade, comptees DANS LE CADRE DU BROKER.
@@ -1184,13 +1210,74 @@ class ResearchSleeveStrategy:
         divergeait sur 155 des 200 premieres sorties au temps de KELT.
         """
         step = pd.Timedelta(minutes=self.bar_minutes)
-        entry_bar = pd.Timestamp(open_time).floor(step)
-        loc = int(bars.index.get_indexer([entry_bar], method="ffill")[0])
+        # LA BARRE D'ENTREE SE CHERCHE DANS L'INDEX, JAMAIS SUR L'HORLOGE.
+        # `.floor(step)` arrondit sur la grille de l'EPOCH (00:00, 04:00, 08:00...),
+        # or les barres H4 du broker tombent a 01/05/09... l'ete et 02/06/10... l'hiver
+        # en UTC vraie -- elles ne sont JAMAIS sur cette grille. Le `ffill` rattrapait
+        # alors la barre PRECEDENTE et `_held` comptait une barre de trop, donc RSKEW
+        # sortait a 4 barres au lieu de 5 (mesure : ecart sur les 7 premieres barres
+        # d'un trade, 2026-08-18). H1 y echappait par coincidence : l'heure ronde EST
+        # sur la grille. `searchsorted` ne suppose ni alignement ni continuite -- et les
+        # flux ont des trous (GER40 n'a pas de barre 23:00).
+        entry_bar = pd.Timestamp(open_time)
+        loc = int(bars.index.searchsorted(entry_bar, side="right")) - 1
         if loc < 0:
             logger.warning("%s: barre d'entree %s hors de la fenetre de %d barres",
                            self.sleeve, entry_bar, len(bars))
             return int((bars.index[-1] - entry_bar) / step) + 1
         return len(bars) - loc
+
+    def _check_window(self, bars: pd.DataFrame, now_utc: pd.Timestamp) -> None:
+        """Crie si la fenetre tiree ne contient plus assez d'OCCURRENCES du signal.
+
+        C'EST LE SEUL MODE DE PANNE ENTIEREMENT SILENCIEUX DE CES DEUX SLEEVES.
+        `causal_rank` classe sur `rolling(rank_win, min_periods=rank_min)`, donc :
+
+          * entre `rank_min` et `rank_win` occurrences, le rang est calcule sur une
+            fenetre PLUS COURTE que celle du backtest -> le seuil `q` tombe sur un autre
+            quantile -> des ENTREES DIFFERENTES, sans la moindre erreur ni exception ;
+          * sous `rank_min`, `causal_rank` rend NaN partout, `decide` rend None a chaque
+            barre et la sleeve cesse simplement d'entrer.
+
+        Aucun des deux ne se lit dans le journal : une sleeve qui n'entre plus ressemble
+        trait pour trait a une sleeve dont le signal ne se declenche pas. Et ce que la
+        fenetre contient ne depend pas de nous mais du BROKER (profondeur d'historique
+        telechargee, `Max bars in chart` du terminal), donc c'est MESURE a chaque barre
+        scannee et jamais suppose : les marges relevees sur le terminal du VPS le
+        2026-08-18 sont x1,47 (RVWAP, 1 466 occurrences) et x1,45 (RSKEW, 1 450).
+
+        Le comptage refait `signal_series` a cote du chemin de decision plutot que
+        d'instrumenter `decide` : `decide` est la fonction PARTAGEE avec le backtest, et
+        la parite prouvee vient precisement de ce qu'elle n'a qu'une definition.
+
+        Une alerte par jour et par sleeve au plus (un H1 en crierait 24).
+        """
+        occ = int(np.isfinite(_research_signal(bars, self.p)).sum())
+        if occ >= self.p.rank_win:
+            self._win_alerted = None
+            return
+        day = now_utc.date()
+        if self._win_alerted == day:
+            return
+        self._win_alerted = day
+        blind = occ < self.p.rank_min
+        logger.warning("%s FENETRE COURTE : %d occurrences du signal sur %d barres tirees, "
+                       "il en faut %d (%s). %s", self.sleeve, occ, len(bars),
+                       self.p.rank_win, f"plancher {self.p.rank_min}",
+                       "AUCUNE ENTREE POSSIBLE (rang NaN)" if blind else
+                       "le rang est calcule sur une fenetre plus courte que le backtest "
+                       "-> entrees DIVERGENTES")
+        _push_alert(self.cfg,
+               f":warning: **{self.sleeve} : FENETRE TROP COURTE** — "
+               f"**{occ}** occurrences du signal dans les {len(bars)} barres servies par "
+               f"le broker, il en faut **{self.p.rank_win}**"
+               + (f" (plancher {self.p.rank_min} : la sleeve N'ENTRE PLUS DU TOUT)."
+                  if blind else
+                  f" (au-dessus du plancher {self.p.rank_min}, donc elle trade encore — "
+                  f"mais sur un rang calcule autrement que le backtest).")
+               + f" Cause probable : historique {self.logical} {self.tf} incomplet sur le "
+                 f"terminal, ou `Max bars in chart` trop bas. Remede : ouvrir le graphique "
+                 f"et le derouler vers le passe, ou augmenter `{self.sleeve.lower()}_bars`.")
 
     def step(self, broker: Broker, risk: LiveRiskManager, now_utc: pd.Timestamp) -> None:
         step_ = pd.Timedelta(minutes=self.bar_minutes)
@@ -1228,6 +1315,12 @@ class ResearchSleeveStrategy:
             logger.info("%s barre perimee %s (%.0f min) -> saut", self.sleeve,
                         last_ts, age_min)
             return
+
+        try:
+            self._check_window(bars, now_utc)
+        except Exception as exc:      # un MONITEUR ne doit jamais tuer ce qu il
+            # surveille : la sleeve trade meme si le comptage echoue.
+            logger.warning("%s: controle de fenetre impossible (%s)", self.sleeve, exc)
 
         res = S.research_scan(bars, self.p)
         self._acted_bar = last_ts
