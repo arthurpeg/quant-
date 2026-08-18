@@ -68,6 +68,136 @@ mean **+4.81 / +4.49 R per month**, median +4.12 / +4.41 R, σ 6.9 / 7.2 R,
 numbers are in-sample for that part. Without it AGRESSIF degenerates to the frozen 4-brick
 book — slower, not broken.
 
+## Le book sans b3 + les 2 candidates (2026-08-18, `15_book_sans_b3.py`) — MESURE, non déployé
+
+| configuration | R/an | maxDD | RoMaD | **%/an risque égal** | P(valider)@1 % | médiane | ruine@0,5 % |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| A — book actuel (b3@0,5R) | +50,7 | 19,0 | 2,66 | 26,63 | 89,0 % | 2,7 mois | 5,4 % |
+| **A sans b3** | +50,4 | 18,6 | 2,71 | 27,08 (+0,45) | **90,2 %** | 2,8 mois | **4,1 %** |
+| A sans b3 + les 2 @0,25R | +54,2 | 17,4 | 3,11 | 31,07 (+4,45) | 91,0 % | 2,6 mois | 3,6 % |
+| **A sans b3 + les 2 @0,5R** | +57,9 | **16,3** | **3,54** | **35,45 (+8,82)** | **91,3 %** | **2,4 mois** | **3,7 %** |
+| A sans b3 + les 2 @1R | +65,3 | 17,9 | 3,65 | 36,46 (+9,83) | 89,9 % | 2,1 mois | 5,4 % |
+| A AVEC b3 + les 2 @0,5R | +58,1 | 16,7 | 3,47 | 34,73 (+8,11) | 90,2 % | 2,4 mois | 4,8 % |
+
+**Retirer b3 est gratuit et améliore le chemin** : −0,3 R/an (bruit), mais maxDD 19,0 → 18,6,
+pire mois −13,5 → −10,4 R, P(valider) +1,2 pt et **ruine funded 5,4 → 4,1 %**. Par année, b3 ne
+manque qu'en **2020** (+42,5 → +31,9) et **2021** (+79,2 → +72,2) ; ailleurs le book est égal ou
+meilleur sans elle (2023 +34,6 → +38,9, 2025 +55,9 → +62,0) — l'edge est mort en 2022.
+
+⚠️ **CORRIGÉ 2026-08-18 — l'optimum est 1R, pas 0,5R.** Le %/an à risque égal et la ruine funded
+ne s'appliquent PAS à un book de challenge (le premier dimensionne au plafond FUNDED, la seconde
+mesure un scénario que le plan interdit). Sur la bonne métrique — **E[temps jusqu'au financement,
+re-challenges compris]** — `@1R` gagne à tous les niveaux de risque : **2,8 mois contre 3,2** à
+1 %/trade. Mécanisme : un dosage fort raccourcit la réussite ET l'échec (2,1 mois pour casser
+contre 2,4), donc son coût n'est pas le temps mais les frais — **+0,02 tentative payée pour
+0,4 mois de funded gagné**. Le seul argument qui survit pour 0,5R : **doser à 0,5R ≡ doser à 1R
+sur un edge deux fois plus petit**, donc *le dosage est la décote appliquée au in-sample*.
+Mesures : `16_temps_jusqu_au_funded.py`.
+
+**Rien de tout cela n'est déployé.** Candidates in-sample ; décision utilisateur requise pour
+toucher `config_live.yaml` ou `books_report.BOOKS`.
+
+## Comparaison des sleeves, NET, sur fenêtre commune (2026-08-18, `14_swap_test_vs_book.py`)
+
+Fenêtre 2018-07 → 2026-07 (8,1 ans), net des coûts FTMO relevés le 2026-08-18. Classement par
+le test d'admission maison — **RoMaD standalone**.
+
+| rang | sleeve | poids | R/an net | maxDD | **RoMaD** | corr book |
+|--:|---|--:|--:|--:|--:|--:|
+| 1 | HMASTO | 0,5 | +21,4 | 12,5 | **1,72** | +0,682 |
+| 2 | b4 IBS | 1,0 | +3,7 | 3,6 | **1,04** | −0,058 |
+| 3 | **`vwap_z` GER40** *(candidate)* | 1,0 | +12,6 | 14,6 | **0,86** | +0,218 |
+| 4 | b1 NAS ORB | 1,0 | +12,9 | 16,3 | 0,80 | +0,598 |
+| 5 | TLF | 0,5 | +10,7 | 13,6 | 0,79 | +0,511 |
+| 6 | **`skew` US30** *(candidate)* | 1,0 | +2,9 | 4,0 | 0,73 | −0,004 |
+| 7 | b2 or ToM | 1,0 | +1,7 | 4,0 | 0,44 | +0,005 |
+| 8 | **b3 crypto** | 0,5 | **+0,2** | **21,3** | **0,01** | +0,242 |
+
+⚠️ **La brique 3 ne rapporte plus rien sur 8 ans nets (+0,2 R/an) et porte le 2ᵉ plus gros
+drawdown du book.** Confirmation étendue du constat du 2026-08-10.
+
+### Ajouts et remplacements, en %/an à risque égal
+
+| configuration | R/an | maxDD | %/an à risque égal |
+|---|--:|--:|--:|
+| A — le book | +50,7 | 19,0 | 26,63 |
+| **A + les DEUX @0,5R** | +58,1 | **16,7** | **34,73 (+8,11)** |
+| A + GER40 @0,5R | +56,7 | 16,8 | 33,79 (+7,17) |
+| **A − b3 + GER40 @1R** | +62,4 | 21,4 | 29,15 (+2,53) |
+| A + skew US30 @1R | +53,6 | 19,1 | 28,10 (+1,47) |
+| A − b2 / −TLF / −b4 / −b1 / −HMASTO + GER40 | | | −0,39 à −6,69 |
+
+**« Adding always beats swapping » tient toujours** (+7,17 contre +2,53) — mais **il existe
+désormais un échange qui gagne, b3 → GER40**, parce que b3 a cessé de valoir quelque chose.
+
+Au MC, `A + les DEUX @0,5R` : P(valider)@1 % **89,0 → 90,2 %**, médiane **2,7 → 2,4 mois**,
+ruine funded@0,5 % **5,4 → 4,8 %** — les trois axes ensemble, une première. À **1R c'est pire**
+(P(valider) 88,9 %, ruine 6,7 %) : l'optimum est 0,5R. Tenue au **swap double** : 34,17 →
+31,74 %/an, toujours très au-dessus du book.
+
+⚠️ Candidates **in-sample** (grille de 28 300 cellules) ; le +8,11 pt s'appuie sur un maxDD de
+chemin unique ; et le benchmark lui-même est fragile — HMASTO, en tête à 1,72, est la sleeve
+qui a échoué son seul hors-échantillon. **Forward-test avant toute décision.**
+
+## Candidats évalués et NON retenus
+
+| Candidat | Date | Autonome | Pourquoi non |
+|---|---|---|---|
+| **GER40 `vwap_z` H1 k=24** (session NY, stop 2,0·ATR14) | 2026-08-18 | NET FTMO +12,6 R/an, PF 1,176, t 2,10 ; **RoMaD standalone 0,73**, corr book +0,213 | **3ᵉ sur 31 candidats.** En attente d'UNE mesure : le spread FTMO de `GER40.cash`. Swap connu et indolore (−6,10 %/an long → 0,0051 R sur 1,49 nuits). Net des deux côtés le RoMaD d'AGRESSIF monte (2,73 → 2,76 à 18 pts de spread), mais au MC c'est un **levier, pas un diversifiant** : challenge 2,6 → 2,3 mois pour P(valider) 89,1 → 88,2 %, funded ruine 5,5 → 7,3 %. Seuil : spread ≤ 18 pts → gain marginal ; ≥ 27 pts → à écarter. **Ne doit pas entrer dans FUNDED.** |
+
+### La shortlist complète (2026-08-18, `research/scripts/10_candidate_shortlist.py`)
+
+Au seuil **pré-enregistré** q=0,90 avec la batterie complète (2 moitiés positives, témoin de
+sens négatif, témoin aléatoire battu, N ≥ 300) : **31 cellules distinctes sur 7 actifs**.
+Classées par le test d'admission maison — **RoMaD standalone**, pas E[R].
+
+| candidat | R/an | maxDD | **RoMaD** | corr book | lecture |
+|---|--:|--:|--:|--:|---|
+| `fix_window` US100 M15 k=24 | +16,6 | 19,2 | **0,87** | **+0,482** | seul au-dessus de la brique 1 — mais le plus corrélé |
+| `orb_break` US100 H1 k=12 | +10,7 | 14,3 | 0,75 | +0,259 | |
+| `vwap_z` GER40 H1 k=24 | +17,2 | 23,5 | 0,73 | +0,213 | |
+| `skew` US30 H4 k=5 | +2,9 | 4,7 | 0,62 | **+0,003** | **le plus décorrélé**, mais petit |
+| `session_move` XAUUSD H4 k=5 | +3,8 | 9,5 | 0,40 | **−0,162** | corrélation NÉGATIVE |
+| … 26 autres | | | ≤ 0,61 | | dont **12 sous le GER40 ORB rejeté (0,38)** |
+
+**Aucun n'atteint le RoMaD de l'IBS (1,59).** L'arbitrage est net : les meilleurs RoMaD sont
+les sleeves intraday NAS100 (donc corrélées au book), les vrais décorrélés sont petits.
+
+#### Panier puis sélection NETTE FTMO (2026-08-18, `11_` puis `12_net_ftmo_shortlist.py`)
+
+Le panier sélectionné sur coûts **Pepperstone** (skew US30 + resid_rev XAUUSD + asia_range_pos
+GER40 + session_move XAUUSD) donnait +1,28 pt/an à risque égal à 0,25R. **Refait nativement
+NET de FTMO, il s'effondre** : 5 cellules sur 25 franchissent le plancher RoMaD 0,38, et en
+croisant avec corr ≤ +0,10 il n'en reste **qu'une**.
+
+| classement NET | nuits | R/an | maxDD | **RoMaD net** | corr |
+|---|--:|--:|--:|--:|--:|
+| `vwap_z` GER40 H1 k=24 **stop 3,0** | 1,62 | +12,2 | 14,9 | **0,82** | +0,220 |
+| `vwap_z` US100 M5 k=24 stop 4,0 | 0,14 | +13,6 | 17,4 | 0,78 | +0,335 |
+| `fix_window` US100 M15 k=24 stop 4,0 | 0,20 | +9,5 | 16,7 | 0,57 | +0,477 |
+| **`skew` US30 H4 k=12 stop 4,0** | 2,64 | +2,2 | 5,3 | 0,42 | **−0,009** |
+| `orb_break` US100 H1 k=12 stop 3,0 | 1,18 | +4,9 | 12,0 | 0,41 | +0,299 |
+
+⚠️ **La géométrie optimale NETTE n'est pas la brute** (GER40 passe de stop 2,0 à 3,0).
+⚠️ **Contre-intuition mesurée** : les survivantes portent **1,18 nuit en médiane contre 0,32
+pour les recalées**. `1R = m×ATR14` étant grand en H1/H4, le swap y pèse peu ; en M5/M15 il est
+petit et c'est le **spread** qui tue. `orb_break` US100 M5 porte 0,03 nuit et rend −3,4 R/an.
+
+**Le meilleur ajout mesuré par toute la chaîne est la plus petite sleeve, dosée PLEINE** —
+`skew` US30 H4 k=12, +2,2 R/an net, corr −0,009, qui **n'ajoute aucun drawdown** :
+
+| dose | R/an | maxDD | **%/an à risque égal** | P(valider)@1 % | ruine funded@0,5 % |
+|---|--:|--:|--:|--:|--:|
+| AGRESSIF seul | +49,9 | 19,0 | 26,24 % | 88,8 % | 5,7 % |
+| + skew US30 @0,5R | +51,4 | 19,0 | 26,98 % (+0,74) | 89,3 % | 5,2 % |
+| **+ skew US30 @1R** | +52,8 | **19,1** | **27,71 % (+1,47)** | **89,5 %** | **5,2 %** |
+
+La règle maison *« poor standalone RoMaD → dose at half »* vise les sleeves qui **ajoutent du
+drawdown**. Celle-ci n'en ajoute pas : la doser à moitié laisserait la moitié du gain. Reste
+in-sample (403 trades) → **forward-test papier**. 6 cellules (UK100, GBPJPY) sont écartées
+faute de swap FTMO relevé : c'est la seule extension gratuite disponible.
+
+
 ## Forward-test sleeves (NOT bricks) — KAER and KELT, added 2026-08-07/08
 
 | Sleeve | Asset | Mechanism | Code | Standalone | Live |
@@ -195,26 +325,55 @@ sizing tested up to 1.5%. The binding limit is now the **−10% static floor**.
 - **Never above 1%** — E[withdrawn] plateaus at 35–38% while ruin explodes past 47%.
 - **Asymmetric plan:** pass the challenge at 1.0% (speed), drop to 0.5% once funded (protection).
 
-### Margin on an FTMO **Swing** account (measured 2026-08-09)
+### Margin on an FTMO **Swing** account — re-measured 2026-08-13 on the HMASTO/TLF book
 
-The swing account is **mandatory** for this book (b2/b3/b4 hold overnight and over
-weekends) and its advertised **1:30 applies to nothing here** — the book holds no forex.
-The leverages that bite are **indices 1:15, metals 1:9, crypto 1:1** (crypto is 1:1 on the
-*normal* account too, so **the swing downgrade is nearly free**). Measured on the real
-position timeline (`scratchpad/ftmo_swing_margin.py`):
+The swing account is **mandatory** and the normal one is not an option: FTMO's normal
+account forbids holding **more than 2 h after market close** and **over the weekend**
+([FTMO FAQ](https://ftmo.com/en/faq/ftmo-swing-account-type/)), and **b2 / b3 / b4 all do
+both**. So the only real question is what the swing's lower leverage costs. Its advertised
+**1:30 applies to nothing here** — the book holds no forex. What bites is **indices 1:15,
+metals 1:9, crypto 1:1** (re-confirmed against FTMO 2026-08-13; crypto is 1:1 on the normal
+account too, so **that part of the downgrade is free**). Measured on the real position
+timeline of the deployed book — b1@1R + b2@1R + b3@0.5R + b4@1R + HMASTO@0.5R + TLF@0.5R —
+by [`scratchpad/ftmo_swing_margin_v2.py`](../scratchpad/ftmo_swing_margin_v2.py) and
+[`_v2b.py`](../scratchpad/ftmo_swing_margin_v2b.py):
 
-| Book | median margin | p99 | max | time > 100 % | entries refused |
-|---|---|---|---|---|---|
-| **AGRESSIF @1.00 %, final (no KELT)** | **19.0 %** | 49.5 % | **84.4 %** | **0 %** | **0 / 3801** |
-| **FUNDED @0.50 %, final (no KELT)** | **4.8 %** | 14.7 % | **24.8 %** | 0 % | **0 / 1445** |
-| *(was)* AGRESSIF with KELT, swing | 31.7 % | 77.6 % | 117.4 % | 0.10 % | 25 / 5034 |
-| *(was)* AGRESSIF with KELT, normal | 30.4 % | 70.6 % | 112.6 % | 0.01 % | 2 / 5034 |
+| Book (swing) | mean | median | p99 | max | time > 100 % | **entries refused** |
+|---|---|---|---|---|---|---|
+| **AGRESSIF @1.00 %** | 11.6 % | 10.0 % | 42.4 % | **93.3 %** | **0 %** | **0 / 4843** |
+| **FUNDED @0.50 %** (no HMASTO) | 5.4 % | 4.9 % | 16.9 % | 38.8 % | 0 % | **0 / 2777** |
+| *same AGRESSIF on a normal account* | 9.6 % | 9.2 % | 22.1 % | 39.8 % | 0 % | 0 / 4843 |
 
-The tail saturation was **KELT's**, not the account's: at 1R it ate **33.9 %** of the balance
-in margin (2.95 % median stop × crypto 1:1) vs KAER 17.5 %, brick 1 16.5 %, brick 4 1.5 %.
-**Retiring it removed the margin problem outright** — the final books never come close to the
-ceiling. (Had it been kept, `0.75 %/trade`, `KELT@0.25R`, or `b3@0.5R + KELT@0.25R` each took
-the max under 100 %.)
+⭐ **Answer: the swing account blocks nothing at the deployed sizing.** Zero refusals in
+4843 entries over 8 years, and the book spends **7 h out of 71 118** (0.010 %) above 90 %
+margin — 9 distinct episodes above 80 % in eight years, worst 93.3 % on 2025-07-18.
+
+Three things the numbers say that the intuition does not:
+
+1. **The margin is crypto's, the peaks are the indices'.** Time-averaged, b3 is **76 %** of
+   the book's margin (BTC 43.9 + ETH 32.4) purely because it is held for weeks at 1:1. But
+   every peak above 80 % is **b1 + HMASTO + TLF stacking on 1:15 indices**: their stops are
+   0.25–0.45 % of price, so 1R of risk buys 100–250 % of the balance in notional. **HMASTO
+   alone is 199.7 % notional / 13.3 % margin at 0.5R** — the tightest stop in the book is
+   also its heaviest margin consumer per R. Dropping it takes the peak 93.3 % → **77.6 %**.
+2. **1.00 %/trade is the last clean rung.** Refusals start immediately above it: **1.25 % →
+   9 refused, 1.50 % → 46, 2.00 % → 207**, always the same four intraday index sleeves.
+   The margin ceiling was never a sizing constraint before; on this composition it is one,
+   and it binds at almost exactly the sizing already chosen for the challenge.
+3. **The 93.3 % is measured against the balance.** MT5 checks free margin against
+   **equity**, so a floating loss shrinks the ceiling. At the worst equity a static −10 %
+   floor allows (cap 90 %), **4 entries of 4843 (0.08 %) are refused** — all TLF. At cap
+   95 %, still zero. No stop-out exposure either: at 93.3 % used, equity would have to fall
+   to 46.6 % of balance to hit a 50 % stop-out, which the −10 % rule makes impossible.
+
+⚠️ **`broker.market_order` never calls `order_calc_margin`/`order_check`**, so a 10019
+refusal raises, the runner logs it, and the brick simply **re-attempts on the next pass**
+at a drifted price.
+
+*History (2026-08-09, the KAER+KELT book):* the tail saturation then was **KELT's**, not the
+account's — at 1R it ate **33.9 %** of the balance in margin (2.95 % median stop × crypto
+1:1) vs KAER 17.5 %, brick 1 16.5 %, brick 4 1.5 %, and it alone produced 25 refusals in
+5034 entries. Retiring it removed that problem outright.
 
 ⚠️ **`broker.market_order` never calls `order_calc_margin`/`order_check`**, so a 10019
 refusal raises, the runner logs it, and the brick simply **re-attempts on the next pass**
@@ -273,12 +432,21 @@ holding time. Measured at 1R:
 |---|---|---|---|---|
 | **KELT** *(retired)* | 2.1 | 17.35 → **5.04** | **29 %** | 2.99 → **0.87** |
 | b3 BTC / ETH | 20.3 / 17.5 | 6.41 → 3.13 / 5.50 → 3.07 | ~50 % | 1.41 / 1.25 |
-| b4 NAS IBS | 3.2 | 4.81 → **4.30** | 89 % | 5.16 → 4.59 |
+| b4 NAS IBS ¹ | 3.2 → **1.9** | 4.81 → **4.30** (→ **4.46** après ¹) | 89 → **93 %** | 5.16 → 4.59 |
 | b2 XAU ToM | 2.8 | 2.56 → **2.21** | 87 % | 2.35 → 2.07 |
 | **b1, KAER** | **0** | **12.95 / 30.82 unchanged** | **100 %** | — |
 
 Gold and the NAS get off lightly — wide stops, low rates, and for gold the Wednesday triple
 means its month-end weekends are cheap. **Crypto carries essentially the whole bill.**
+
+¹ **b4 ne paie plus la dernière nuit depuis le 2026-08-13.** Sa sortie signal partait au
+rollover 00:00, dans la coupure 00:00-01:00 : rejetée, elle remplissait à la réouverture,
+**après** le prélèvement du swap, et un vendredi après le week-end (59/285 sorties un lundi).
+Le driver quitte désormais à **23:50 serveur (22:50 Paris)**, sur la barre qui se ferme :
+3,20 → 1,93 unité/trade, **+4,27 → +4,46 R/an net**, t 4,57 → 4,74, maxDD 3,26 → 3,10 R,
+pour −0,03 R/an de brut (bruit, t=−1,05). ⚠️ **`run_ibs` et donc les chiffres canoniques de
+cette page mesurent toujours la sortie au rollover** : le livre publié sous-estime b4 de
+~0,19 R/an. Voir [[exp-009-ibs-reversion-4th-brick]] résultat 6.
 
 ⭐ **Removing KELT is what the numbers say.** Net of every FTMO cost, with KELT the books are
 AGRESSIF 43.39 R/yr at maxDD **21.92** (RoMaD 1.98, challenge @1 % 82.0 %) and FUNDED 24.96
@@ -506,6 +674,18 @@ Every sleeve has one: b1/KAER flat at 15:55 ET (wall clock), b2 on a count of th
 completed D1 bars, b3 at 30 D1 bars, b4 at 30 D1 bars or `IBS>0.8`, KELT at 96 H1 bars,
 **TLF at 15:55 ET *or* 60 M5 bars — whichever comes first**. Three rules, the first two
 learned the hard way on 2026-08-09 and the third on 2026-08-12 (see [[log]]):
+
+**And none of them has a TAKE-PROFIT — that is a measured choice, not an omission.**
+`tp_R` is plumbed in both forward-test sleeves and swept over 11 values (0.5 → 6 R) on
+2026-08-17: **not one beats `None`**, on either sleeve, on any metric, and the curve is
+**monotone in `tp_R`, converging to the no-target case from below** — there is no interior
+optimum. The cause is the shape of the distribution, not the level of the target: HMASTO's
+117 trades above +4 R (5.3 % of the flow) make **+768 R while the other 2082 make −440 R**,
+so a target is exactly the instrument that cuts the tail that pays for every stop. The trap
+it documents is worth keeping: a 0.5 R target **raises** the hit rate to 64 % (from 35 %)
+and returns **−15.2 R/yr**. Details and the per-year / half-sample / cross-asset controls
+are in [[log]] (2026-08-17) and the [[Failed Ideas/ledger|ledger]]; the parameters live in
+`edgelab/intraday/{hma_stoch,two_leg_fade}.py` and are not restated here.
 
 1. **Count BARS in the broker's own frame, never calendar dates or elapsed hours.** MT5
    returns `position.time` on the **server** clock (Athens) but labelled UTC —

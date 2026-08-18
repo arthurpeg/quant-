@@ -43,3 +43,23 @@ edgelab/data/_cache_yahoo/
 # Campaign outputs (regenerable): corpus sweeps, battery runs, per-asset CSVs. 47 MB and
 # rebuilt by scratchpad/battery_*.py — the wiki links to the scripts, not to these blobs.
 scratchpad/_inx/
+
+# crosslab (momentum cross-sectionnel G8) : 1,4 Go de M1 des 28 paires, re-tirable
+# par `python -m crosslab.fetch`, et les parquets de grille, re-generables par
+# `python -m crosslab.run`. Le rapport et le code, eux, sont suivis.
+data_cache_fx28/
+crosslab_grid/
+fx28_*.log
+
+# swinglab : donnees et artefacts regenerables (fetch -> costs -> run -> validate)
+data_cache_swing/
+swinglab/_brackets/
+swinglab/_out/
+# la config live peut porter des reglages propres a la machine ; le modele est commite
+swinglab/live_config.json
+
+# research/ (phase 1, porte IC) : 332 Mo de parquets MT5 M5/M15/H1/H4 et les
+# grilles d'IC, tous re-tirables par `python research/scripts/04_run_pipeline.py`.
+# Les livrables (validated_hypotheses.json, rapport_ic_gate.md) et le code sont suivis.
+research/data/*.parquet
+research/data/ic_results*.parquet
